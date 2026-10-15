@@ -10,6 +10,7 @@ Rust Core · Rust Daemon & CLI · SwiftUI untuk macOS · WinUI 3 untuk Windows
 | Versi dokumen | `1.0.0` |
 | Tanggal | 15 Oktober 2026 |
 | Status | **DRAFT / PROPOSED SCOPE — siap untuk review dan perencanaan implementasi** |
+| Peran dokumen | Kebutuhan awal; agent pelaksana mengikuti scope dan specs yang berlaku |
 | Target pertama | Aplikasi macOS untuk penggunaan development sehari-hari secara internal |
 | Target berikutnya | Publikasi stabil dan ekosistem komunitas; aplikasi Windows native dengan WinUI 3 |
 | Minimum OS | macOS 27; Windows 11 versi 26H2 |
@@ -45,13 +46,17 @@ Rust Core · Rust Daemon & CLI · SwiftUI untuk macOS · WinUI 3 untuk Windows
 
 ### Struktur tiga lapisan
 
-Dokumen tunggal `prd.md` ini menjadi sumber kebutuhan yang konsisten, dengan tiga lapisan:
+Dokumen tunggal `prd.md` ini merekam kebutuhan produk awal sebagai bahan untuk menyusun scope dan specs, dengan tiga lapisan:
 
 1. **WHAT:** tujuan, perilaku produk, cakupan, aturan bisnis, pengguna, serta kebutuhan pengalaman pengguna.
 2. **PROJECT FIT:** batas arsitektur dan cara mengintegrasikan kebutuhan dengan repository, protokol, platform, serta komponen yang tersedia.
 3. **VERIFICATION:** acceptance criteria yang observable dan testable, bukti pengujian, kriteria rilis, serta Definition of Done.
 
-Keputusan produk yang telah disepakati tidak boleh diganti diam-diam dengan pilihan teknologi lain. Detail implementasi yang diberi label **usulan** dapat disesuaikan melalui Architecture Decision Record (ADR), selama requirement dan keamanan tetap dipenuhi.
+Saat menyusun atau merekonsiliasi scope/specs, keputusan produk yang telah disepakati tidak boleh diganti diam-diam dengan pilihan teknologi lain. Detail implementasi yang diberi label **usulan** dapat disesuaikan melalui Architecture Decision Record (ADR), selama requirement dan keamanan tetap dipenuhi.
+
+### Prioritas untuk pekerjaan agent berikutnya
+
+PRD ini adalah input kebutuhan awal, bukan sumber instruksi untuk pekerjaan implementasi setelah scope dan specs tersedia. Agent pelaksana wajib mengikuti scope task yang aktif, specs yang relevan dan telah disetujui, serta `AGENTS.md`; agent tidak boleh mengambil atau menyimpulkan kebutuhan, keputusan teknis, maupun acceptance criteria langsung dari PRD ini. PRD ini hanya dirujuk ketika task secara eksplisit meminta penyusunan atau rekonsiliasi scope/specs. Jika informasi yang diperlukan belum ada atau dokumen tersebut bertentangan, ikuti workflow untuk memperbarui scope/specs atau minta keputusan; jangan diam-diam menjadikan PRD ini fallback.
 
 ### Penyimpanan di repository
 
@@ -81,11 +86,11 @@ docs/plan/prd/{NNN}-stackly/
 
 Tetapkan satu sumber kanonis ketika melakukan pemecahan agar versi konsolidasi dan dokumen terpisah tidak berbeda. File yang diserahkan ini belum disimpan ke repository dan belum mendapatkan nomor repository.
 
-### Aturan kerja agent
+### Aturan untuk menyusun scope/spec
 
-Baca `AGENTS.md`, aturan workspace, dokumentasi arsitektur, PRD terkait, dan kode existing sebelum implementasi. Terapkan **REUSE > EXTEND > CREATE**. Untuk repository kosong, tulis keputusan foundation secara eksplisit; jangan menganggap modul, CI, signing identity, registry, atau aplikasi telah tersedia.
+Bagian ini hanya berlaku jika task secara eksplisit meminta penyusunan atau rekonsiliasi scope/specs dari PRD ini; bukan instruksi bagi agent pelaksana. Untuk task tersebut, baca `AGENTS.md`, aturan workspace, scope/specs existing, dokumentasi arsitektur, dan kode yang relevan. Terapkan **REUSE > EXTEND > CREATE**. Untuk repository kosong, tulis keputusan foundation secara eksplisit; jangan menganggap modul, CI, signing identity, registry, atau aplikasi telah tersedia.
 
-Gunakan ID `REQ`, `BR`, `VAL`, `NFR`, `AC`, dan `OQ` secara stabil. Semua test dimulai dengan status `NOT_RUN`. Hasil mock tidak boleh dilaporkan sebagai kompatibilitas runtime nyata. Catat `BLOCKED` jika hardware, binary, izin, signing credential, atau akses pengujian belum tersedia, tetapi lanjutkan pekerjaan lain yang tidak bergantung pada blocker tersebut.
+Saat menurunkan kebutuhan ke scope/specs, pertahankan ID `REQ`, `BR`, `VAL`, `NFR`, `AC`, dan `OQ` secara stabil. Status pengujian awal adalah `NOT_RUN`; hasil mock bukan bukti kompatibilitas runtime nyata. Catat `BLOCKED` jika hardware, binary, izin, signing credential, atau akses pengujian belum tersedia.
 
 Dokumen ini **bukan** instruksi untuk memodifikasi Herd, menyalin kode proprietary, atau menggunakan REA. Produk dikembangkan sebagai implementasi independen dari kebutuhan dan dokumentasi publik.
 
@@ -1823,53 +1828,9 @@ Pilih lisensi source core secara sadar, catat lisensi dependensi dan artefak pro
 
 Security disclosure harus mempunyai kanal privat dan proses advisory sebelum detail sensitif dipublikasikan. Respons community issue membedakan bug core, bug provider, incompatibility upstream, dan configuration issue sehingga tanggung jawab jelas.
 
-## 40. Instruksi handoff untuk coding agent
+## 40. Aturan handoff untuk agent berikutnya
 
-```text
-Tugas:
-Gunakan PRD Native Development Environment Manager ini sebagai kontrak produk.
-Bangun implementasi independen: Rust Core + Rust daemon/CLI + SwiftUI macOS.
-Persiapkan kontrak/platform boundary untuk WinUI 3 Windows, tanpa membangun
-GUI Windows sebelum milestone macOS yang disepakati selesai.
-
-Sebelum coding:
-1. Baca AGENTS.md, aturan repository, arsitektur dan PRD existing.
-2. Tentukan folder docs/plan/prd/{NNN}-stackly sesuai aturan.
-3. Terapkan REUSE > EXTEND > CREATE dan catat reuse/gap audit.
-4. Buat compatibility matrix, threat model, ADR dan implementation plan.
-5. Selesaikan M0: sumber runtime, dependency packaging, background helper,
-   IPC prototype dan signing/distribution feasibility.
-
-Saat implementasi:
-- Gunakan REQ/BR/VAL/NFR/AC sebagai ID stabil.
-- Jaga pemisahan provider, runtime, instance dan environment.
-- Jangan jadikan GUI pemilik lifecycle; semua mutation melalui daemon.
-- Buktikan multi-version dan same-version multi-instance menggunakan data
-  sentinel berbeda, port berbeda, serta runtime ID yang eksplisit.
-- Jangan menjalankan initdb pada data existing, purge tanpa ownership,
-  kill-by-name, shell interpolation, atau auto-upgrade mayor database.
-- Default loopback dan per-user. Jangan menonaktifkan proteksi macOS.
-- Provider komunitas adalah native code yang perlu trust; jangan klaim sandbox.
-- Setiap fitur unsupported, platform gap dan dependency missing harus terlihat.
-- Semua operations berat punya journal/progress/error/cancelability yang jelas.
-- Jangan mengganti Rust/SwiftUI dengan Tauri/Angular/Electron tanpa scope change.
-- Jangan menyalin implementasi proprietary Herd atau menjadikan REA dependency.
-
-Urutan:
-Foundation + fixture provider → runtime/instance engine → PostgreSQL 17/18
-→ MySQL, NATS/Traefik untuk menguji extensibility → ClickHouse/Valkey
-→ SwiftUI dan CLI parity → environment + backup/restore
-→ security/recovery/distribution hardening → pilot → stable macOS.
-Pekerjaan GUI dapat paralel menggunakan contract fixtures.
-
-Pelaporan:
-Sertakan file yang berubah, ADR, schema/migration, command test, hasil nyata,
-compatibility matrix, traceability, residual risks dan runbooks.
-Gunakan NOT_RUN/PASS/FAIL/BLOCKED secara jujur.
-Blocked signing/hardware/upstream artifact tidak boleh diubah menjadi PASS.
-Lanjutkan bagian yang tidak bergantung pada blocker, tetapi jangan klaim
-production-ready sebelum semua release gates mandatory lulus.
-```
+PRD ini hanya menjadi bahan awal bagi agent atau pemilik produk yang menyusun scope dan specs. Setelah scope dan specs tersedia, agent implementasi mengikuti dokumen-dokumen tersebut dan `AGENTS.md`, bukan instruksi atau rincian requirement dalam PRD ini. Jika task belum memiliki scope/spec yang diperlukan, agent harus menggunakan workflow scope/spec untuk membuat atau merekonsiliasinya sebelum implementasi; jangan mengambil detail dari PRD ini sebagai pengganti.
 
 ---
 
@@ -1931,4 +1892,4 @@ Dokumentasi berikut diperiksa untuk penyusunan PRD pada **15 Oktober 2026**. Ref
 
 ---
 
-**Akhir PRD.** Dokumen menetapkan target produk, kontrak integrasi dan bukti penerimaan. Ia tidak menyatakan bahwa source code, runtime packages, provider integration, signing, native compatibility, atau pengujian sudah selesai.
+**Akhir PRD.** Dokumen ini merekam kebutuhan produk awal sebagai bahan penyusunan scope dan specs; bukan sumber instruksi implementasi bagi agent berikutnya. Agent implementasi mengikuti scope dan specs yang berlaku. Dokumen ini tidak menyatakan bahwa source code, runtime packages, provider integration, signing, native compatibility, atau pengujian sudah selesai.
