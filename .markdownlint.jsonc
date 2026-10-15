@@ -1,0 +1,11 @@
+{
+  "MD013": false,
+  // Top-level layer, appendix, and reference headings define the PRD outline.
+  "MD025": false,
+  "MD033": {
+    "allowed_elements": ["a"]
+  },
+  "MD060": {
+    "style": "compact"
+  }
+}

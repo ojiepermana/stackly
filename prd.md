@@ -1,9 +1,9 @@
 # PRD — Stackly: Native Development Environment Manager
 
-**Rust Core · Rust Daemon & CLI · SwiftUI untuk macOS · WinUI 3 untuk Windows**
+Rust Core · Rust Daemon & CLI · SwiftUI untuk macOS · WinUI 3 untuk Windows
 
 | Metadata | Nilai |
-|---|---|
+| --- | --- |
 | Nama final produk | **Stackly** |
 | Slug | `stackly` |
 | PRD ID | `PRD-{NNN}`; ditentukan setelah memeriksa repository |
@@ -17,7 +17,7 @@
 | GUI pertama | SwiftUI, tanpa Tauri, Electron, atau webview sebagai UI utama |
 | Model eksekusi | Native process, per-user, daemon terpisah dari GUI |
 | Penyimpanan metadata | SQLite lokal; bukan database layanan yang sedang dikelola |
-| Provider awal wajib | PostgreSQL, NATS Server + JetStream, ClickHouse, Redis, Traefik |
+| Provider awal wajib | PostgreSQL, MySQL, NATS Server + JetStream, ClickHouse, Valkey, Traefik |
 | Status implementasi | **Belum diaudit atau diimplementasikan melalui dokumen ini** |
 | Status pengujian | **NOT_RUN**; verifikasi dokumentasi bukan bukti bahwa integrasi sudah lulus pengujian |
 | Sumber persyaratan | Keputusan dalam percakapan pengguna; asumsi tambahan diberi label usulan atau OQ |
@@ -31,7 +31,7 @@
 ## Peta dokumen
 
 | Bagian | Isi |
-|---|---|
+| --- | --- |
 | [Petunjuk penggunaan PRD](#petunjuk-prd) | Penyimpanan, tiga lapisan, status, dan aturan untuk coding agent |
 | [Lapisan 1 — Product Requirements / WHAT](#layer-1) | Visi, scope, provider, konsep domain, use case, fitur, aturan, UI, CLI, dan environment |
 | [Lapisan 2 — Project Integration / PROJECT FIT](#layer-2) | Arsitektur Rust, monorepo, model data, IPC, supervisor, keamanan, integrasi native, dan distribusi |
@@ -40,6 +40,7 @@
 | [Referensi](#referensi) | Sumber primer yang diperiksa dan batas penggunaannya |
 
 <a id="petunjuk-prd"></a>
+
 ## Petunjuk penggunaan PRD
 
 ### Struktur tiga lapisan
@@ -91,6 +92,7 @@ Dokumen ini **bukan** instruksi untuk memodifikasi Herd, menyalin kode proprieta
 ---
 
 <a id="layer-1"></a>
+
 # LAPISAN 1 — PRODUCT REQUIREMENTS / WHAT
 
 ## 1. Ringkasan produk
@@ -106,9 +108,10 @@ Satu Mac
 ├── PostgreSQL 17 — pg17-dev   — 127.0.0.1:5432 — data A
 ├── PostgreSQL 17 — pg17-test  — 127.0.0.1:5433 — data B
 ├── PostgreSQL 18 — pg18-dev   — 127.0.0.1:5434 — data C
-├── NATS + JetStream          — 127.0.0.1:4222 — storage D
-├── ClickHouse               — HTTP :8123 / native TCP :9000 — data E
-├── Redis                    — 127.0.0.1:6379 — data F
+├── MySQL                  — 127.0.0.1:3306 — data D
+├── NATS + JetStream          — 127.0.0.1:4222 — storage E
+├── ClickHouse               — HTTP :8123 / native TCP :9000 — data F
+├── Valkey                   — 127.0.0.1:6379 — data G
 └── Traefik                  — HTTP :8080 / HTTPS :8443 bila dikonfigurasi
 ```
 
@@ -123,7 +126,7 @@ Tim membutuhkan file environment yang dapat dibagikan tanpa ikut membagikan data
 ### Tujuan produk
 
 | ID | Tujuan | Indikator keberhasilan |
-|---|---|---|
+| --- | --- | --- |
 | GOAL-01 | Multi-version dan multi-instance yang dapat diandalkan | PostgreSQL 17 dan 18 serta dua instance versi identik berjalan bersamaan tanpa data tercampur |
 | GOAL-02 | Pengelolaan native yang mudah | Pengguna dapat install, create, start, stop, inspect, dan recover melalui GUI maupun CLI |
 | GOAL-03 | Provider extensible | Provider deklaratif tambahan dapat digunakan tanpa perubahan core untuk kemampuan yang sudah tersedia |
@@ -134,7 +137,7 @@ Tim membutuhkan file environment yang dapat dibagikan tanpa ikut membagikan data
 ### Pengguna utama
 
 | Persona | Kebutuhan |
-|---|---|
+| --- | --- |
 | Developer individu | Menjalankan stack lokal, mengganti versi secara terkontrol, melihat log, menyalin connection string |
 | Developer dalam tim | Memakai definisi environment yang sama dengan data dan secrets lokal masing-masing |
 | Maintainer internal | Menentukan versi teruji, membagikan provider, mendiagnosis kegagalan, mengelola pembaruan |
@@ -144,7 +147,7 @@ Tim membutuhkan file environment yang dapat dibagikan tanpa ikut membagikan data
 ## 3. Prinsip dan keputusan produk
 
 | Prinsip | Konsekuensi |
-|---|---|
+| --- | --- |
 | Native-first, tidak mewajibkan Docker | Runtime dijalankan sebagai executable OS; backend WSL/container tidak disamarkan sebagai native |
 | Daemon-centric | GUI dan CLI adalah client; tidak menjadi pemilik lifecycle database |
 | Runtime berbeda dari instance | Satu instalasi versi konkret dapat dipakai banyak instance dengan storage berbeda |
@@ -160,7 +163,7 @@ Tim membutuhkan file environment yang dapat dibagikan tanpa ikut membagikan data
 
 ### 4.1 Baseline rilis stabil macOS
 
-Cakupan wajib meliputi Rust core, daemon, CLI, SwiftUI, registry SQLite, provider deklaratif, lima provider awal, multi-version, multi-instance, port/data/config isolation, log, health, metrik dasar, autostart setelah login, project environment, trust policy, backup/recovery dasar, installer bertanda tangan, dan dokumentasi operasional.
+Cakupan wajib meliputi Rust core, daemon, CLI, SwiftUI, registry SQLite, provider deklaratif, enam provider awal, multi-version, multi-instance, port/data/config isolation, log, health, metrik dasar, autostart setelah login, project environment, trust policy, backup/recovery dasar, installer bertanda tangan, dan dokumentasi operasional.
 
 **Minimum OS macOS adalah macOS 27. Apple Silicon / ARM64 adalah target validasi utama.** Dukungan Intel/x86_64 disiapkan di model runtime, tetapi tidak boleh diiklankan supported tanpa hardware/runner dan artefak provider yang diuji.
 
@@ -185,7 +188,7 @@ Public community registry dapat berkembang setelah internal stable. Namun, forma
 ### 5.1 Arti status
 
 | Status | Arti |
-|---|---|
+| --- | --- |
 | `PLANNED` | Masuk roadmap, belum diimplementasikan |
 | `UNVERIFIED` | Integrasi/artefak belum melalui seluruh pemeriksaan yang diperlukan |
 | `EXPERIMENTAL` | Dapat dicoba dengan peringatan; tidak termasuk jaminan rilis stabil |
@@ -198,22 +201,23 @@ Status upstream dan status integrasi Stackly adalah dua hal berbeda. Pada tangga
 ### 5.2 Provider awal wajib
 
 | Provider | Target versi awal | Kemampuan minimum | macOS | Catatan Windows |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | PostgreSQL | Mayor 17 dan 18; patch konkret dikunci saat implementasi | Init cluster, multi-version/instance, auth, query readiness, log, persistence, logical backup/restore | Target wajib; artefak dan dependency wajib diuji | Kandidat native; lifecycle Windows didokumentasikan upstream, tetap perlu pengujian [S04] |
+| MySQL | Rilis stabil konkret dipilih dan dikunci sebelum beta | Server terisolasi, multi-instance, auth, query readiness, log, persistence, backup/restore | Target wajib; artefak dan dependency wajib diuji [S22] | Kandidat native; paket, lifecycle, dan arsitektur tetap perlu pengujian [S22] |
 | NATS Server | Rilis 2.x yang dipilih dan diverifikasi | Core messaging, JetStream opsional, storage per-instance, client/monitoring ports, health | Target wajib; instalasi macOS didokumentasikan [S05] | Rilis Windows tersedia menurut dokumentasi NATS; arsitektur/per-versi tetap diverifikasi [S05] |
 | ClickHouse | Rilis stabil konkret yang kompatibel; tidak hardcode `latest` | Single-node server, HTTP/native TCP, config, path, health/query, persistence | Dokumentasi resmi mencakup native macOS; target wajib setelah artefak diuji [S06] | Jalur resmi yang diperiksa menggunakan WSL; **jangan klaim Windows native** [S06] |
-| Redis | Rilis Open Source terpilih, termasuk lini 8 bila lolos matrix | Standalone, port, auth, PING, persistence policy, log, data per-instance | Dokumentasi resmi mencakup macOS/Homebrew; paket konkret tetap diuji [S07] | Jalur instalasi dan kompatibilitas partner berbeda; tidak otomatis menjanjikan binary native Redis yang setara [S07] |
+| Valkey | Rilis stabil konkret dipilih dan dikunci sebelum beta | Standalone, port, auth, PING, persistence policy, log, data per-instance | Dokumentasi resmi mencakup macOS/Homebrew; paket konkret tetap diuji [S07] | Upstream tidak mendukung Windows native; jangan mengganti dengan WSL secara diam-diam [S07] |
 | Traefik | Rilis 3.x konkret yang diverifikasi | Native process, entrypoints, file-based routes, health, config reload sesuai kemampuan | Target wajib; artefak per-arch diuji | Kandidat setelah artefak dan lifecycle/file-watching Windows diverifikasi |
 
-Minimal matriks versi untuk rilis: PostgreSQL mempunyai dua mayor yang diuji, sedangkan empat provider lainnya masing-masing mempunyai minimal satu versi konkret teruji dan dua instance dari versi tersebut. Kemampuan menjalankan versi lain ditandai supported hanya setelah diuji; jangan menjanjikan semua versi historis.
+Minimal matriks versi untuk rilis: PostgreSQL mempunyai dua mayor yang diuji, sedangkan lima provider lainnya masing-masing mempunyai minimal satu versi konkret teruji dan dua instance dari versi tersebut. Kemampuan menjalankan versi lain ditandai supported hanya setelah diuji; jangan menjanjikan semua versi historis.
 
 ### 5.3 Kandidat perluasan katalog
 
 | Kelompok | Kandidat | Batas komitmen |
-|---|---|---|
-| Database | MySQL, MariaDB, MongoDB | Ditambahkan setelah availability, packaging, lisensi, dan data lifecycle ditinjau |
+| --- | --- | --- |
+| Database | MariaDB, MongoDB | Ditambahkan setelah availability, packaging, lisensi, dan data lifecycle ditinjau |
 | Messaging | RabbitMQ, Kafka, Redpanda | Dependency seperti Erlang/JVM dan kebutuhan OS/backend diperiksa; bukan janji native macOS |
-| Cache | Valkey, Memcached | Provider terpisah; bukan alias diam-diam untuk Redis |
+| Cache | Redis, Memcached | Provider terpisah dari Valkey; kompatibilitas protokol tidak menjanjikan pertukaran tanpa verifikasi |
 | Proxy | Caddy, Nginx, HAProxy | Routing, TLS, privilege, dan port tambahan sesuai provider |
 | Object storage | MinIO atau implementasi kompatibel yang dipilih | Status distribusi dan izin redistribusi ditinjau sebelum masuk katalog |
 | Search | Meilisearch, Typesense, OpenSearch | Runtime dependency dan resource minimum dinyatakan |
@@ -226,7 +230,7 @@ Daftar ini adalah backlog, bukan bagian yang harus selesai agar baseline macOS d
 ## 6. Domain produk dan definisi isolasi
 
 | Konsep | Definisi |
-|---|---|
+| --- | --- |
 | Software | Identitas tool, misalnya PostgreSQL |
 | Provider | Paket metadata dan aturan pengelolaan tool, termasuk schema, capabilities, artefak, dan lifecycle |
 | Provider revision | Versi immutable manifest/template yang digunakan untuk menjalankan instance |
@@ -250,7 +254,7 @@ Runtime tidak mengandung data bisnis instance. Satu runtime PostgreSQL 17 yang s
 ### Apa yang wajib dipisahkan
 
 | Resource | Kebijakan |
-|---|---|
+| --- | --- |
 | Data/WAL/JetStream/RDB/AOF | Direktori per-instance; tidak berbagi writable data path |
 | Konfigurasi | File effective config, include, dan revision per-instance |
 | Log | Stream dan direktori terpisah; akses dan retention terdefinisi |
@@ -270,7 +274,7 @@ Tidak ada klaim bahwa instance A mustahil mengakses file instance B jika binary 
 Pengguna membuka **Catalog → PostgreSQL**, memilih versi mayor 17 dan patch terverifikasi, lalu memasang runtime. Setelah itu **Create Instance** meminta nama, endpoint, data location, auth, dan autostart. Runtime yang sama dipilih lagi untuk membuat instance kedua dengan port berbeda. Langkah yang sama untuk mayor 18 menghasilkan instance ketiga.
 
 | Instance | Runtime | Port TCP | Path logis |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `pg17-dev` | Exact runtime hasil resolusi mayor 17 | `5432` | `instances/<id-a>/data` |
 | `pg17-test` | **Runtime ID identik** dengan `pg17-dev` | `5433` | `instances/<id-b>/data` |
 | `pg18-dev` | Exact runtime hasil resolusi mayor 18 | `5434` | `instances/<id-c>/data` |
@@ -314,30 +318,31 @@ Output connection URI menyembunyikan password secara default. Reveal/copy secret
 ### 7.3 Banyak port dalam satu instance
 
 | Provider | Instance A | Instance B | Tambahan yang harus diperiksa |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | NATS | Client `4222`, monitoring `8222` | Client `4223`, monitoring `8223` | Cluster, leaf, gateway, WebSocket/MQTT bila diaktifkan; default fitur tersebut off |
+| MySQL | TCP `3306` | TCP `3307` | Unix socket/TLS bila diaktifkan; port contoh, bukan jaminan ketersediaan |
 | ClickHouse | HTTP `8123`, native TCP `9000` | HTTP `8124`, native TCP `9001` | Interserver, HTTPS/TLS, metrics atau endpoint lain bila diaktifkan |
 | Traefik | HTTP `8080`, HTTPS `8443`, health `18080` | HTTP `8081`, HTTPS `8444`, health `18081` | Dashboard/API, TCP/UDP entrypoints, HTTP/3 bila diaktifkan |
-| Redis | TCP `6379` | TCP `6380` | Unix socket/TLS bila diaktifkan; cluster bukan baseline |
+| Valkey | TCP `6379` | TCP `6380` | Unix socket/TLS bila diaktifkan; cluster bukan baseline |
 
 Angka adalah contoh konfigurasi Stackly, bukan jaminan port host sedang kosong. Monitoring NATS merupakan endpoint terpisah dari koneksi client dan harus dikonfigurasi tersendiri. [S09]
 
 ---
+
 ## 8. Kebutuhan fungsional wajib
 
 Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Windows aktual yang secara eksplisit ditunda. Kata **wajib** adalah release requirement; bukan klaim implementasi selesai. Setiap ID mempunyai acceptance criterion utama dengan nomor yang sama di Lapisan 3.
 
-
 ### Platform & lifecycle
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-001 | **Core independen** | Core tidak mengimpor framework GUI. GUI dan CLI mengakses daemon yang sama; aplikasi tetap dapat digunakan headless. Penutupan window maupun Quit GUI tidak dianggap perintah stop service. |
 
 ### Catalog & runtime
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-002 | **Catalog berbasis capability** | Catalog menampilkan publisher, provider revision, kategori, OS/arch, versi tersedia, trust, status kompatibilitas, dependency, kebutuhan disk, dan capability. Unsupported tidak ditampilkan seolah install berhasil. |
 | REQ-003 | **Resolusi dan pin versi** | Selector seperti @17, @18, dan @stable diselesaikan menjadi exact version dan artifact digest. Instance menyimpan runtime ID immutable; katalog yang berubah tidak mengganti runtime instance. |
 | REQ-004 | **Instalasi managed yang atomik** | Unduh ke staging, validasi origin/digest dan signature sesuai kebijakan, ekstrak aman, validasi binary/dependency, lalu commit instalasi. Retry tidak membuat duplikasi atau runtime setengah terpasang. |
@@ -348,7 +353,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### Instance & supervision
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-008 | **Create instance terkontrol** | Create menghasilkan ID stabil, nama, provider revision, runtime ID, credential reference, config revision, endpoint, direktori, dan startup policy. Inisialisasi hanya pada target baru yang tervalidasi dan tidak menimpa data existing. |
 | REQ-009 | **Multi-version dan multi-instance terisolasi** | Versi berbeda serta versi identik dapat berjalan bersama dengan writable data, config, log, temp, socket, identity, dan lifecycle terpisah. Runtime yang sama boleh digunakan ulang; data directory tidak boleh dibagi. |
 | REQ-010 | **Seluruh endpoint dan konflik resource** | Validasi address, transport, port, wildcard IPv4/IPv6, Unix socket dan endpoint tambahan provider. Fixed port tidak diganti diam-diam. Auto-port harus dipersistenkan dan ditampilkan setelah bind/readiness berhasil. |
@@ -360,7 +365,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### Configuration & diagnostics
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-015 | **Config revision dan drift** | Form typed dan advanced config memakai schema provider. Tampilkan diff, validasi, revision, restart/reload impact, serta drift akibat edit luar. Managed field penting tidak boleh ditimpa oleh override tanpa validasi. |
 | REQ-016 | **Secrets dan akses lokal** | Simpan secret di platform secret store dan hanya reference di SQLite/manifest. Masking berlaku untuk GUI, CLI, logs, diagnostics, dan environment export. Kebutuhan file config plaintext oleh tool dinyatakan sebagai residual risk dengan permission ketat. |
 | REQ-017 | **Log streaming dan retention** | Log per-instance mendukung follow, pagination/cursor, filter dasar, timestamps, pemisahan stdout/stderr bila tersedia, batas ukuran, dan rotasi. Subscriber lambat tidak boleh menahan pipe proses atau membuat memori tidak terbatas. |
@@ -370,7 +375,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### Environment
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-020 | **Environment plan dan validasi** | File deklaratif mempunyai schema version, namespace, runtime selector, endpoint, settings, secret references, dependencies, dan ownership. Plan menampilkan diff serta dampak tanpa download, spawn, trust grant, atau file mutation. |
 | REQ-021 | **Environment up dan partial failure** | Up menginstal yang diperlukan, membuat dedicated instance, memperoleh lease, lalu menjalankan dependency graph berdasarkan readiness. Siklus ditolak. Partial failure menghasilkan state yang jelas dan kompensasi hanya pada resource milik operasi tersebut. |
 | REQ-022 | **Environment down dan shared instance** | Down melepas lease environment dan menghentikan hanya instance yang tidak lagi dibutuhkan. Shared reference, manual start, dan ownership diperhitungkan. Down tidak menghapus data atau runtime. |
@@ -379,7 +384,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### Native GUI
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-024 | **Shell SwiftUI dan state global** | GUI menyediakan navigasi, daemon connection status, operation center, loading/empty/error/stale/unsupported states, serta reconnect. Seluruh business mutation melalui API daemon. |
 | REQ-025 | **Runtime, instance, dan catalog UI** | Sediakan install wizard, create/duplicate-config instance, runtime list, instance list/detail, version/endpoint/auth summary, lifecycle actions, dan dependency warning. Duplicate-config membuat storage baru dan bukan clone data. |
 | REQ-026 | **Config, logs, environment dan recovery UI** | GUI menyediakan config diff/validation, logs, monitoring, environment preview/up/down, backup/restore progress, dan diagnostics. Tombol tidak boleh tersedia seolah capability unsupported sudah bekerja. |
@@ -388,7 +393,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### CLI & provider
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-028 | **CLI parity dan automation** | Seluruh operasi administrasi baseline tersedia di CLI dengan help, JSON output, exit code stabil, noninteractive mode, progress ke stderr, serta secret input aman. CLI menggunakan daemon dan tidak menjadi supervisor kedua. |
 | REQ-029 | **Manifest provider deklaratif** | Manifest mendeskripsikan identity, versions/artifacts, platforms, settings schema, capabilities, resources, template, startup/shutdown/readiness dan dependencies. Tool baru dengan primitive existing tidak perlu patch core/GUI. |
 | REQ-030 | **Versioned Provider SDK** | Schema dan SDK mempunyai version compatibility, deprecation policy, validator, template scaffold, test harness, serta schema migration policy. Unknown field keamanan dan capability yang tidak dapat dipenuhi ditolak. |
@@ -400,17 +405,18 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### Provider awal
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-035 | **PostgreSQL 17 dan 18** | Provider menginisialisasi cluster dengan tool versi cocok, auth lokal aman, seluruh endpoint terpisah, query readiness, shutdown terkontrol, log, persistence, logical backup/restore. Upgrade mayor in-place otomatis dilarang. [S01], [S04], [S10] |
 | REQ-036 | **NATS dan JetStream** | Provider mendukung client endpoint, monitoring loopback, credential configuration, JetStream enable/disable, unique server identity, store_dir dan resource limits. Monitoring tidak boleh terbuka ke LAN secara default. [S09], [S11] |
 | REQ-037 | **ClickHouse single-node** | Provider mengelola native binary terpilih, path storage/temp/log/user-files/config, HTTP/native ports, auth, query readiness dan persistence. Endpoint lain dimatikan atau didaftarkan. Windows WSL tidak diberi label native. [S06] |
-| REQ-038 | **Redis standalone** | Provider mengelola config, bind/auth, PING, persistent directory, RDB/AOF policy, log dan stop. UI menjelaskan mode volatile versus durable dan batas durability yang dipilih; tidak mengasumsikan semua key selalu persisten. |
+| REQ-038 | **Valkey standalone** | Provider mengelola config, bind/auth, PING, persistent directory, RDB/AOF policy, log dan stop. UI menjelaskan mode volatile versus durable dan batas durability yang dipilih; tidak mengasumsikan semua key selalu persisten. [S21] |
 | REQ-039 | **Traefik dan routing lokal** | Provider mendukung entrypoint loopback, file-based routing config, health endpoint, per-instance route namespace, validation dan safe apply. HTTPS membutuhkan certificate material yang disediakan; root CA/DNS sistem tidak dipasang otomatis. [S12], [S13] |
+| REQ-055 | **MySQL standalone** | Provider mengelola data/config/temp/log path terisolasi, bind/auth, readiness query, shutdown terkontrol, persistence dan backup/restore. Runtime tidak boleh dibind ke data yang tidak kompatibel; adopsi data existing memerlukan preflight dan persetujuan eksplisit. [S22], [S23] |
 
 ### Data safety & release
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-040 | **Backup metadata manager** | Sediakan backup konsisten registry/config metadata dengan versi schema, checksum, dan secret references. Backup metadata tidak diklaim mencakup seluruh database provider atau isi Keychain. Restore metadata wajib reconcile dengan file/proses nyata. |
 | REQ-041 | **Backup data per-provider** | Sediakan native backup bila capability tersedia dan fallback cold backup hanya setelah stop bersih untuk layout lokal yang telah divalidasi. Backup mempunyai consistency mode, scope, runtime identity, file digests, size dan status verifikasi; bukan zip live data generik. |
 | REQ-042 | **Restore aman dan pengujian recovery** | Restore default membuat instance baru dengan endpoint baru. Overwrite existing membutuhkan konfirmasi, backup/preflight, compatible runtime dan disk cukup. Backup belum dianggap recoverable sampai restore verification berhasil. |
@@ -422,40 +428,40 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ### IPC & integrity
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-047 | **IPC lokal berversi dan terotorisasi** | Sediakan handshake/version/capability, request ID, structured errors, operation polling/events dan local-user authorization. Tidak membuka TCP admin listener pada baseline. Transport macOS dan Windows boleh berbeda; payload contract sama. |
 | REQ-048 | **Concurrency dan idempotency** | Daemon tunggal mengoordinasikan mutasi dengan lock per-resource, state revision, idempotency key dan operation journal. SQLite tidak dipakai sebagai mutex yang ditahan sepanjang download atau process startup. |
 
-### Data safety & release
+### Data safety & release — packaging
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-049 | **Packaging dan distribusi macOS** | Distribusi .app dengan helper/CLI, signing/notarization sesuai kebijakan, installer/uninstaller, upgrade path dan troubleshooting. Pengguna final tidak perlu Rust/Xcode untuk core manager; dependency provider harus terlihat dan terpasang melalui sumber yang disetujui. [S14] |
 
-### Platform & lifecycle
+### Platform & lifecycle — Windows readiness
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-050 | **Windows-ready, bukan Windows-done** | Core, DTO, provider schema dan storage logical model bebas asumsi macOS. Platform-specific implementation dipisah. Windows GUI/adapter/provider readiness merupakan milestone tersendiri, bukan syarat fitur WinUI selesai pada rilis macOS. |
 
-### Data safety & release
+### Data safety & release — quality and recovery
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-051 | **Quality gates dan bukti pengujian** | Semua requirement mempunyai AC, test/evidence dan status. Provider supported wajib lulus integration matrix nyata. Release ditahan bila mandatory security, data safety, clean-install atau recovery test gagal/blocked. |
 | REQ-052 | **Uninstall, remove dan purge** | Remove instance mempertahankan data sebagai retained record; purge adalah aksi berbeda dengan path/size/impact preview dan explicit confirmation. Uninstall default mempertahankan data serta menjelaskan cara recovery; cache/runtime tidak ikut dihapus tanpa scope jelas. |
 | REQ-053 | **Adoption dan orphan data** | Directory existing/orphan dapat dideteksi dan diinventarisasi read-only. Adoption melalui preflight version/config/process ownership dan tindakan eksplisit; tidak menjalankan initdb, reset, upgrade atau take-over otomatis. |
 
-### IPC & integrity
+### IPC & integrity — operation progress
 
 | ID | Kebutuhan | Perilaku yang wajib dipenuhi |
-|---|---|---|
+| --- | --- | --- |
 | REQ-054 | **Progress, cancellation dan recovery operation** | Install/create/backup/restore/update mempunyai stage, progress bila terukur, cancellability dan recovery action. Cancel pada langkah irreversible tidak berarti rollback berhasil; tampilkan continuing-safe-shutdown atau needs-recovery. |
 
 ## 9. Aturan bisnis dan invariants
 
 | ID | Aturan |
-|---|---|
+| --- | --- |
 | BR-001 | Instance selalu menunjuk exact runtime ID dan provider revision; selector tidak dievaluasi ulang diam-diam saat start. |
 | BR-002 | Dua instance tidak boleh mempunyai writable data root yang sama, bertumpuk parent/child, atau resolve ke target yang sama melalui symlink. |
 | BR-003 | Mengganti nama instance tidak mengganti ID, runtime, credential reference, atau storage path. |
@@ -485,7 +491,7 @@ Semua `REQ` di bagian ini berlaku untuk baseline macOS, kecuali pekerjaan Window
 ## 10. Validasi input dan resource
 
 | ID | Validasi minimum |
-|---|---|
+| --- | --- |
 | VAL-001 | Nama instance: usulan 1–63 karakter lowercase kebab-case, dimulai huruf; display name opsional dapat Unicode. ID tetap terpisah. |
 | VAL-002 | Nama provider namespaced, misalnya `official/postgresql`; revision/version tidak kosong dan tidak mengandung path traversal. |
 | VAL-003 | Runtime selector di-resolve menurut scheme provider. Jangan memaksakan SemVer pada semua software yang memakai format versi berbeda. |
@@ -535,7 +541,7 @@ Stackly
 ### 11.2 Spesifikasi per halaman
 
 | ID | Halaman | Informasi dan aksi wajib |
-|---|---|---|
+| --- | --- | --- |
 | PAGE-01 | Onboarding | Status daemon/background permission, lokasi storage, model isolasi, catalog trust, pilihan CLI install, dan tanpa kewajiban akun cloud |
 | PAGE-02 | Overview | Ringkasan ready/stopped/failed, active operations, capacity warning, quick navigation; tidak hanya menghitung PID |
 | PAGE-03 | Instances | Search/filter/sort; nama, provider, exact version, endpoints, lifecycle, readiness, ownership, environment reference |
@@ -574,7 +580,7 @@ Menu bar status dasar menampilkan ringkasan service dan aksi membuka aplikasi. *
 ## 12. CLI yang direncanakan
 
 | Kelompok | Command baseline |
-|---|---|
+| --- | --- |
 | Daemon | `stackly daemon status`, `stackly daemon install`, `stackly daemon start`, `stackly daemon stop`, `stackly daemon restart` |
 | Catalog/provider | `stackly provider list`, `stackly provider inspect`, `stackly provider import`, `stackly provider validate`, `stackly provider test` |
 | Runtime | `stackly runtime list`, `stackly runtime install`, `stackly runtime register`, `stackly runtime inspect`, `stackly runtime remove` |
@@ -618,6 +624,23 @@ services:
       mode: managed
       persistent: true
 
+  mysql:
+    provider: official/mysql
+    version: stable
+    ownership: dedicated
+    endpoints:
+      database:
+        host: "127.0.0.1"
+        port: 3306
+        transport: tcp
+    secretRefs:
+      rootPassword: "local:erp/mysql/root"
+    settings:
+      initialDatabase: erp
+    storage:
+      mode: managed
+      persistent: true
+
   nats:
     provider: official/nats
     version: "2"
@@ -646,14 +669,14 @@ services:
       mode: managed
       persistent: true
 
-  redis:
-    provider: official/redis
+  valkey:
+    provider: official/valkey
     version: stable
     ownership: dedicated
     endpoints:
       client: {host: "127.0.0.1", port: 6379, transport: tcp}
     secretRefs:
-      defaultPassword: "local:erp/redis/password"
+      defaultPassword: "local:erp/valkey/password"
     settings:
       persistence: aof
     storage:
@@ -674,7 +697,7 @@ services:
           upstream: "http://127.0.0.1:3000"
 ```
 
-Kelima service tidak memiliki dependency wajib satu sama lain pada contoh tersebut; jangan menambahkan dependency palsu sekadar membuat grafik. Backend ERP pada port `3000` adalah aplikasi pengguna yang dijalankan terpisah, bukan runtime aplikasi yang otomatis dibuat oleh contoh ini. HTTPS baru diaktifkan setelah certificate/key diberikan melalui alur yang didukung.
+Keenam service tidak memiliki dependency wajib satu sama lain pada contoh tersebut; jangan menambahkan dependency palsu sekadar membuat grafik. Backend ERP pada port `3000` adalah aplikasi pengguna yang dijalankan terpisah, bukan runtime aplikasi yang otomatis dibuat oleh contoh ini. HTTPS baru diaktifkan setelah certificate/key diberikan melalui alur yang didukung.
 
 ```bash
 stackly env validate --file stackly.yaml
@@ -714,7 +737,7 @@ Lockfile tidak memuat password, home directory, atau PID. Artefak dicatat per pl
 Angka berikut adalah **target engineering awal**, bukan hasil benchmark. Validasi dengan hardware baseline yang dicatat sebelum beta; perubahan target memerlukan ADR dan persetujuan product owner.
 
 | ID | Area | Target dan cara mengukur |
-|---|---|---|
+| --- | --- | --- |
 | NFR-001 | Respons API lokal | p95 operasi metadata read ≤250 ms untuk 100 instance terdaftar, pada mesin baseline, di luar network/disk-heavy operation |
 | NFR-002 | Respons GUI | Snapshot awal setelah koneksi daemon ≤2 detik untuk 100 instance; operasi berat tidak memblokir UI thread |
 | NFR-003 | Overhead manager | Usulan daemon idle ≤150 MiB RSS dan rata-rata ≤1% satu logical CPU pada 10 instance idle; tidak menghitung memori binary provider |
@@ -737,6 +760,7 @@ Usulan baseline pengujian performa: Mac Apple Silicon, RAM 16 GB, storage APFS l
 ---
 
 <a id="layer-2"></a>
+
 # LAPISAN 2 — PROJECT INTEGRATION / PROJECT FIT
 
 ## 15. Arsitektur sistem
@@ -772,7 +796,7 @@ Usulan baseline pengujian performa: Mac Apple Silicon, RAM 16 GB, storage APFS l
 ### 15.1 Batas modul
 
 | Komponen | Tanggung jawab | Tidak boleh |
-|---|---|---|
+| --- | --- | --- |
 | Domain/core | Invariants, state transition, policies, model dan interfaces | Menjalankan `launchctl`, mengakses UI, atau membaca raw manifest langsung untuk side effects |
 | Application services | Use case, transaction boundary, operation orchestration | Mengasumsikan GUI selalu online |
 | Runtime manager | Resolve, fetch, verify, stage, install, pin, refs, remove | Menentukan data directory database lewat default global |
@@ -788,7 +812,7 @@ Usulan baseline pengujian performa: Mac Apple Silicon, RAM 16 GB, storage APFS l
 
 Domain tidak bergantung pada platform atau provider konkret. Application services menggunakan trait/interfaces. Adapter mengimplementasikan interface domain. Daemon merangkai dependency secara eksplisit; tidak memerlukan framework dependency injection berat. Semua mutasi penting harus dapat diuji memakai fake platform serta fixture provider.
 
-Tidak diperlukan NATS, Redis, ClickHouse, HTTP server, maupun OpenTelemetry Collector agar **Stackly sendiri** dapat berjalan. Tool tersebut adalah service yang dikelola, bukan dependency wajib core manager. Structured logs lokal cukup untuk foundation; integrasi observability eksternal adalah opsional.
+Tidak diperlukan MySQL, NATS, ClickHouse, Valkey, HTTP server, maupun OpenTelemetry Collector agar **Stackly sendiri** dapat berjalan. Tool tersebut adalah service yang dikelola, bukan dependency wajib core manager. Structured logs lokal cukup untuk foundation; integrasi observability eksternal adalah opsional.
 
 ## 16. Struktur pengembangan monorepo
 
@@ -841,9 +865,10 @@ stackly/
 │   └── lockfile.schema.json
 ├── providers/
 │   ├── postgresql/
+│   ├── mysql/
 │   ├── nats/
 │   ├── clickhouse/
-│   ├── redis/
+│   ├── valkey/
 │   └── traefik/
 ├── tests/
 │   ├── unit/
@@ -880,7 +905,7 @@ Rust toolchain dan dependencies dipin setelah audit compatibility; PRD tidak men
 Schema fisik boleh disesuaikan, tetapi logical entities dan constraints berikut wajib ada. Semua waktu disimpan dalam UTC dan ditampilkan sesuai locale pengguna.
 
 | Entity | Field inti | Constraints/perilaku |
-|---|---|---|
+| --- | --- | --- |
 | `provider_sources` | id, kind, location, trust_root, last_sync, status | Source tidak otomatis trusted hanya karena HTTPS |
 | `provider_revisions` | provider_id, revision, schema_version, manifest_digest, publisher, capabilities, approval | Revision immutable; unique provider + revision + digest |
 | `artifacts` | id, provider_revision, version, os, arch, minimum_os, source, digest, signature_info, dependency_manifest | Satu artefak konkret; tidak menyimpan selector sebagai exact version |
@@ -903,6 +928,7 @@ Schema fisik boleh disesuaikan, tetapi logical entities dan constraints berikut 
 Foreign key dan transaction enforcement wajib aktif. SQLite berada di filesystem lokal supported. Migrations berurutan, diuji dari versi sebelumnya, dan memiliki backup serta forward/rollback policy. Jangan menyalin file SQLite aktif secara sembarang; gunakan mekanisme backup konsisten yang sesuai. [S15]
 
 State UI seperti posisi window dan selected tab boleh disimpan client; tidak menggandakan desired state layanan.
+
 ## 18. Kontrak IPC dan client native
 
 ### 18.1 Transport dan authorization
@@ -947,7 +973,7 @@ Contoh payload konseptual; UUID dan nilai adalah ilustrasi, bukan respons aplika
 Core API minimum:
 
 | Area | Operasi kontrak |
-|---|---|
+| --- | --- |
 | Daemon | Handshake, GetInfo, GetHealth, GetCapabilities |
 | Provider | List, Inspect, Validate, Import, Approve, Test |
 | Runtime | Resolve, Install, RegisterExternal, List, Inspect, Verify, Remove |
@@ -974,7 +1000,7 @@ Swift DTO/client dan C# DTO/client berasal dari schema atau fixture yang sama. C
 ### 19.1 Pisahkan tiga state domain
 
 | State domain | Nilai contoh |
-|---|---|
+| --- | --- |
 | Runtime installation | `absent`, `resolving`, `downloading`, `verifying`, `installing`, `installed`, `failed`, `missing`, `drifted` |
 | Instance lifecycle | `uninitialized`, `initializing`, `stopped`, `starting`, `running`, `stopping`, `failed`, `recovering`, `unknown`, `retained` |
 | Readiness/health | Readiness: `unknown/not_ready/ready`; health: `unknown/healthy/degraded/unhealthy`; timestamp dan reason wajib |
@@ -1057,7 +1083,7 @@ File PID dan socket adalah ephemeral state; registry/config/data bukan cache. Ru
 ### 20.2 Managed versus external
 
 | Mode | Janji Stackly | Batas |
-|---|---|---|
+| --- | --- | --- |
 | Managed | Exact artifact/version dan dependency terverifikasi; install/update/remove melalui manager | Hanya versi yang paketnya tersedia dan lulus test |
 | External | Verifikasi lokasi/version/digest, own-instance config/data, drift detection | Binary dapat berubah/dihapus tool lain; tidak dapat menjamin reproducible install |
 | Build-from-source | Dapat menjadi pipeline maintainer untuk menerbitkan paket teruji | Bukan kewajiban end-user menginstal toolchain untuk baseline supported |
@@ -1168,7 +1194,7 @@ Signature/hash melindungi integritas sesuai trust root, tetapi tidak membuktikan
 
 Permission engine membatasi tindakan **host engine**, tetapi bukan hard sandbox bagi child executable. Ini harus terlihat pada developer docs dan user confirmation, bukan hanya dalam security appendix.
 
-## 22. Integrasi khusus lima provider
+## 22. Integrasi khusus enam provider
 
 ### 22.1 PostgreSQL
 
@@ -1192,13 +1218,13 @@ Konfigurasi wajib mengarahkan data, temp, logs, user files, user/access configur
 
 Readiness mencakup query dan identitas endpoint yang benar. Backup online ClickHouse memiliki mekanisme upstream tersendiri; dukungan itu tidak boleh diasumsikan identik dengan backup file generik. [S20]
 
-### 22.4 Redis
+### 22.4 Valkey
 
 Mode volatile harus disebut sebagai pilihan cache tanpa jaminan persistence. Mode persistent menyimpan config RDB/AOF dan seluruh file terkait pada path instance. Ketika AOF menggunakan beberapa file atau manifest pada versi target, backup tidak boleh hanya mengambil satu filename lama.
 
-Redis menyediakan RDB, AOF, gabungan keduanya, atau persistence nonaktif; durability bergantung pada kebijakan yang dipilih. Test recovery harus mencatat konfigurasi tersebut dan membedakan shutdown normal, crash process, serta kehilangan daya host. [S21]
+Valkey menyediakan RDB, AOF, gabungan keduanya, atau persistence nonaktif; durability bergantung pada kebijakan yang dipilih. Test recovery harus mencatat konfigurasi tersebut dan membedakan shutdown normal, crash process, serta kehilangan daya host. [S21]
 
-Jangan mengganti Redis dengan Valkey, Memurai, atau image container secara diam-diam karena platform tidak tersedia. Alternatif harus menjadi pilihan provider/backend berbeda dengan capability dan lisensi sendiri.
+Jangan mengganti Valkey dengan Redis, Memurai, atau image container secara diam-diam karena platform tidak tersedia. Redis adalah provider/backend terpisah dengan capability, kompatibilitas, dan ketentuan distribusinya sendiri.
 
 ### 22.5 Traefik
 
@@ -1208,10 +1234,16 @@ Route mempunyai ID/name yang dinamespace per-instance/environment. File routing 
 
 Dashboard/API insecure tidak diaktifkan secara default. HTTPS hanya aktif dengan certificate/key yang valid dan cara penyimpanan yang aman. Tidak ada janji wildcard domain lokal, port 80/443, trusted certificate otomatis, atau perubahan `/etc/hosts` tanpa fitur terpisah yang secara eksplisit disetujui.
 
+### 22.6 MySQL
+
+Setiap instance menggunakan data, config, temporary, dan log path sendiri; bind loopback dan autentikasi dikonfigurasi eksplisit. Readiness menjalankan query terautentikasi dengan hak minimum. Initialization dan shutdown menggunakan tool/lifecycle yang sesuai versi MySQL terpilih. [S22]
+
+Backup/restore mengikuti metode MySQL yang tervalidasi untuk scope data yang dipilih; copy filesystem hanya boleh dilakukan setelah shutdown bersih dan validasi layout. Uji restore-as-new wajib memverifikasi data sentinel dan kompatibilitas runtime. Major upgrade tidak dilakukan dengan mengganti binary pada data directory yang sama tanpa preflight dan prosedur migrasi teruji. [S23]
+
 ## 23. Keamanan dan model ancaman
 
 | Ancaman | Kontrol wajib | Residual risk yang harus dinyatakan |
-|---|---|---|
+| --- | --- | --- |
 | Manifest/provider berbahaya | Explicit trust, signed/digested metadata, safe primitives, review/test | Executable native tetap mempunyai hak user setelah dijalankan |
 | Supply-chain tampering | HTTPS, expected digest, signature/provenance policy, staged verify | Trust root/publisher yang disusupi dapat tetap menerbitkan binary berbahaya |
 | IPC dari user lain | Private endpoint, peer identity, pipe ACL, no remote admin listener | Tidak melindungi dari admin/root atau malicious process dengan identitas user yang sama |
@@ -1234,12 +1266,13 @@ App Sandbox bukan syarat baseline direct distribution dan tidak diklaim aktif me
 ### 24.1 Cakupan backup baseline
 
 | Objek/provider | Minimum baseline | Di luar janji baseline |
-|---|---|---|
+| --- | --- | --- |
 | Registry Stackly | Snapshot konsisten SQLite + nonsecret config + references | Backup otomatis seluruh Keychain atau database provider |
 | PostgreSQL | Logical backup/restore untuk scope yang dipilih, termasuk penjelasan roles/global objects; cold backup validated layout sebagai opsi | PITR/WAL archive, online physical backup automation, migrasi mayor satu klik |
 | NATS JetStream | Cold backup verified local instance storage setelah stop bersih; restore dengan runtime compatible | Distributed cluster snapshot orchestration dan zero-downtime migration |
 | ClickHouse | Cold backup local managed layout setelah stop bersih; native backup dapat ditambah sebagai capability teruji | Seluruh external object-storage data atau cluster replication state otomatis |
-| Redis persistent | Backup metode provider yang tervalidasi; minimum cold backup seluruh persistence set yang relevan | Jaminan mempertahankan key dari volatile mode atau semua writes saat power failure |
+| MySQL | Logical dump/restore untuk scope yang dipilih; cold backup hanya setelah stop bersih dan layout tervalidasi | PITR, binary-log recovery, replication, atau hot physical backup tanpa capability dan test khusus |
+| Valkey persistent | Backup metode provider yang tervalidasi; minimum cold backup seluruh persistence set yang relevan | Jaminan mempertahankan key dari volatile mode atau semua writes saat power failure |
 | Traefik | Export/backup config dan route; certificate secret handling eksplisit | Backup lengkap external certificate authority atau backend application data |
 
 Metode native PostgreSQL mencakup beberapa pendekatan yang tidak dapat disamakan; setiap backup harus menyebut scope dan consistency. [S19] SQLite Online Backup API mendukung snapshot konsisten database aktif. [S15]
@@ -1267,7 +1300,7 @@ Restore over existing data mempunyai separate preview dan explicit confirmation,
 ### 24.3 Update dan rollback
 
 | Operasi | Aturan |
-|---|---|
+| --- | --- |
 | Update GUI/CLI | Tidak mengubah database provider; handshake compatibility diperiksa |
 | Update daemon | Koordinasi operasi aktif dan restart disruption; backup registry sebelum schema mutation |
 | Update provider revision | Diff capability/template/permission dan explicit apply; instance lama tetap pin |
@@ -1295,7 +1328,7 @@ Update check boleh otomatis hanya untuk metadata setelah preference/consent yang
 Windows menggunakan Rust core/protocol yang sama dan GUI WinUI 3 native. Build/QA dilakukan dengan toolchain Windows dan runner yang sesuai; keberhasilan compile Rust lintas target saja tidak membuktikan installer, GUI, atau provider Windows bekerja. [S03]
 
 | Area | Implementasi Windows yang perlu dibuat |
-|---|---|
+| --- | --- |
 | GUI | C# + XAML, native navigation/commands, client state dan accessibility |
 | IPC | Named pipe, user SID authorization, local-only policy, endpoint identity [S17] |
 | Process | Process-tree ownership, shutdown semantics, handle inheritance, Job Objects bila tepat [S18] |
@@ -1307,7 +1340,7 @@ Windows menggunakan Rust core/protocol yang sama dan GUI WinUI 3 native. Build/Q
 
 Tidak semua executable dapat langsung didaftarkan sebagai Windows Service. Supervisor dapat mengelola proses biasa; mode service memerlukan host/adapter yang cocok. Job Objects menyediakan mekanisme pengelompokan proses pada Windows, tetapi kebijakan kill-on-close tidak boleh diaktifkan tanpa mempertimbangkan lifecycle daemon dan data safety. [S18]
 
-PostgreSQL dan NATS menjadi kandidat awal validasi Windows. ClickHouse tidak diberi label native Windows karena dokumentasi yang diperiksa menggunakan WSL. Redis juga perlu matriks jalur instalasi dan distribusi Windows yang terpisah. Ketidaktersediaan provider harus tampil sebagai capability gap; tidak boleh diam-diam memasang Docker/WSL atau mengganti produk. [S04], [S05], [S06], [S07]
+PostgreSQL, MySQL, dan NATS menjadi kandidat awal validasi Windows. ClickHouse tidak diberi label native Windows karena dokumentasi yang diperiksa menggunakan WSL. Valkey upstream tidak mendukung Windows native; jangan memakai WSL atau mengganti provider diam-diam. Ketidaktersediaan provider harus tampil sebagai capability gap. [S04], [S05], [S06], [S07], [S22]
 
 ## 27. CI/CD dan engineering workflow
 
@@ -1322,6 +1355,7 @@ Release artifact mempunyai source commit, toolchain, dependency lock, provider c
 ---
 
 <a id="layer-3"></a>
+
 # LAPISAN 3 — ACCEPTANCE CRITERIA & VERIFICATION
 
 ## 28. Standar bukti dan status
@@ -1334,18 +1368,18 @@ Evidence record wajib memuat AC ID, source commit, provider/runtime exact versio
 
 ## 29. Acceptance criteria utama
 
-Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap skenario menggunakan pola **Given / When / Then**.
+Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. AC-081 memverifikasi REQ-055; AC tambahan lintas fitur mempertahankan ID yang sudah ada. Setiap skenario menggunakan pola **Given / When / Then**.
 
-### Platform & lifecycle
+### Platform & lifecycle (AC-001)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-001 | Given tiga instance ready; when GUI ditutup dan dibuka kembali; then PID/identitas instance tetap konsisten, query tetap berhasil, dan UI mengambil ulang state dari daemon. | REQ-001 |
 
-### Catalog & runtime
+### Catalog & runtime (AC-002–007)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-002 | Given provider untuk platform lain; when catalog dibuka; then provider berlabel unsupported dengan alasan dan aksi install ditolak oleh daemon, bukan hanya disembunyikan UI. | REQ-002 |
 | AC-003 | Given instance memakai runtime konkret; when catalog mendapat versi baru; then runtime ID, digest, dan versi instance lama tetap sama sampai ada operasi update eksplisit. | REQ-003 |
 | AC-004 | Given unduhan putus setelah sebagian byte; when install diulang; then hanya artefak utuh terverifikasi yang menjadi installed dan tidak ada binary parsial yang dijalankan. | REQ-004 |
@@ -1353,10 +1387,10 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-006 | Given runtime external terdaftar; when binary diubah atau dihapus di luar Stackly; then drift/missing terdeteksi dan Stackly tidak mengganti ke binary lain atau menghapus instalasi tersebut. | REQ-006 |
 | AC-007 | Given runtime dipakai instance stopped; when remove/GC dijalankan; then runtime ditahan dengan daftar referensi dan data instance tidak berubah. | REQ-007 |
 
-### Instance & supervision
+### Instance & supervision (AC-008–014)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-008 | Given data directory berisi data; when create mencoba menggunakannya tanpa alur adoption; then operasi ditolak sebelum initdb atau inisialisasi provider berjalan. | REQ-008 |
 | AC-009 | Given dua instance PostgreSQL mayor 17 dengan runtime ID sama serta satu mayor 18; when ketiganya menerima data sentinel berbeda; then pembacaan dan restart per-instance tidak menampilkan atau mengubah sentinel instance lain. | REQ-009 |
 | AC-010 | Given monitoring port NATS sudah digunakan proses luar; when instance start; then kegagalan menunjuk monitoring endpoint yang konflik dan proses luar tidak dihentikan. | REQ-010 |
@@ -1365,38 +1399,38 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-013 | Given daemon crash dan restart; when reconciliation selesai; then tidak ada instance ganda, tidak ada penghapusan data, dan proses yang identitasnya meragukan berstatus unknown/blocker tanpa dibunuh. | REQ-013 |
 | AC-014 | Given autostart aktif; when user login kembali dan izin OS tersedia; then daemon serta instance yang dipilih ready; jika izin dicabut, UI menunjukkan alasan dan tidak mengubah setting OS diam-diam. | REQ-014 |
 
-### Configuration & diagnostics
+### Configuration & diagnostics (AC-015–019)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-015 | Given edit config tidak valid; when apply; then active config dan instance sehat tetap dipertahankan, error menunjuk field/line yang relevan, dan tidak ada restart parsial. | REQ-015 |
 | AC-016 | Given credential sentinel; when inspect/export/log/diagnostic dilakukan; then sentinel tidak muncul dalam hasil default atau database metadata dan reveal hanya terjadi setelah aksi eksplisit. | REQ-016 |
 | AC-017 | Given provider menghasilkan log besar dan client lambat; when streaming berlangsung; then service tetap responsif, buffer dibatasi, rotasi berjalan, dan kehilangan segmen ditandai gap/truncation. | REQ-017 |
 | AC-018 | Given provider multiprocess; when metrics ditampilkan; then label menjelaskan cakupan agregasi dan metrik tidak tersedia tidak ditampilkan sebagai nol yang menyesatkan. | REQ-018 |
 | AC-019 | Given stale PID record yang menunjuk proses lain; when doctor berjalan; then masalah dilaporkan beserta bukti, tanpa menghapus file data atau menghentikan proses tersebut. | REQ-019 |
 
-### Environment
+### Environment (AC-020–023)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-020 | Given manifest baru; when env plan; then daftar install/create/start terlihat tetapi tidak ada file data, proses, perubahan trust, atau runtime yang dibuat. | REQ-020 |
 | AC-021 | Given dependency tidak ready; when env up; then dependent tidak dijalankan sebagai sukses, instance existing yang sehat tidak dihapus, dan operation menunjukkan tahap gagal serta langkah recovery. | REQ-021 |
 | AC-022 | Given dua environment memakai shared instance; when environment A down; then lease B tetap ada dan instance tetap ready; data tidak dihapus. | REQ-022 |
 | AC-023 | Given environment diekspor dan diimpor ke user lain; when resolve dilakukan; then tidak ada path home/secret lama dan artefak unsupported dilaporkan tanpa auto-substitution. | REQ-023 |
 
-### Native GUI
+### Native GUI (AC-024–027)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-024 | Given daemon unreachable; when GUI dibuka; then UI tetap dapat menampilkan status koneksi dan retry/diagnostics tanpa menyatakan instance stopped atau menjalankan binary langsung. | REQ-024 |
 | AC-025 | Given duplicate instance config; when wizard diselesaikan; then ID, data path, secret policy, dan port baru tervalidasi; data lama tidak disalin tanpa fitur backup/restore. | REQ-025 |
 | AC-026 | Given provider tidak memiliki hot reload; when config berubah; then UI meminta controlled restart dan tidak menampilkan keberhasilan reload palsu. | REQ-026 |
 | AC-027 | Given navigasi keyboard dan VoiceOver; when pengguna membuat, menghentikan, dan memeriksa instance; then alur dapat diselesaikan tanpa informasi yang hanya tersedia lewat warna atau hover. | REQ-027 |
 
-### CLI & provider
+### CLI & provider (AC-028–034)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-028 | Given instance dapat dibuat dari GUI; when operasi setara dilakukan CLI --json; then validation/error semantics sama dan output dapat diparse tanpa progress bercampur di stdout. | REQ-028 |
 | AC-029 | Given provider fake-server baru dengan manifest dan template valid; when dimuat; then install/create/start/health/form UI bekerja tanpa perubahan Rust core atau SwiftUI. | REQ-029 |
 | AC-030 | Given manifest dengan versi schema tidak didukung; when validate/load; then error menjelaskan versi yang didukung dan tidak mengeksekusi lifecycle. | REQ-030 |
@@ -1405,20 +1439,21 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-033 | Given local provider belum dipercaya; when file diimpor untuk preview; then metadata dapat diperiksa tetapi executable dan init hook tidak berjalan. | REQ-033 |
 | AC-034 | Given contributor mengikuti panduan dari repository bersih; when contoh provider dijalankan; then validator dan test harness dapat menghasilkan report tanpa modifikasi core. | REQ-034 |
 
-### Provider awal
+### Provider awal (AC-035–039, AC-081)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-035 | Given matrix PG17/PG18 dan same-version pair; when init/write/restart/backup/restore dijalankan; then seluruh skenario lulus dan startup binary mayor yang salah terhadap data existing ditolak. | REQ-035 |
 | AC-036 | Given dua NATS dengan JetStream dan store_dir berbeda; when publish/consume persistent fixture dan restart; then masing-masing hanya mengakses stream sendiri dan monitoring berada pada endpoint masing-masing. | REQ-036 |
 | AC-037 | Given dua ClickHouse instances; when tabel bernama sama diisi data berbeda dan masing-masing direstart; then data/ports tidak tercampur dan seluruh listener aktif cocok dengan resource registry. | REQ-037 |
-| AC-038 | Given Redis persistence aktif dengan fixture tersimpan; when shutdown normal dan start; then fixture pulih; ketika mode volatile dipilih, UI menunjukkan data dapat hilang dan tidak menjanjikan restore. | REQ-038 |
+| AC-038 | Given Valkey persistence aktif dengan fixture tersimpan; when shutdown normal dan start; then fixture pulih; ketika mode volatile dipilih, UI menunjukkan data dapat hilang dan tidak menjanjikan restore. | REQ-038 |
 | AC-039 | Given dua Traefik instances dan backend uji; when route A diubah; then hanya request pada instance A yang berubah, B tetap berjalan, dan config invalid tidak mengganti last-known-good config. | REQ-039 |
+| AC-081 | Given dua instance MySQL dengan runtime kompatibel, data directory, dan port berbeda; when data sentinel ditulis, kedua instance direstart, dan restore-as-new diuji; then query hanya membaca data milik instance yang sesuai dan runtime tidak dapat direbind ke data yang tidak kompatibel. | REQ-055 |
 
-### Data safety & release
+### Data safety & release (AC-040–046)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-040 | Given registry backup saat aplikasi aktif; when dipulihkan pada profil uji; then metadata konsisten, missing secret ditandai, dan tidak ada instance otomatis di-init pada path data existing. | REQ-040 |
 | AC-041 | Given service masih menulis; when cold backup diminta; then quiesce/stop dan verifikasi proses selesai dilakukan sebelum copy; external path yang tak didukung membuat operasi ditolak, bukan backup parsial berlabel complete. | REQ-041 |
 | AC-042 | Given backup valid; when restore-as-new; then instance sumber tidak berubah, instance baru lulus query/data fixture, dan checksum/compatibility failure tidak menimpa target. | REQ-042 |
@@ -1427,43 +1462,43 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-045 | Given create/start/change-port/purge; when operasi selesai atau gagal; then audit mempunyai correlation ID dan result tanpa credential plaintext. | REQ-045 |
 | AC-046 | Given network dimatikan; when instance installed dijalankan dari GUI/CLI; then fungsi lokal bekerja; artefak tidak tersedia menghasilkan offline/cache-missing yang benar. | REQ-046 |
 
-### IPC & integrity
+### IPC & integrity (AC-047–048)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-047 | Given client UID tidak berhak atau protocol major berbeda; when koneksi/mutation dicoba; then ditolak sebelum side effect dan error aman dikembalikan. | REQ-047 |
 | AC-048 | Given GUI dan CLI mengirim start/create bersamaan dengan idempotency key sama; when diproses; then hanya satu side effect dibuat dan kedua client menerima operation/result konsisten. | REQ-048 |
 
-### Data safety & release
+### Data safety & release (AC-049 packaging)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-049 | Given profil macOS bersih pada matrix supported; when signed distribution diinstal; then GUI/daemon/CLI dan provider wajib dapat digunakan tanpa developer toolchain serta tanpa menonaktifkan Gatekeeper. | REQ-049 |
 
-### Platform & lifecycle
+### Platform & lifecycle (AC-050 cross-platform core)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-050 | Given test platform fake dan cross-target core check; when kontrak diuji; then tidak ada dependency GUI/macOS di domain dan not-supported dikembalikan untuk capability Windows yang belum dibuat. | REQ-050 |
 
-### Data safety & release
+### Data safety & release (AC-051–053)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-051 | Given candidate release; when satu mandatory restore test BLOCKED; then release report menyatakan belum stable-ready dan tidak mengubah status test menjadi PASS. | REQ-051 |
 | AC-052 | Given pengguna memilih remove tanpa purge; when selesai; then data masih ada dan tercatat retained; purge di luar owned root ditolak sekalipun ada symlink. | REQ-052 |
 | AC-053 | Given orphan PG data ditemukan; when scan dilakukan; then hanya metadata ditemukan; adoption tidak berjalan sampai kompatibilitas/ownership diverifikasi dan pengguna menyetujui. | REQ-053 |
 
-### IPC & integrity
+### IPC & integrity (AC-054 cancellation)
 
 | ID | Skenario dan hasil yang harus terlihat | Trace |
-|---|---|---|
+| --- | --- | --- |
 | AC-054 | Given cancel saat restore staging; when diterima; then target asli tidak berubah; bila commit sudah dimulai, status menjelaskan tindakan recovery dan tidak melaporkan sukses palsu. | REQ-054 |
 
 ## 30. Acceptance criteria lintas fitur dan adversarial
 
 | ID | Kasus | Given / When / Then | Trace |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | AC-055 | Endpoint race | Given port lolos preflight lalu direbut proses lain; when child bind gagal; then operasi gagal dengan endpoint conflict, tidak mengubah fixed port diam-diam, dan tidak menghentikan proses luar. | REQ-010, VAL-004, BR-005 |
 | AC-056 | IPv4/IPv6 dan wildcard | Given listener wildcard/dual-stack yang overlap dengan endpoint rencana; when validate/start; then overlap terdeteksi atau bind failure ditangani jelas; tuple port tidak diperlakukan hanya sebagai integer global. | REQ-010, BR-004, VAL-006 |
 | AC-057 | Symlink dan path escape | Given purge target atau archive mengandung symlink/traversal menuju file di luar scope; when purge/extract; then operasi ditolak dan fixture file luar tetap identik, termasuk race yang dapat direproduksi. | REQ-004, REQ-052, VAL-007, VAL-011 |
@@ -1473,7 +1508,7 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-061 | Isolasi yang dijelaskan dengan benar | Given onboarding, docs provider, dan permission dialog; when direview; then semuanya menjelaskan logical/process isolation dan tidak menyatakan native provider disandbox atau mustahil membaca file user yang sama. | REQ-009, REQ-032, BR-012, BR-020 |
 
 | ID | Kasus | Given / When / Then | Trace |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | AC-062 | Secret store terkunci | Given Keychain tidak dapat diakses saat autostart; when service membutuhkan secret; then status blocked/needs-secret terlihat dan tidak fallback ke auth kosong, trust, atau password hardcode. | REQ-014, REQ-016, VAL-018 |
 | AC-063 | Cold backup tidak boleh melompati stop | Given instance gagal berhenti bersih; when backup cold dijalankan; then copy tidak dipublikasikan sebagai consistent backup dan pengguna menerima alasan serta pilihan aman. | REQ-011, REQ-041, BR-022 |
 | AC-064 | Disk full saat backup/restore | Given free space habis di staging; when backup/restore gagal; then instance sumber tetap utuh, target belum diklaim ready, operation needs-recovery/failed akurat dan cleanup tidak menghapus sumber. | REQ-041, REQ-042, REQ-054, NFR-008 |
@@ -1483,7 +1518,7 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-068 | Restart budget | Given provider terus crash pada startup; when retry budget habis; then restart berhenti, tidak ada busy loop atau child process ganda, dan GUI/CLI menampilkan backoff serta last error. | REQ-013, NFR-003, NFR-007 |
 
 | ID | Kasus | Given / When / Then | Trace |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | AC-069 | Autostart dan stop manual | Given autostart instance aktif; when pengguna stop selama sesi login yang sama; then reconciler tidak menyalakannya kembali segera; pada login berikutnya policy startup berlaku sesuai setting yang ditampilkan. | REQ-014, REQ-022, BR-024 |
 | AC-070 | IPC endpoint palsu dan remote access | Given endpoint palsu/wrong owner atau koneksi dari scope tidak berhak; when client mencoba mengirim request; then verifikasi identity/authorization gagal sebelum credential atau mutation dikirim; tidak ada TCP admin listener baseline. | REQ-016, REQ-047, VAL-017 |
 | AC-071 | Protocol/event compatibility | Given client minor lebih lama, optional field baru, dan event cursor kadaluarsa; when reconnect; then compatible payload tetap diproses dan gap memicu snapshot refresh; major incompatible ditolak. | REQ-047, REQ-050 |
@@ -1493,10 +1528,10 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 | AC-075 | Notarization/signing failure | Given signed distribution pipeline gagal verifikasi/notarization; when release gate dievaluasi; then artefak tidak dipublikasikan sebagai stable supported dan workaround mematikan proteksi OS tidak dimasukkan ke installer. | REQ-049, REQ-051, NFR-009 |
 
 | ID | Kasus | Given / When / Then | Trace |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | AC-076 | Performance dan memory bound | Given hardware baseline tercatat dan 100 registered/10 running idle instances; when benchmark metadata/UI/daemon/log dilakukan; then NFR yang ditetapkan diukur, hasil disimpan, dan outlier/failure tidak disembunyikan. | NFR-001, NFR-002, NFR-003, NFR-004, NFR-006, NFR-007 |
-| AC-077 | Durability policy bukan janji universal | Given Redis volatile, Redis persistent dan NATS JetStream fixtures; when normal restart/crash/power-loss simulation yang tersedia diuji; then hasil dibedakan berdasarkan policy/durability, tidak menjanjikan semua unflushed writes selalu bertahan. | REQ-036, REQ-038, REQ-041, NFR-008 |
-| AC-078 | Third-party package compliance | Given lima provider wajib akan dirilis; when provenance/license/dependency/signing inventory direview; then setiap artefak mempunyai sumber dan keputusan distribusi yang tercatat; paket dengan izin/sumber tak jelas tetap BLOCKED. | REQ-004, REQ-032, REQ-049 |
+| AC-077 | Durability policy bukan janji universal | Given Valkey volatile, Valkey persistent dan NATS JetStream fixtures; when normal restart/crash/power-loss simulation yang tersedia diuji; then hasil dibedakan berdasarkan policy/durability, tidak menjanjikan semua unflushed writes selalu bertahan. | REQ-036, REQ-038, REQ-041, NFR-008 |
+| AC-078 | Third-party package compliance | Given enam provider wajib akan dirilis; when provenance/license/dependency/signing inventory direview; then setiap artefak mempunyai sumber dan keputusan distribusi yang tercatat; paket dengan izin/sumber tak jelas tetap BLOCKED. | REQ-004, REQ-032, REQ-049 |
 | AC-079 | Dua user pada satu Mac | Given dua user dengan registry/socket terpisah; when user B mencoba IPC user A atau memakai port yang sama; then IPC terlarang ditolak dan port conflict dilaporkan tanpa mengambil alih data/proses user A. | REQ-010, REQ-047, BR-012 |
 | AC-080 | Environment non-destructive plan dan export | Given manifest berisi local overrides dan secret references; when plan/export dijalankan; then plan tidak menjalankan side effect, export tidak memuat secrets/home path/PID, dan lockfile mempertahankan exact artifacts. | REQ-020, REQ-023, REQ-046 |
 
@@ -1505,7 +1540,7 @@ Nomor AC-001 sampai AC-054 berpasangan langsung dengan REQ bernomor sama. Setiap
 Tabel ini bukan status implementasi. Agent wajib menambahkan path kode, schema/API, UI, test nyata, command dan evidence setelah pekerjaan dilakukan. Semua baris awal **NOT_RUN**.
 
 | Requirement | Komponen utama | Acceptance criterion utama | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | REQ-001 | domain, daemon, clients | AC-001 | NOT_RUN |
 | REQ-002 | provider-engine, catalog, GUI | AC-002 | NOT_RUN |
 | REQ-003 | runtime, lockfile | AC-003 | NOT_RUN |
@@ -1543,7 +1578,7 @@ Tabel ini bukan status implementasi. Agent wajib menambahkan path kode, schema/A
 | REQ-035 | providers/postgresql | AC-035 | NOT_RUN |
 | REQ-036 | providers/nats | AC-036 | NOT_RUN |
 | REQ-037 | providers/clickhouse | AC-037 | NOT_RUN |
-| REQ-038 | providers/redis | AC-038 | NOT_RUN |
+| REQ-038 | providers/valkey | AC-038 | NOT_RUN |
 | REQ-039 | providers/traefik, routing | AC-039 | NOT_RUN |
 | REQ-040 | storage, backup | AC-040 | NOT_RUN |
 | REQ-041 | backup, provider-engine | AC-041 | NOT_RUN |
@@ -1560,14 +1595,16 @@ Tabel ini bukan status implementasi. Agent wajib menambahkan path kode, schema/A
 | REQ-052 | instance, packaging, storage | AC-052 | NOT_RUN |
 | REQ-053 | instance, diagnostics | AC-053 | NOT_RUN |
 | REQ-054 | operations, IPC, GUI | AC-054 | NOT_RUN |
+| REQ-055 | providers/mysql | AC-081 | NOT_RUN |
 
 Additional AC pada bagian sebelumnya melengkapi negative cases, BR/VAL, dan NFR. Kebutuhan Windows aktual diverifikasi ulang pada release gate Windows; keberhasilan fixture baseline tidak mengubahnya menjadi implemented.
+
 ## 32. Strategi pengujian dan compatibility matrix
 
 ### 32.1 Lapisan test
 
 | Jenis test | Cakupan | Kapan |
-|---|---|---|
+| --- | --- | --- |
 | Unit | Invariants, version selectors, endpoint overlap, path policy, lifecycle, leases, redaction, config validation | Setiap PR |
 | Contract | Provider schema, IPC fixtures, Swift/Rust DTO, compatibility/deprecation, fake provider | Setiap PR |
 | Integration | SQLite transactions, actual runtime install/create/start/stop, credential paths, log/health, shared environments | PR terkait dan nightly |
@@ -1583,13 +1620,14 @@ Test harus membedakan **process crash**, **OS restart**, dan **power loss simula
 ### 32.2 Matrix minimum baseline
 
 | Dimensi | Minimum |
-|---|---|
+| --- | --- |
 | macOS/arch | macOS 27 (minimum) pada Apple Silicon dan satu OS terbaru yang dipilih untuk rilis; Intel hanya jika didukung secara eksplisit |
 | Windows/arch | Windows 11 versi 26H2 (minimum); setiap arsitektur yang diiklankan harus masuk matrix pengujian |
 | PostgreSQL | Satu patch terpilih di mayor 17 dan satu di mayor 18; dua instance mayor 17 memakai runtime ID sama |
+| MySQL | Satu versi konkret; dua instance dengan data directory terpisah; isolation, readiness, shutdown, backup/restore-as-new |
 | NATS | Satu versi konkret; dua instance; JetStream on dan off; persistence fixture ketika on |
 | ClickHouse | Satu versi konkret; dua instance; HTTP + native TCP serta audit listener lain |
-| Redis | Satu versi konkret; dua instance; mode persistent dan volatile dengan expected result berbeda |
+| Valkey | Satu versi konkret; dua instance; mode persistent dan volatile dengan expected result berbeda |
 | Traefik | Satu versi konkret; dua instance; routing update, invalid config, HTTP, health; HTTPS ketika capability diuji |
 | Source | Managed install end-to-end; external register/drift/missing; corrupted artifact |
 | Filesystem | Path space/Unicode, symlink negative tests, missing path, full disk simulation; local filesystem baseline |
@@ -1600,7 +1638,7 @@ Compatibility record wajib mencatat source URL, artifact digest, provider revisi
 
 ### 32.3 Test fixture wajib
 
-Fixture minimum meliputi dummy server TCP/HTTP yang dapat delay-ready/crash/log-spam; fake provider declarative; tiga cluster PostgreSQL dengan sentinel berbeda; NATS stream/message per-instance; tabel ClickHouse bernama sama dengan isi berbeda; Redis key/value dan persistence policy; backend HTTP uji Traefik; malformed archives; secrets sentinel; protocol mismatch; operation race; serta registry versi sebelumnya.
+Fixture minimum meliputi dummy server TCP/HTTP yang dapat delay-ready/crash/log-spam; fake provider declarative; tiga cluster PostgreSQL dengan sentinel berbeda; dua server MySQL dengan data directory dan sentinel berbeda; NATS stream/message per-instance; tabel ClickHouse bernama sama dengan isi berbeda; Valkey key/value dan persistence policy; backend HTTP uji Traefik; malformed archives; secrets sentinel; protocol mismatch; operation race; serta registry versi sebelumnya.
 
 Cleanup test wajib memeriksa test-run ownership dan tidak melakukan recursive delete pada path yang dipasok tanpa validasi. Integration tests tidak boleh memakai database bisnis pengguna sebagai fixture.
 
@@ -1617,13 +1655,13 @@ Asumsi tim: satu engineer Rust/backend berpengalaman, satu engineer SwiftUI yang
 ### 33.2 Milestone sampai stabil macOS
 
 | Milestone | Minggu relatif | Fokus | Exit gate dan bukti |
-|---|---|---|---|
-| M0 — Discovery & feasibility | 1–2 | Audit repository, ADR, threat model, runtime sources, signing/background prototype, matrix awal lima provider | Satu executable tiap provider berjalan pada Mac uji; strategi managed packaging PG/dependency dan distribusi jelas; blocker tercatat |
+| --- | --- | --- | --- |
+| M0 — Discovery & feasibility | 1–2 | Audit repository, ADR, threat model, runtime sources, signing/background prototype, matrix awal enam provider | Satu executable tiap provider berjalan pada Mac uji; strategi managed packaging PG, MySQL, Valkey/dependency dan distribusi jelas; blocker tercatat |
 | M1 — Core, daemon, protocol | 3–5 | Workspace, domain, storage/migrations, operations, IPC, CLI, fake platform/provider | GUI/client fixture dan CLI dapat mengelola dummy service; auth/contract/reconciliation dasar lulus |
 | M2 — Runtime & instances | 6–8 | Verified installer, multi-version, data/port/config isolation, shutdown, provider engine | PG17 + PG18 + dua instance runtime identik lulus isolation/persistence tests dari CLI |
-| M3 — Lima provider wajib | 9–12 | NATS, ClickHouse, Redis, Traefik, PG hardening; provider capability/tests | Semua versi terpilih pada matrix lulus lifecycle/readiness/persistence/endpoint tests; tidak ada false supported |
+| M3 — Enam provider wajib | 9–12 | MySQL, NATS, ClickHouse, Valkey, Traefik, PG hardening; provider capability/tests | Semua versi terpilih pada matrix lulus lifecycle/readiness/persistence/endpoint tests; tidak ada false supported |
 | M4 — Native SwiftUI | 9–16, paralel M3/M5 | App shell, catalog/runtime/instance, config/log/metrics, operations, accessibility, menu bar | Critical user journeys dan CLI/GUI parity lulus; close GUI tidak menghentikan service |
-| M5 — Environment & recovery | 13–17 | Manifest/lockfile, graph/leases, shared ownership, metadata/data backup, restore-as-new | ERP environment five-service bekerja; partial failure/shared-down/restore drill lulus |
+| M5 — Environment & recovery | 13–17 | Manifest/lockfile, graph/leases, shared ownership, metadata/data backup, restore-as-new | ERP environment six-service bekerja; partial failure/shared-down/restore drill lulus |
 | M6 — Hardening & release candidate | 18–21 | Security/fuzz, crash/disk/race tests, packaging/signing, update/migrations, docs, provider SDK | Mandatory RC gates lulus; tidak ada critical/high security atau data-loss blocker |
 | M7 — Internal pilot & stable | 22–24 | Dogfooding, support runbooks, UAT, bug fixes, clean-install/reinstall/upgrade verification | Minimal pilot yang disetujui lulus; requirement/evidence matrix dan sign-off lengkap |
 | Contingency | Tambahan 0–8 | Perbaikan packaging, platform, dependency, regression dan pilot issues | Perpanjangan berbasis blocker nyata; bukan pemotongan requirement keamanan/data |
@@ -1633,7 +1671,7 @@ Keputusan arsitektur provider tidak ditunda sampai kelima service selesai. NATS/
 ### 33.3 Setelah macOS stabil
 
 | Tahap | Fokus | Syarat mulai |
-|---|---|---|
+| --- | --- | --- |
 | Community beta | Publish SDK/docs, source contribution, issue triage, reviewed catalog workflow | Provider contract cukup stabil dan local-provider tests tersedia |
 | Public registry | Discovery, publishing, trust roots, revocation, compatibility reports | Governance/security ownership dan distribusi runtime disepakati |
 | Windows foundation | IPC named pipe, process/secret/path/startup adapters, runner dan packaging spike | Core/protocol stabil serta matrix native Windows jelas |
@@ -1646,8 +1684,8 @@ Usulan effort awal untuk **Windows beta** setelah foundation macOS: 12–20 ming
 ## 34. Release gates dan sign-off
 
 | Gate | Syarat wajib | Pemilik sign-off |
-|---|---|---|
-| G0 — Feasibility | Sumber binary/dependency, artifact identity, OS matrix, background behavior, dan distribution policy lima provider jelas | Tech lead + release owner |
+| --- | --- | --- |
+| G0 — Feasibility | Sumber binary/dependency, artifact identity, OS matrix, background behavior, dan distribution policy enam provider jelas | Tech lead + release owner |
 | G1 — Functional | Seluruh REQ baseline dan AC utama lulus; GUI/CLI parity serta provider extensibility terbukti | Product owner + engineering |
 | G2 — Isolation/data safety | Multi-version/same-version, no path overlap, safe purge, external ownership, shared leases, concurrency lulus | Core maintainer + QA |
 | G3 — Recovery | Backup metadata/data, restore-as-new, restart/crash, migration rollback/forward, retained-data recovery lulus | QA + data safety reviewer |
@@ -1676,7 +1714,7 @@ Rilis pertama tidak langsung dipakai untuk satu-satunya salinan data penting. Pe
 ### 35.2 Default operasional usulan
 
 | Area | Default usulan | Catatan |
-|---|---|---|
+| --- | --- | --- |
 | Log rotation | 5 file × 20 MiB per stream/instance | Disesuaikan melalui setting; truncation terlihat |
 | Audit retention | 30 hari atau batas ukuran yang disetujui | Aksi penting dapat diekspor; bukan immutable audit |
 | Metrics | In-memory bounded history; sampling default 5 detik | Disk usage scan lebih jarang/on-demand |
@@ -1691,7 +1729,7 @@ Nilai final ditetapkan setelah benchmark dan pilot. Tidak ada background telemet
 ### 35.3 Runbook minimum
 
 | Kondisi | Langkah aman yang harus didokumentasikan |
-|---|---|
+| --- | --- |
 | Daemon tidak terhubung | Periksa background permission, user scope, endpoint ownership, protocol, helper signature; tidak otomatis delete registry |
 | Port conflict | Identifikasi endpoint dan proses yang menggunakan; pilih port lain secara eksplisit atau kelola proses luar sendiri |
 | Runtime missing/drifted | Verify source/digest, install ulang artefak yang tepat; jangan auto-rebind ke `latest` |
@@ -1706,7 +1744,7 @@ Nilai final ditetapkan setelah benchmark dan pilot. Tidak ada background telemet
 
 ## 36. Definition of Done
 
-MacOS baseline dinyatakan selesai hanya bila pengguna dapat memasang signed distribution pada mesin supported, menginstal runtime tanpa toolchain developer untuk paket yang diiklankan managed, membuat beberapa versi dan beberapa instance dari versi identik, mengelola lima provider melalui GUI/CLI, dan menjalankan environment tanpa membutuhkan cloud account atau Docker.
+MacOS baseline dinyatakan selesai hanya bila pengguna dapat memasang signed distribution pada mesin supported, menginstal runtime tanpa toolchain developer untuk paket yang diiklankan managed, membuat beberapa versi dan beberapa instance dari versi identik, mengelola enam provider melalui GUI/CLI, dan menjalankan environment tanpa membutuhkan cloud account atau Docker.
 
 Seluruh data/config/endpoints/identitas instance terpisah; menutup GUI tidak menghentikan service. Restart daemon, logout/login, dan restart OS mempunyai perilaku yang diuji serta batas disruption yang terdokumentasi. Backup yang diklaim recoverable telah melalui restore drill. Unsupported capability dan platform gap ditampilkan dengan jujur.
 
@@ -1717,12 +1755,13 @@ Semua mandatory AC berstatus PASS dengan evidence nyata, tidak ada unresolved cr
 ---
 
 <a id="lampiran-keputusan"></a>
+
 # LAMPIRAN — KEPUTUSAN, RISIKO, DAN HANDOFF
 
 ## 37. Risiko utama dan mitigasi
 
 | ID | Risiko | Dampak | Mitigasi / trigger |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | RISK-01 | Native macOS runtime tidak relocatable atau bergantung Homebrew global | Multi-version/reproducibility dan clean-install gagal | Prototype packaging pada M0; dependency closure dan managed artifact pipeline |
 | RISK-02 | Trust provider disalahartikan sebagai sandbox | Pengguna menjalankan executable berbahaya dengan hak user | Explicit native-code warning, review, source/digest control; tidak mengklaim security isolation |
 | RISK-03 | Dua supervisor atau race start | Dua proses menyasar data yang sama | Satu mutation owner, journal/locks, ownership identity, reconciliation |
@@ -1733,7 +1772,7 @@ Semua mandatory AC berstatus PASS dengan evidence nyata, tidak ada unresolved cr
 | RISK-08 | Provider schema terlalu powerful | Arbitrary code execution melalui manifest | Safe primitive set, no default shell/hooks, extensibility melalui review |
 | RISK-09 | GUI dan daemon protocol drift | State salah atau operasi gagal setelah update | Versioned protocol, shared fixtures, handshake dan release compatibility |
 | RISK-10 | Packaging/signing terlambat ditemukan | Rilis tidak dapat dipakai di mesin bersih | Spike pada M0 dan signed clean-install sebelum beta |
-| RISK-11 | Scope katalog tak terkendali | Baseline tidak selesai | Lima provider wajib; tambahan tetap backlog dengan owner/prioritas |
+| RISK-11 | Scope katalog tak terkendali | Baseline tidak selesai | Enam provider wajib; tambahan tetap backlog dengan owner/prioritas |
 | RISK-12 | Lisensi/sumber artefak tidak jelas | Distribusi tidak dapat disetujui | Inventory per versi, source/redistribution review sebelum publishing |
 | RISK-13 | Backup ada tetapi tidak bisa direstore | Kehilangan kemampuan recovery | Mandatory restore drill, compatible runtime inventory, missing-secret warning |
 | RISK-14 | Status berasal dari PID/cache lama | Wrong kill atau false ready | Compound identity, fresh probe, unknown state dan safe fallback |
@@ -1743,11 +1782,11 @@ Semua mandatory AC berstatus PASS dengan evidence nyata, tidak ada unresolved cr
 OQ bukan alasan menghentikan seluruh pekerjaan. Gunakan default usulan untuk prototype yang aman, simpan keputusan/evidence, dan selesaikan blocker sebelum gate terkait.
 
 | ID | Keputusan yang diperlukan | Default sementara | Gate / owner |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | OQ-001 | CLI, bundle ID, namespace, license project, pemeriksaan legal merek | Nama final produk: Stackly; identifier teknis, lisensi, dan pemeriksaan legal masih perlu dituntaskan | Sebelum public release / product owner |
 | OQ-002 | Dukungan Intel macOS dan arsitektur Windows | Minimum OS: macOS 27 dan Windows 11 versi 26H2; Apple Silicon/ARM64 wajib untuk macOS; Intel hanya setelah matrix lulus; arsitektur Windows dikunci sebelum fase Windows | Gate platform terkait / platform lead |
-| OQ-003 | Sumber paket managed PostgreSQL dan dependency closure | Paket resmi/terpercaya atau maintainer-built dengan provenance; external hanya mode tambahan | G0 / runtime maintainer |
-| OQ-004 | Exact versions dan artifact matrix lima provider | PG17/18 patch terpilih; provider lain satu stable concrete version masing-masing | Sebelum beta / provider owners |
+| OQ-003 | Sumber paket managed enam provider dan dependency closure | Sumber resmi/terpercaya atau maintainer-built dengan provenance; sumber dan ketentuan distribusi tiap provider diverifikasi; external hanya mode tambahan | G0 / runtime maintainer |
+| OQ-004 | Exact versions dan artifact matrix enam provider | PG17/18 patch terpilih; lima provider lain satu stable concrete version masing-masing | Sebelum beta / provider owners |
 | OQ-005 | Encoding IPC final dan generation tooling | JSON schema + length-prefix + Unix socket; Windows named pipe | M1 / tech lead |
 | OQ-006 | Mechanism helper registration dan bundling final | Per-user background helper, Service Management sesuai deployment target | M0/M1 / macOS lead |
 | OQ-007 | Policy restart daemon dan child handover | Controlled disruption pada restart; reconcile surviving processes; tidak menjanjikan zero downtime | M1/M2 / supervisor owner |
@@ -1818,7 +1857,7 @@ Saat implementasi:
 
 Urutan:
 Foundation + fixture provider → runtime/instance engine → PostgreSQL 17/18
-→ NATS/Traefik untuk menguji extensibility → ClickHouse/Redis
+→ MySQL, NATS/Traefik untuk menguji extensibility → ClickHouse/Valkey
 → SwiftUI dan CLI parity → environment + backup/restore
 → security/recovery/distribution hardening → pilot → stable macOS.
 Pekerjaan GUI dapat paralel menggunakan contract fixtures.
@@ -1835,19 +1874,20 @@ production-ready sebelum semua release gates mandatory lulus.
 ---
 
 <a id="referensi"></a>
+
 # Referensi primer dan batas verifikasi
 
 Dokumentasi berikut diperiksa untuk penyusunan PRD pada **15 Oktober 2026**. Referensi mendukung kemampuan upstream tertentu; **bukan bukti bahwa integrasi Stackly, paket runtime, permission, atau installer telah diuji pada perangkat nyata**. Dokumen yang menggunakan jalur `latest` dapat berubah; saat implementasi, pin referensi dan artifact version yang benar-benar dipakai.
 
 | ID | Sumber primer | Digunakan untuk |
-|---|---|---|
+| --- | --- | --- |
 | S01 | [PostgreSQL 18 — postgres][S01] | Beberapa server pada host dengan data area dan communication ports berbeda |
 | S02 | [Apple — SMAppService][S02] | Background helper, LoginItems, LaunchAgents/LaunchDaemons dan kebutuhan OS |
 | S03 | [Microsoft — WinUI 3][S03] | Native Windows UI, C#/C++ dan Windows App SDK |
 | S04 | [PostgreSQL 18 — pg_ctl][S04] | Lifecycle, shutdown modes, readiness wait dan opsi Windows service |
 | S05 | [NATS — Getting Started][S05] | Jalur instalasi macOS dan Windows, server/CLI distinction |
 | S06 | [ClickHouse — Install with the ClickHouse CLI][S06] | Native macOS/Linux, local version/server management, Windows melalui WSL |
-| S07 | [Redis — Install Redis Open Source][S07] | Jalur macOS/Homebrew dan batas jalur Windows yang berbeda |
+| S07 | [Valkey — Installation][S07] | Jalur macOS/Homebrew dan keterangan dukungan Windows/WSL |
 | S08 | [PostgreSQL 18 — Creating a Database Cluster][S08] | Cluster/data directory dan inisialisasi |
 | S09 | [NATS — Monitoring endpoints][S09] | Port monitoring terpisah dan endpoint observability |
 | S10 | [PostgreSQL 18 — pg_upgrade][S10] | Major upgrade, compatibility dan batas rollback data |
@@ -1861,7 +1901,9 @@ Dokumentasi berikut diperiksa untuk penyusunan PRD pada **15 Oktober 2026**. Ref
 | S18 | [Microsoft — Job Objects][S18] | Pengelompokan dan pengelolaan proses Windows |
 | S19 | [PostgreSQL 18 — Backup and Restore][S19] | Perbedaan metode backup database |
 | S20 | [ClickHouse — Backup and restore overview][S20] | Mekanisme backup/restore upstream yang perlu adapter tersendiri |
-| S21 | [Redis — Persistence][S21] | RDB/AOF, volatile mode dan durability trade-offs |
+| S21 | [Valkey — Persistence][S21] | RDB/AOF, volatile mode dan durability trade-offs |
+| S22 | [MySQL 8.4 Reference Manual — Installing MySQL][S22] | Referensi instalasi dan konfigurasi MySQL; belum diverifikasi pada host target |
+| S23 | [MySQL 8.4 Reference Manual — Backup and Recovery][S23] | Referensi backup/restore MySQL; belum diverifikasi pada host target |
 
 [S01]: https://www.postgresql.org/docs/18/app-postgres.html
 [S02]: https://developer.apple.com/documentation/servicemanagement/smappservice
@@ -1869,7 +1911,7 @@ Dokumentasi berikut diperiksa untuk penyusunan PRD pada **15 Oktober 2026**. Ref
 [S04]: https://www.postgresql.org/docs/18/app-pg-ctl.html
 [S05]: https://docs.nats.io/concepts/getting-started/
 [S06]: https://clickhouse.com/docs/get-started/setup/self-managed/clickhousectl
-[S07]: https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/
+[S07]: https://valkey.io/topics/installation/
 [S08]: https://www.postgresql.org/docs/18/creating-cluster.html
 [S09]: https://docs.nats.io/learn/monitoring/monitoring-endpoints
 [S10]: https://www.postgresql.org/docs/18/pgupgrade.html
@@ -1883,7 +1925,9 @@ Dokumentasi berikut diperiksa untuk penyusunan PRD pada **15 Oktober 2026**. Ref
 [S18]: https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects
 [S19]: https://www.postgresql.org/docs/18/backup.html
 [S20]: https://clickhouse.com/docs/concepts/features/backup-restore/overview
-[S21]: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
+[S21]: https://valkey.io/topics/persistence/
+[S22]: https://dev.mysql.com/doc/refman/8.4/en/installing.html
+[S23]: https://dev.mysql.com/doc/refman/8.4/en/backup-and-recovery.html
 
 ---
 
