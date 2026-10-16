@@ -8,7 +8,7 @@ Stackly adalah aplikasi open source untuk memasang, membuat instance, menjalanka
 
 **Cakupan:** baseline rilis stabil macOS (macOS 27, Apple Silicon). Windows, Linux, public registry, dan katalog tambahan ada di [Deferred](#deferred).
 
-**Sumber:** `prd.md` versi 1.0.0 (15 Oktober 2026). ID `REQ`, `BR`, `VAL`, `NFR`, `AC`, `PAGE`, `JOURNEY`, `RISK`, dan `OQ` dari PRD dipertahankan di baris **Trace** tiap fitur supaya traceability tetap utuh.
+**Sumber:** `prd.md` versi 1.0.0 (15 Oktober 2026). ID `REQ`, `BR`, `VAL`, `NFR`, `AC`, `PAGE`, `JOURNEY`, dan `OQ` dari PRD dipertahankan di baris **Trace** tiap fitur supaya traceability tetap utuh; sebagian `RISK` dan `GOAL` juga dicantumkan di fitur yang paling langsung menanganinya.
 
 _Ini rekomendasi supaya build kamu tetap tertib, bukan kewajiban. Lewati apa pun yang tidak cocok: kalau kamu sudah tahu cara membangun sebuah fitur, langsung pakai `/develop` dan lewati `/architect`. Kamu yang menentukan kapan sebuah fitur `done`._
 
@@ -19,17 +19,17 @@ Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan,
 | File | Fase | Fitur | Status |
 | --- | --- | --- | --- |
 | [01-foundation.md](01-foundation.md) | Foundation dan Skeleton | 1 sampai 14 | 14 planned |
-| [02-instalasi-pertama.md](02-instalasi-pertama.md) | Instalasi pertama (JOURNEY-01, PostgreSQL) | 15 sampai 21 | 7 planned |
-| [03-multi-versi-dan-instance.md](03-multi-versi-dan-instance.md) | Multi versi & instance (JOURNEY-02, JOURNEY-03) | 22 sampai 23 | 2 planned |
-| [04-kerja-harian.md](04-kerja-harian.md) | Kerja harian | 24 sampai 30 | 7 planned |
-| [05-saat-instance-gagal.md](05-saat-instance-gagal.md) | Saat instance gagal (JOURNEY-05) | 31 sampai 33 | 3 planned |
-| [06-menambah-provider.md](06-menambah-provider.md) | Menambah provider (JOURNEY-07) | 34 sampai 36 | 3 planned |
-| [07-stack-enam-service.md](07-stack-enam-service.md) | Stack enam service | 37 sampai 41 | 5 planned |
-| [08-environment-proyek.md](08-environment-proyek.md) | Environment proyek (JOURNEY-04) | 42 sampai 45 | 4 planned |
-| [09-backup-dan-restore.md](09-backup-dan-restore.md) | Backup & restore (JOURNEY-06) | 46 sampai 48 | 3 planned |
-| [10-merawat-runtime-dan-data.md](10-merawat-runtime-dan-data.md) | Merawat runtime & data | 49 sampai 53 | 5 planned |
-| [11-distribusi-aplikasi.md](11-distribusi-aplikasi.md) | Distribusi aplikasi | 54 sampai 56 | 3 planned |
-| [12-siap-rilis-stabil.md](12-siap-rilis-stabil.md) | Siap rilis stabil | 57 sampai 61 | 5 planned |
+| [02-instalasi-pertama.md](02-instalasi-pertama.md) | Instalasi pertama (JOURNEY-01, PostgreSQL, plus NATS dasar) | 15 sampai 23 | 9 planned |
+| [03-multi-versi-dan-instance.md](03-multi-versi-dan-instance.md) | Multi versi & instance (JOURNEY-02, JOURNEY-03) | 24 sampai 25 | 2 planned |
+| [04-kerja-harian.md](04-kerja-harian.md) | Kerja harian | 26 sampai 32 | 7 planned |
+| [05-saat-instance-gagal.md](05-saat-instance-gagal.md) | Saat instance gagal (JOURNEY-05) | 33 sampai 35 | 3 planned |
+| [06-menambah-provider.md](06-menambah-provider.md) | Menambah provider (JOURNEY-07) | 36 sampai 38 | 3 planned |
+| [07-stack-enam-service.md](07-stack-enam-service.md) | Stack enam service | 39 sampai 43 | 5 planned |
+| [08-environment-proyek.md](08-environment-proyek.md) | Environment proyek (JOURNEY-04) | 44 sampai 47 | 4 planned |
+| [09-backup-dan-restore.md](09-backup-dan-restore.md) | Backup & restore (JOURNEY-06) | 48 sampai 53 | 6 planned |
+| [10-merawat-runtime-dan-data.md](10-merawat-runtime-dan-data.md) | Merawat runtime & data | 54 sampai 59 | 6 planned |
+| [11-distribusi-aplikasi.md](11-distribusi-aplikasi.md) | Distribusi aplikasi | 60 sampai 62 | 3 planned |
+| [12-siap-rilis-stabil.md](12-siap-rilis-stabil.md) | Siap rilis stabil | 63 sampai 66 | 4 planned |
 
 ## At a glance
 
@@ -49,68 +49,77 @@ Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan,
 | 12 | Design system & UI foundation | Foundation | planned |
 | 13 | App shell SwiftUI & Swift client | Foundation | planned |
 | 14 | Walking skeleton | Skeleton | planned |
-| 15 | Onboarding & background agent | Instalasi pertama | planned |
-| 16 | Catalog & provider detail | Instalasi pertama | planned |
-| 17 | Install runtime managed | Instalasi pertama | planned |
-| 18 | Provider PostgreSQL | Instalasi pertama | planned |
-| 19 | Create instance | Instalasi pertama | planned |
-| 20 | Start, readiness & connection | Instalasi pertama | planned |
-| 21 | Overview & daftar instance | Instalasi pertama | planned |
-| 22 | Instance kedua dari runtime yang sama | Multi versi & instance | planned |
-| 23 | PostgreSQL 17 & 18 berdampingan | Multi versi & instance | planned |
-| 24 | Stop, restart & reload | Kerja harian | planned |
-| 25 | Log per instance | Kerja harian | planned |
-| 26 | Metrics & health | Kerja harian | planned |
-| 27 | Edit config & drift | Kerja harian | planned |
-| 28 | Reconciliation setelah daemon restart | Kerja harian | planned |
-| 29 | Autostart instance & login | Kerja harian | planned |
-| 30 | Menu bar & Settings | Kerja harian | planned |
-| 31 | Error aman & crash loop | Saat instance gagal | planned |
-| 32 | Doctor & diagnostic bundle | Saat instance gagal | planned |
-| 33 | Operations, activity & audit | Saat instance gagal | planned |
-| 34 | Provider SDK & test harness | Menambah provider | planned |
-| 35 | Import provider lokal & trust | Menambah provider | planned |
-| 36 | Panduan kontributor & governance | Menambah provider | planned |
-| 37 | Provider NATS & JetStream | Stack enam service | planned |
-| 38 | Provider Valkey | Stack enam service | planned |
-| 39 | Provider Traefik & routing lokal | Stack enam service | planned |
-| 40 | Provider MySQL | Stack enam service | planned |
-| 41 | Provider ClickHouse | Stack enam service | planned |
-| 42 | Manifest environment: validate & plan | Environment proyek | planned |
-| 43 | Lockfile & override lokal | Environment proyek | planned |
-| 44 | Env up & dependency graph | Environment proyek | planned |
-| 45 | Env down, shared instance & lease | Environment proyek | planned |
-| 46 | Backup metadata registry | Backup & restore | planned |
-| 47 | Backup data per provider | Backup & restore | planned |
-| 48 | Restore as new & verifikasi | Backup & restore | planned |
-| 49 | Remove, retain & purge | Merawat runtime & data | planned |
-| 50 | Hapus runtime & garbage collection | Merawat runtime & data | planned |
-| 51 | Runtime external (Homebrew) | Merawat runtime & data | planned |
-| 52 | Scan data orphan & adoption | Merawat runtime & data | planned |
-| 53 | Update runtime & provider revision | Merawat runtime & data | planned |
-| 54 | Packaging, signing & notarization | Distribusi aplikasi | planned |
-| 55 | Update aplikasi & kompatibilitas | Distribusi aplikasi | planned |
-| 56 | Uninstall & reinstall dengan data tetap | Distribusi aplikasi | planned |
-| 57 | Security review & fuzzing | Siap rilis stabil | planned |
-| 58 | Fault injection, recovery & soak | Siap rilis stabil | planned |
-| 59 | Audit aksesibilitas journey kritis | Siap rilis stabil | planned |
-| 60 | Quality gates & release report | Siap rilis stabil | planned |
-| 61 | Runbook & dokumentasi pengguna | Siap rilis stabil | planned |
+| 15 | Background agent & CLI install | Instalasi pertama | planned |
+| 16 | Onboarding | Instalasi pertama | planned |
+| 17 | Catalog & provider detail | Instalasi pertama | planned |
+| 18 | Install runtime managed | Instalasi pertama | planned |
+| 19 | Provider PostgreSQL | Instalasi pertama | planned |
+| 20 | Create instance | Instalasi pertama | planned |
+| 21 | Start, readiness & connection | Instalasi pertama | planned |
+| 22 | Overview & daftar instance | Instalasi pertama | planned |
+| 23 | Provider NATS lewat manifest | Instalasi pertama | planned |
+| 24 | Instance kedua dari runtime yang sama | Multi versi & instance | planned |
+| 25 | PostgreSQL 17 & 18 berdampingan | Multi versi & instance | planned |
+| 26 | Stop, restart & reload | Kerja harian | planned |
+| 27 | Log per instance | Kerja harian | planned |
+| 28 | Metrics & health | Kerja harian | planned |
+| 29 | Edit config, nama & endpoint | Kerja harian | planned |
+| 30 | Reconciliation & restart daemon terencana | Kerja harian | planned |
+| 31 | Demand, autostart & login | Kerja harian | planned |
+| 32 | Menu bar & Settings | Kerja harian | planned |
+| 33 | Crash loop & error start yang aman | Saat instance gagal | planned |
+| 34 | Doctor & diagnostic bundle | Saat instance gagal | planned |
+| 35 | Operations, activity & audit | Saat instance gagal | planned |
+| 36 | Provider SDK & test harness | Menambah provider | planned |
+| 37 | Import provider lokal & trust | Menambah provider | planned |
+| 38 | Panduan kontributor & governance | Menambah provider | planned |
+| 39 | Provider NATS & JetStream | Stack enam service | planned |
+| 40 | Provider Valkey | Stack enam service | planned |
+| 41 | Provider Traefik & routing lokal | Stack enam service | planned |
+| 42 | Provider MySQL | Stack enam service | planned |
+| 43 | Provider ClickHouse | Stack enam service | planned |
+| 44 | Manifest environment: validate & plan | Environment proyek | planned |
+| 45 | Lockfile & override lokal | Environment proyek | planned |
+| 46 | Env up & dependency graph | Environment proyek | planned |
+| 47 | Env down, shared instance & lease | Environment proyek | planned |
+| 48 | Backup metadata registry | Backup & restore | planned |
+| 49 | Cold backup & kontrak backup | Backup & restore | planned |
+| 50 | Backup logical PostgreSQL | Backup & restore | planned |
+| 51 | Restore as new & verifikasi | Backup & restore | planned |
+| 52 | Halaman Backup & Restore | Backup & restore | planned |
+| 53 | Backup MySQL, NATS, ClickHouse, Valkey & Traefik | Backup & restore | planned |
+| 54 | Remove, retain & purge | Merawat runtime & data | planned |
+| 55 | Hapus runtime & garbage collection | Merawat runtime & data | planned |
+| 56 | Runtime external (Homebrew) | Merawat runtime & data | planned |
+| 57 | Scan data orphan & adoption | Merawat runtime & data | planned |
+| 58 | Rebind runtime kompatibel | Merawat runtime & data | planned |
+| 59 | Update provider revision | Merawat runtime & data | planned |
+| 60 | Packaging, signing & notarization | Distribusi aplikasi | planned |
+| 61 | Update aplikasi & kompatibilitas | Distribusi aplikasi | planned |
+| 62 | Uninstall & reinstall dengan data tetap | Distribusi aplikasi | planned |
+| 63 | Security review & fuzzing | Siap rilis stabil | planned |
+| 64 | Fault injection, recovery & soak | Siap rilis stabil | planned |
+| 65 | Quality gates & release report | Siap rilis stabil | planned |
+| 66 | Runbook & dokumentasi pengguna | Siap rilis stabil | planned |
 
 ## Catatan urutan
 
-- **Mulai risiko besar lebih awal.** Fitur 3 (sumber runtime) bisa kamu kerjakan bersamaan dengan fitur 1 dan 2, karena hasilnya menentukan fitur 17. Kalau mau menurunkan RISK-10 lebih cepat, jalankan `/architect` untuk fitur 15 (background agent) dan 54 (signing) di minggu awal; build keduanya tetap mengikuti urutan.
+- **Mulai risiko besar lebih awal.** Fitur 3 (sumber runtime) bisa kamu kerjakan bersamaan dengan fitur 1 dan 2, karena hasilnya menentukan fitur 18.
+- **Helper dan signing dibuktikan di fase 02.** Bundling, signing development, dan registrasi helper dibuktikan di fitur 15; fitur 60 hanya menambah notarization, installer, pipeline rilis, dan third party notices. Minta signing account (OQ-012) ke release owner sejak awal, karena PRD menjadikannya release blocker (RISK-10).
+- **Engine dibuktikan pada provider kedua sejak awal.** NATS dasar lewat manifest saja (fitur 23) dijalankan sebelum fase 04, dan schema Traefik dengan routes berbentuk daftar sudah divalidasi di fitur 9 lalu dipakai sebagai uji form di fitur 29. Ini menjawab RISK-07 sesuai PRD bagian 33.2.
 - **Jalur SwiftUI paralel.** Fitur 12 dan 13 bisa dikerjakan engineer SwiftUI segera setelah kontrak IPC (fitur 6) stabil, memakai contract fixtures. Setelah itu setiap journey membawa layarnya sendiri, jadi GUI dan CLI tetap setara per fase.
-- **Jalur kontributor sebelum lima provider.** Fase 06 sengaja datang sebelum fase 07, supaya NATS, Valkey, Traefik, MySQL, dan ClickHouse dibangun lewat SDK dan harness yang sama dengan kontributor (menjawab RISK-07).
+- **Jalur kontributor sebelum lima provider.** Fase 06 sengaja datang sebelum fase 07, supaya NATS, Valkey, Traefik, MySQL, dan ClickHouse dibangun lewat SDK dan harness yang sama dengan kontributor (JOURNEY-07, REQ-029, gate G1).
 - **Enam provider sebelum environment.** Environment ERP di fase 08 memakai keenam provider, jadi fase 07 harus selesai lebih dulu.
-- **Pilot bukan fitur.** Pilot internal (gate G7) dijalankan setelah fitur 61, dengan backup teruji, dan hasilnya dicatat lewat `/scope` berikutnya.
+- **Checkpoint performa ringan di akhir fase 04.** Ukur NFR-001, NFR-003, dan NFR-006 sekali dengan fixture 100 instance terdaftar dan 10 berjalan, supaya masalah ketahuan sebelum IPC, registry, dan GUI membeku; angka final tetap diukur di fitur 64.
+- **Fuzzing sejak awal.** Tiap fitur 6, 9, 18, 20, dan 54 membawa fuzz target di Done when dan menjalankannya sebagai CI selektif; fitur 63 memperluas dan menutupnya.
+- **Pilot bukan fitur.** Pilot internal (gate G7) dijalankan setelah fitur 66, dengan backup teruji, dan hasilnya dicatat lewat `/scope` berikutnya. Peserta dan kapasitasnya (OQ-016) diputuskan product owner saat kickoff.
 
 ## Deferred
 
 Di luar baseline macOS, dicatat supaya rencana tetap jujur.
 
 - **Community beta**: publikasi SDK dan docs, kontribusi source, alur review catalog · needs a decision
-- **Public registry**: discovery, publishing, trust roots, revocation, laporan kompatibilitas · needs a decision · GA
+- **Public registry**: discovery, publishing, trust roots, sinkronisasi catalog dan revocation list online, laporan kompatibilitas · needs a decision · GA
 - **Windows foundation**: IPC named pipe, adapter proses, secret, path, dan startup, runner dan packaging spike (OQ-014, OQ-015) · needs a decision
 - **WinUI 3 beta**: client C#, UI native, parity lifecycle dan recovery untuk provider yang tersedia · needs a decision
 - **Windows stable**: gate distribusi, keamanan, dan recovery untuk Windows · needs a decision · GA
@@ -120,11 +129,11 @@ Di luar baseline macOS, dicatat supaya rencana tetap jujur.
 - **Backup lanjutan**: PITR, WAL archive, backup terjadwal atau incremental, retention otomatis, S3 · needs a decision
 - **Upgrade mayor otomatis**: otomasi `pg_upgrade` penuh dengan preflight dan rollback · needs a decision · GA
 - **Jaringan lanjutan**: bind LAN, port privileged, TLS trust otomatis, perubahan DNS atau `/etc/hosts` (OQ-017) · needs a decision · GA
-- **Storage eksternal**: custom data volume dan external storage (OQ-018) · needs a decision
+- **Storage eksternal**: custom data volume, external storage, dan relokasi data instance yang sudah ada (OQ-018) · needs a decision
 
 ## Legend
 
-**Kotak keputusan.** Tiap fitur punya tepat satu kotak yang labelnya berakhir dengan `(spec)`. Bunyinya bisa berbeda (`Design it (spec)` biasanya, `Decide the stack (spec)` untuk Stack & arsitektur), jadi skill lain mencarinya lewat akhiran `(spec)`, bukan label persis. Kotak lain adalah kotak eksekusi, dan `/architect` tidak pernah mencentangnya.
+**Kotak keputusan.** Tiap fitur bertag needs a decision punya tepat satu kotak yang labelnya berakhir dengan `(spec)`; fitur tanpa tag itu langsung punya kotak `/develop` (atau `/audit`). Bunyinya bisa berbeda (`Design it (spec)` biasanya, `Decide the stack (spec)` untuk Stack & arsitektur), jadi skill lain mencarinya lewat akhiran `(spec)`, bukan label persis. Kotak lain adalah kotak eksekusi, dan `/architect` tidak pernah mencentangnya.
 
 **Siklus fitur:**
 
