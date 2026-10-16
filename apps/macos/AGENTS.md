@@ -2,7 +2,7 @@
 
 ## Overview
 
-The native macOS GUI: the `Stackly` app target plus the local `StacklyUI` package for views, built with Xcode 27. It is only a client of `stacklyd`. Every read and every mutation goes through `StacklyClient` ([clients/swift/AGENTS.md](../../clients/swift/AGENTS.md)) over IPC, never through FFI into Rust. Nothing here exists yet: the feature 1 scaffold creates it, and the shell and shared components come with features 12, 13, and 67 to 69 in `docs/scope/ui-macos.md`.
+The native macOS GUI: the `Stackly` app target plus the local `StacklyUI` package for views, built with Xcode 27. It is only a client of `stacklyd`. Every read and every mutation goes through `StacklyClient` ([clients/swift/AGENTS.md](../../clients/swift/AGENTS.md)) over IPC, never through FFI into Rust. The feature 1 scaffold holds only a placeholder `RootView` shown in one `WindowGroup`; the shell and shared components come with features 12, 13, and 67 to 69 in `docs/scope/ui-macos.md`.
 
 ## Key files
 

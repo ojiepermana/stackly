@@ -1,6 +1,6 @@
 # Stackly
 
-Stackly installs, runs, and watches native developer tools (PostgreSQL, MySQL, NATS, ClickHouse, Valkey, Traefik) on one Mac: many versions and many instances, no Docker, no cloud account. One Rust daemon per user (`stacklyd`) owns the registry and every process. The Rust CLI (`stackly`) and the SwiftUI app only talk to it over IPC. There is no code yet; the next step is the feature 1 scaffold.
+Stackly installs, runs, and watches native developer tools (PostgreSQL, MySQL, NATS, ClickHouse, Valkey, Traefik) on one Mac: many versions and many instances, no Docker, no cloud account. One Rust daemon per user (`stacklyd`) owns the registry and every process. The Rust CLI (`stackly`) and the SwiftUI app only talk to it over IPC. The feature 1 scaffold is in place: nine cargo workspace members, the `StacklyClient` and `StacklyUI` Swift packages, and the Xcode project, each holding one small real piece of content.
 
 ## Stack
 
@@ -15,7 +15,7 @@ Journey (satu user journey dibangun lengkap, termasuk semua state, error, dan po
 
 ## Commands
 
-Planned in spec 0001. None of them work until the scaffold lands.
+From the repo root. All of these work on the feature 1 scaffold (spec 0001).
 
 ```bash
 cargo test -p <crate> [test_name_filter]
@@ -53,7 +53,7 @@ Recorded here, installed by `/develop coding standards & tooling` (feature 2).
 - Format with rustfmt and swift-format (`.swift-format`). Clippy runs with default lints plus `clippy::unwrap_used`, and warnings fail (`-D warnings`). Library crates turn on `missing_docs`.
 - Pre commit: a plain git hook, no Node or extra tools, running `cargo fmt --check`, clippy on the changed crates, and `swift-format lint`. Tests run in CI.
 - CI on GitHub Actions as spec 0001 describes: Linux for fmt, clippy, tests, `cargo-deny`, and the portability check (clippy and tests there use `--workspace --exclude stackly-platform-macos`); `macos-26` for Rust jobs on darwin; one self hosted macOS 27 Mac for Swift and real runtime jobs. Builds never remap source paths.
-- `typeshare-cli` is pinned in xtask. Install the matching one with `cargo install --locked typeshare-cli --version <v>`.
+- `typeshare-cli` is pinned in xtask. The pin is 1.13.4 (`TYPESHARE_CLI_VERSION` in `xtask/src/codegen.rs`); install it with `cargo install --locked typeshare-cli --version 1.13.4`.
 - Markdown follows `.markdownlint.jsonc`: no line length limit, only `<a>` as inline HTML, compact tables.
 
 ## Git
