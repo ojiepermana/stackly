@@ -1,7 +1,7 @@
 # 0001. Stack dan arsitektur Stackly
 
 **Date**: 2026-10-16
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 

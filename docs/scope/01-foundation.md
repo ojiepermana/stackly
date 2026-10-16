@@ -6,7 +6,7 @@ Fondasi yang dipijak semua journey: stack, tooling, sumber runtime, model domain
 
 ## Foundation
 
-### 1. Stack & arsitektur · in-progress
+### 1. Stack & arsitektur · done
 
 Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, supaya setiap journey dibangun di atas struktur nyata. PRD sudah mengunci Rust untuk core, daemon, dan CLI, SwiftUI untuk macOS, dan SQLite untuk registry; spec ini mengunci sisanya (toolchain, pembagian crate, encoding IPC) tanpa membuat crate kosong yang belum perlu.
 
