@@ -17,7 +17,7 @@ The native macOS GUI: the `Stackly` app target plus the local `StacklyUI` packag
 ## Commands
 
 ```bash
-cargo xtask build-app   # from the repo root, runs xcodebuild for scheme Stackly
+cargo xtask build-app   # from the repo root, runs xcodebuild for scheme Stackly into target/xcode
 ```
 
 ## Conventions
@@ -28,6 +28,8 @@ cargo xtask build-app   # from the repo root, runs xcodebuild for scheme Stackly
 - Target settings that differ from the template: `ARCHS = arm64`, `MACOSX_DEPLOYMENT_TARGET = 27.0`, bundle ID `com.ojiepermana.stackly`, ad hoc signing until feature 15, and App Sandbox off (the app must reach the daemon socket and bundle helpers).
 - Package manifests write the platform as a string, `.macOS("27.0")`, and `swift-tools-version` matches the Swift in the pinned Xcode.
 - Swift Testing for unit tests, XCUITest for UI tests. No force unwrap or `try!` outside tests.
+- Swift Testing suites are a `struct` with `@Test func` methods named as a camelCase phrase that states the behavior (`fixtureDecodesToCurrentVersion`). Indent with 4 spaces.
+- The app target gets its default isolation from the build setting `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` (with `SWIFT_APPROACHABLE_CONCURRENCY = YES`); the packages use `.defaultIsolation(MainActor.self)` instead.
 - Where the mockup imitates a macOS control in HTML (table, picker, toggle, sheet, popover, menu), use the native SwiftUI control. UI copy is English and comes from the mockup.
 
 ## Gotchas

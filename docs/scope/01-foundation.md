@@ -19,7 +19,7 @@ Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, 
 - [x] Decide the stack (spec): `/architect stack & arsitektur`
 - [x] Scaffold from the decision: `/develop stack & arsitektur`
 
-### 2. Coding standards & tooling
+### 2. Coding standards & tooling · in-progress
 
 Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang format, lint, typecheck, CI dasar, dan aturan test integrasi yang wajib diikuti semua fitur berikutnya.
 
@@ -27,7 +27,7 @@ Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang forma
 
 **Trace:** REQ-051, OQ-011, PRD bagian 27, 28, 31, 32.1, dan 32.3
 
-- [ ] Capture conventions and tooling choices: `/audit`
+- [x] Capture conventions and tooling choices: `/audit`
 - [ ] Install the tooling: `/develop coding standards & tooling`
 
 ### 3. Sumber & packaging runtime · needs a decision
