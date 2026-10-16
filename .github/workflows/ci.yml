@@ -5,7 +5,8 @@
 #   contract     generated Swift types and JSON Schemas match stackly-protocol
 #   deny         cargo-deny: licenses, RustSec advisories, bans, sources
 #   macos-rust   Rust on darwin, including stackly-platform-macos
-# Self hosted macOS 27 Mac (trusted branches only, never fork pull requests):
+# Self hosted macOS 27 Mac (trusted branches only, never fork pull requests,
+# and only when the repository variable SELF_HOSTED_MACOS27 is `true`):
 #   macos-swift  swift-format, Swift contract tests, the app build
 # Real runtime jobs also run on the self hosted Mac, in their own job, once
 # the first native runtime test exists.
@@ -119,8 +120,13 @@ jobs:
   macos-swift:
     name: macOS 27 Swift (self hosted)
     # The self hosted Mac never runs code from a fork and never holds signing
-    # secrets. While it is offline, this job waits in the queue.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # secrets. The job is skipped until the repository variable
+    # SELF_HOSTED_MACOS27 is set to `true` (Settings > Secrets and variables >
+    # Actions > Variables), so a missing runner never leaves a run queued and
+    # blocking the concurrency group. Unset it while the Mac is offline.
+    if: >-
+      vars.SELF_HOSTED_MACOS27 == 'true' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, macOS, ARM64, macos-27]
     timeout-minutes: 30
     steps:
