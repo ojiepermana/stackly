@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 stackly-platform.workspace = true
+tempfile.workspace = true
 
 [lints]
 workspace = true

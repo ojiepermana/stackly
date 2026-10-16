@@ -45,10 +45,12 @@ typeshare = "1.0"
 uuid = { version = "1.28", features = ["v7"] }
 
 [workspace.lints.rust]
+missing_docs = "warn"
 unsafe_code = "deny"
 
 [workspace.lints.clippy]
 undocumented_unsafe_blocks = "deny"
+unwrap_used = "deny"
 
 [profile.release]
 panic = "unwind"

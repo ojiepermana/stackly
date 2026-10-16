@@ -1,0 +1,114 @@
+#!/bin/sh
+# Stackly pre commit checks: rustfmt, clippy on the changed crates, and
+# swift-format lint on the changed Swift files. Tests run in CI.
+#
+# Install once per clone:  git config core.hooksPath .githooks
+#
+# The checks read the working tree, so stage whole files: a file that is only
+# partly staged is checked as it is on disk.
+
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -n "$staged" ] || exit 0
+
+rust_changed=no
+whole_workspace=no
+packages=''
+swift_files=''
+lint_all_swift=no
+
+# Prints the package name of the nearest crate above a file, or nothing when
+# the file belongs to no workspace member.
+package_of() {
+    dir=$(dirname "$1")
+    while [ "$dir" != "." ] && [ "$dir" != "/" ]; do
+        if [ -f "$dir/Cargo.toml" ]; then
+            sed -n 's/^name = "\(.*\)"$/\1/p' "$dir/Cargo.toml" | head -n 1
+            return
+        fi
+        dir=$(dirname "$dir")
+    done
+}
+
+# Split on newlines only and never expand globs, so every path stays whole.
+old_ifs=$IFS
+IFS='
+'
+set -f
+for file in $staged; do
+    case "$file" in
+        # Root files that change how every crate builds or lints.
+        Cargo.toml | Cargo.lock | rust-toolchain.toml | rustfmt.toml | clippy.toml | .cargo/config.toml)
+            rust_changed=yes
+            whole_workspace=yes
+            ;;
+        *.rs | */Cargo.toml)
+            rust_changed=yes
+            package=$(package_of "$file")
+            if [ -n "$package" ]; then
+                case " $packages " in
+                    *" $package "*) ;;
+                    *) packages="$packages $package" ;;
+                esac
+            fi
+            ;;
+        .swift-format)
+            lint_all_swift=yes
+            ;;
+        */Generated/*.swift)
+            ;;
+        *.swift)
+            if [ -f "$file" ]; then
+                swift_files="$swift_files$file
+"
+            fi
+            ;;
+    esac
+done
+set +f
+IFS=$old_ifs
+
+failed=no
+
+if [ "$rust_changed" = yes ]; then
+    echo "pre-commit: cargo fmt --all --check"
+    cargo fmt --all --check || failed=yes
+
+    if [ "$whole_workspace" = yes ]; then
+        set -- --workspace
+    else
+        set --
+        for package in $packages; do
+            set -- "$@" -p "$package"
+        done
+    fi
+    if [ "$#" -gt 0 ]; then
+        echo "pre-commit: cargo clippy $* --all-targets --locked -- -D warnings"
+        cargo clippy "$@" --all-targets --locked -- -D warnings || failed=yes
+    fi
+fi
+
+if [ "$lint_all_swift" = yes ]; then
+    swift_files=$(git ls-files -- '*.swift' ':(exclude)**/Generated/**')
+fi
+
+if [ -n "$swift_files" ]; then
+    if command -v xcrun > /dev/null 2>&1 && xcrun --find swift-format > /dev/null 2>&1; then
+        set -- xcrun swift-format
+    elif command -v swift-format > /dev/null 2>&1; then
+        set -- swift-format
+    else
+        echo "pre-commit: swift-format not found; install Xcode 27 and select it with xcode-select" >&2
+        exit 1
+    fi
+    echo "pre-commit: swift-format lint --strict (changed Swift files)"
+    printf '%s' "$swift_files" | tr '\n' '\0' | xargs -0 "$@" lint --strict || failed=yes
+fi
+
+if [ "$failed" = yes ]; then
+    echo "pre-commit: fix the problems above, then commit again" >&2
+    exit 1
+fi

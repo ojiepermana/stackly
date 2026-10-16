@@ -1,0 +1,49 @@
+# cargo-deny settings: licenses, RustSec advisories, bans, and sources.
+# This is the dependency gate for PRD 27 (spec 0001). Run `cargo deny check`.
+
+[graph]
+# Every target Stackly builds or checks: the Mac app, the Linux CI runner,
+# and the Windows portability check.
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-pc-windows-msvc",
+]
+
+[advisories]
+# Fail on any RustSec vulnerability, on unmaintained crates anywhere in the
+# graph, and on yanked versions. Add an ignore only with a reason and an owner.
+unmaintained = "all"
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Stackly is `MIT OR Apache-2.0`; only permissive licenses may enter the graph.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "Unicode-3.0",
+]
+confidence-threshold = 0.93
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Workspace path dependencies carry no version; they are never published.
+allow-wildcard-paths = true
+# Known duplicates while the ecosystem moves to a new major. Drop an entry
+# once the old version leaves Cargo.lock.
+skip = [
+    { crate = "syn:<3", reason = "proc macros are moving from syn 2 to syn 3" },
+    { crate = "winnow:<1", reason = "toml 0.9 still uses winnow 0.7 next to toml_parser on 1.x" },
+]
+deny = [
+    { crate = "serde_yml", reason = "RUSTSEC-2025-0068; use serde_yaml_ng (spec 0001)" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

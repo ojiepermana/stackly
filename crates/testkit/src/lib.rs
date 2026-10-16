@@ -2,10 +2,20 @@
 //!
 //! Add this crate only as a dev dependency. It never depends on
 //! `stackly-core`, so core unit tests see a single copy of every type.
+//!
+//! Integration tests take their own [`TestRoot`] and ports from
+//! [`allocate_port`], so they never touch the real per user folders, never
+//! share state, and can run in parallel.
+
+mod port;
+mod test_root;
 
 use std::path::{Path, PathBuf};
 
 use stackly_platform::{DirectoryResolver, PlatformError};
+
+pub use port::allocate_port;
+pub use test_root::TestRoot;
 
 /// A [`DirectoryResolver`] that points at a test root instead of the real
 /// per user folders.
