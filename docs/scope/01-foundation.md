@@ -14,10 +14,10 @@ Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, 
 
 **Trace:** REQ-001, REQ-050, NFR-010, OQ-005, PRD bagian 15 dan 16
 
-**Pointer:** spec [0001](../specs/0001-stack-arsitektur/index.md)
+**Pointer:** spec [0001](../specs/0001-stack-arsitektur/index.md) · code in `crates/`, `apps/`, `clients/swift/`, `protocols/`, `xtask/`
 
 - [x] Decide the stack (spec): `/architect stack & arsitektur`
-- [ ] Scaffold from the decision: `/develop stack & arsitektur`
+- [x] Scaffold from the decision: `/develop stack & arsitektur`
 
 ### 2. Coding standards & tooling
 
