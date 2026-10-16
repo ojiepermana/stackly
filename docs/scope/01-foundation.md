@@ -2,7 +2,7 @@
 
 [Kembali ke index](index.md)
 
-Fondasi yang dipijak semua journey: stack, tooling, sumber runtime, model domain dan data, protokol IPC, operation engine, CLI, mesin provider, supervisor, secrets, dan GUI shell. Fase ini ditutup dengan walking skeleton yang membuktikan semuanya sudah tersambung.
+Fondasi yang dipijak semua journey: stack, tooling, sumber runtime, model domain dan data, protokol IPC, operation engine, CLI, mesin provider, supervisor, dan secrets. Design system dan GUI shell dikerjakan di jalur paralel [ui-macos.md](ui-macos.md). Fase ini ditutup dengan walking skeleton yang membuktikan semuanya sudah tersambung.
 
 ## Foundation
 
@@ -118,25 +118,7 @@ Simpan secret di Keychain dan hanya reference di SQLite atau manifest, lalu tera
 
 - [ ] Design it (spec): `/architect secret store & redaction`
 
-### 12. Design system & UI foundation · needs a decision
-
-Bahasa visual dan komponen dasar SwiftUI supaya semua layar terasa satu kesatuan dan aksesibel sejak awal: tipografi, warna light/dark, status yang tidak hanya bergantung pada warna, serta pola state loading, empty, error, stale, unsupported, dan partial.
-
-**Done when:** `design.md` mencakup tipografi, warna, spacing, dan komponen; komponen dasar mendukung keyboard, label VoiceOver, Dynamic Type, dan konfirmasi aksi destruktif.
-
-**Trace:** REQ-027, NFR-012, PRD bagian 11.2
-
-- [ ] Design it (spec): `/architect design system & UI foundation`
-
-### 13. App shell SwiftUI & Swift client · needs a decision
-
-Shell aplikasi macOS dengan navigasi PRD bagian 11.1, status koneksi daemon, operation center, reconnect, dan Swift client yang dibangkitkan dari schema atau fixture yang sama dengan Rust. Semua mutasi lewat API daemon.
-
-**Done when:** GUI tetap terbuka saat daemon mati dan menampilkan status koneksi, retry, dan diagnostics tanpa menyebut instance stopped; reconnect memakai snapshot plus cursor; test kontrak Swift lulus untuk enum, optional field, timestamp, dan error code.
-
-**Trace:** REQ-024, AC-024, RISK-09, PRD bagian 11.1 dan 18.3
-
-- [ ] Design it (spec): `/architect app shell SwiftUI & Swift client`
+_Catatan:_ fitur 12 (Design system & UI foundation) dan 13 (App shell SwiftUI & Swift client) sekarang ada di [ui-macos.md](ui-macos.md), bersama fitur UI lintas layar lain yang diturunkan dari mockup UI. Nomor, urutan, dan statusnya tidak berubah.
 
 ## Skeleton
 

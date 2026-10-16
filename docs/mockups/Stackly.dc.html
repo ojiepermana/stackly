@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="stackly-data.js"></script>
+<style>
+html,body{margin:0;padding:0}
+body{-webkit-font-smoothing:antialiased;background:#dfe5f0}
+button{font:inherit;color:inherit}
+button:disabled{opacity:.38;cursor:default!important}
+input,select,textarea{font:inherit;color:inherit;outline:none}
+input:focus,select:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+input::placeholder{color:var(--text3)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:var(--fill-strong);border-radius:10px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+:root,[data-theme=light]{--win:#F5F5F7;--card:#FFFFFF;--sheet:#F7F7F9;--text:#1D1D1F;--text2:#6B6B70;--text3:#A1A1A6;--sep:rgba(0,0,0,.1);--fill:rgba(0,0,0,.055);--fill-h:rgba(0,0,0,.09);--fill-strong:rgba(0,0,0,.17);--stripe:rgba(0,0,0,.022);--sel:rgba(0,0,0,.07);--seg-on:#FFFFFF;--seg-sh:0 1px 2px rgba(0,0,0,.14),0 0 0 .5px rgba(0,0,0,.06);--console:#FFFFFF;--green:#34C759;--green-t:#1B7F33;--red:#FF3B30;--red-t:#C4170D;--orange:#FF9500;--orange-t:#A85A00;--gray:#8E8E93;--glass-bd:rgba(255,255,255,.75);--win-glass:rgba(236,238,244,.55);--menubar:rgba(255,255,255,.42);--shadow:0 34px 90px rgba(20,30,60,.28),0 0 0 .5px rgba(0,0,0,.22);--wall:radial-gradient(1100px 760px at 12% 8%,#a9c9f5 0%,transparent 70%),radial-gradient(900px 700px at 92% 85%,#f1bfd6 0%,transparent 70%),radial-gradient(800px 600px at 70% 10%,#c9c2f2 0%,transparent 70%),#dfe5f0}
+[data-theme=dark]{--win:#1E1E20;--card:#2A2A2D;--sheet:#252528;--text:#F2F2F5;--text2:#A2A2A8;--text3:#6C6C72;--sep:rgba(255,255,255,.1);--fill:rgba(255,255,255,.08);--fill-h:rgba(255,255,255,.13);--fill-strong:rgba(255,255,255,.22);--stripe:rgba(255,255,255,.025);--sel:rgba(255,255,255,.1);--seg-on:rgba(255,255,255,.2);--seg-sh:0 1px 2px rgba(0,0,0,.3);--console:#18181A;--green:#30D158;--green-t:#4ADE74;--red:#FF453A;--red-t:#FF6961;--orange:#FF9F0A;--orange-t:#FFB340;--gray:#8E8E93;--glass-bd:rgba(255,255,255,.14);--win-glass:rgba(30,30,34,.5);--menubar:rgba(20,20,26,.4);--shadow:0 34px 90px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.14);--wall:radial-gradient(1100px 760px at 12% 8%,#203a6b 0%,transparent 70%),radial-gradient(900px 700px at 92% 85%,#4a2140 0%,transparent 70%),radial-gradient(800px 600px at 70% 10%,#2c2860 0%,transparent 70%),#0f1220}
+:root,[data-theme=light][data-glass=tinted]{--side:rgba(226,229,238,.72);--glass:rgba(250,250,252,.8);--pop:rgba(246,246,249,.86)}
+[data-theme=light][data-glass=clear]{--side:rgba(236,238,246,.35);--glass:rgba(255,255,255,.3);--pop:rgba(255,255,255,.5)}
+[data-theme=dark][data-glass=tinted]{--side:rgba(38,38,44,.74);--glass:rgba(46,46,50,.8);--pop:rgba(40,40,44,.86)}
+[data-theme=dark][data-glass=clear]{--side:rgba(30,30,38,.32);--glass:rgba(70,70,78,.28);--pop:rgba(40,40,46,.5)}
+:root,[data-accent=blue]{--accent:#0A7AFF}
+[data-accent=purple]{--accent:#A550A7}
+[data-accent=pink]{--accent:#E8478F}
+[data-accent=orange]{--accent:#E8780F}
+[data-accent=green]{--accent:#3E9E2E}
+[data-accent=graphite]{--accent:#7C7C82}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" data-glass="{{ glass }}" data-accent="{{ accent }}" style="position:relative;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro',system-ui,sans-serif;font-size:13px;line-height:1.38;color:var(--text);background:var(--wall);overflow:auto">
+<div style="position:sticky;top:0;z-index:50;height:30px;display:flex;align-items:center;gap:20px;padding:0 16px;background:var(--menubar);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);font-size:13px;color:var(--text);min-width:1344px">
+<span style="font-weight:700">Stackly</span><span>File</span><span>Edit</span><span>View</span><span>Window</span><span>Help</span>
+<div style="flex:1"></div>
+<button onClick="{{ toggleMenu }}" title="Stackly" style="position:relative;height:22px;padding:0 7px;border:0;border-radius:6px;background:{{ menuBtnBg }};display:flex;align-items:center;cursor:pointer">
+<svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path><path d="M2 11l6 3 6-3"></path></svg>
+<sc-if value="{{ counts.failed }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:4px;top:3px;width:6px;height:6px;border-radius:50%;background:var(--red)"></span></sc-if>
+</button>
+<span style="font-variant-numeric:tabular-nums">Fri Oct 16  2:04 PM</span>
+</div>
+<div style="display:flex;justify-content:safe center;align-items:flex-start;padding:36px 32px 56px;min-width:min-content">
+<div style="position:relative;width:1280px;height:800px;flex:none">
+<sc-if value="{{ windowClosed }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;place-items:center"><div style="padding:14px 20px;border-radius:16px;background:var(--pop);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);box-shadow:0 0 0 .5px var(--sep);text-align:center;max-width:360px"><div style="font-weight:600">Stackly is still running</div><div style="color:var(--text2);margin-top:2px">Closing the window doesn’t stop stacklyd or your instances. Use the menu bar icon to reopen it.</div></div></div>
+</sc-if>
+<sc-if value="{{ windowOpen }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;border-radius:24px;overflow:hidden;background:var(--win-glass);backdrop-filter:blur(50px) saturate(1.8);-webkit-backdrop-filter:blur(50px) saturate(1.8);box-shadow:var(--shadow)">
+<sc-if value="{{ is.onboarding }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--win);display:flex;flex-direction:column">
+<div style="display:flex;gap:8px;padding:18px 20px"><button onClick="{{ closeWindow }}" style="width:12px;height:12px;border-radius:50%;border:0;padding:0;background:#FF5F57;cursor:pointer"></button><span style="width:12px;height:12px;border-radius:50%;background:#FEBC2E"></span><span style="width:12px;height:12px;border-radius:50%;background:var(--fill-strong)"></span></div>
+<div style="flex:1;display:flex;justify-content:center;align-items:center;padding:0 40px">
+<div style="width:520px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+<sc-if value="{{ ob.s0 }}" hint-placeholder-val="{{ true }}">
+<div style="width:112px;height:112px;border-radius:26px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 14px 40px color-mix(in srgb,var(--accent) 40%,transparent)"><svg width="60" height="60" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path><path d="M2 11l6 3 6-3"></path></svg></div>
+<div style="font-size:28px;font-weight:700;margin-top:8px">Welcome to Stackly</div>
+<div style="color:var(--text2);font-size:14px;max-width:420px">Run local databases, queues and proxies side by side, each with its own data, port and secret.</div>
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;text-align:left;width:100%">
+<div style="display:flex;gap:14px"><span style="width:34px;height:34px;flex:none;border-radius:9px;background:color-mix(in srgb,#28B14C 16%,transparent);color:#28B14C;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2.5" width="12" height="4.5" rx="1.5"></rect><rect x="2" y="9" width="12" height="4.5" rx="1.5"></rect></svg></span><div><div style="font-weight:600">Isolated instances</div><div style="color:var(--text2)">Several versions of the same server, never touching each other’s data.</div></div></div>
+<div style="display:flex;gap:14px"><span style="width:34px;height:34px;flex:none;border-radius:9px;background:color-mix(in srgb,#30B0C7 16%,transparent);color:#30B0C7;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 1.8 13.5 4.8v6.4L8 14.2 2.5 11.2V4.8Z"></path></svg></span><div><div style="font-weight:600">Verified runtimes</div><div style="color:var(--text2)">Downloaded, checked against a pinned digest, then committed.</div></div></div>
+<div style="display:flex;gap:14px"><span style="width:34px;height:34px;flex:none;border-radius:9px;background:color-mix(in srgb,#AF52DE 16%,transparent);color:#AF52DE;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path></svg></span><div><div style="font-weight:600">Environments as files</div><div style="color:var(--text2)">A stackly.yaml per project. Plan, then bring everything up in order.</div></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ ob.s1 }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:24px;font-weight:700">Keep services running in the background</div>
+<div style="color:var(--text2);font-size:14px">stacklyd supervises your instances when the window is closed. macOS asks you to allow it in Login Items.</div>
+<div style="width:100%;margin-top:10px;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);display:flex;align-items:center;gap:12px;text-align:left">
+<sc-if value="{{ ob.permOk }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--green)"></circle><path d="m5 8.2 2 2 4-4.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="flex:1"><div style="font-weight:600">Allowed in Login Items</div><div style="font-size:12px;color:var(--text2)">stacklyd starts when you log in.</div></div></sc-if>
+<sc-if value="{{ ob.permNo }}" hint-placeholder-val="{{ true }}"><svg width="24" height="24" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="6.4" fill="none" stroke="var(--orange)" stroke-width="1.4"></circle><path d="M8 4.8V8l2 1.4" fill="none" stroke="var(--orange)" stroke-width="1.4" stroke-linecap="round"></path></svg><div style="flex:1"><div style="font-weight:600">Waiting for approval</div><div style="font-size:12px;color:var(--text2)">Without it, the daemon runs only while the app is open.</div></div><button onClick="{{ ob.allow }}" style="height:26px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Open System Settings…</button></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ ob.s2 }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:24px;font-weight:700">Where your data lives</div>
+<div style="color:var(--text2);font-size:14px">Everything stays in your user Library. Instance data is kept by stable ID, so renaming never moves files.</div>
+<div style="width:100%;margin-top:10px;display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep);text-align:left">
+<div style="display:flex;gap:12px;padding:10px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Data</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">~/Library/Application Support/Stackly</span></div>
+<div style="display:flex;gap:12px;padding:10px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Cache</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">~/Library/Caches/Stackly</span></div>
+<div style="display:flex;gap:12px;padding:10px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Logs</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">~/Library/Logs/Stackly</span></div>
+<div style="display:flex;gap:12px;padding:10px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Secrets</span><span>Login Keychain</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ ob.s3 }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:24px;font-weight:700">Choose catalog sources</div>
+<div style="color:var(--text2);font-size:14px">Providers describe how to install and run each server. Only trusted sources appear in the catalog.</div>
+<div style="width:100%;margin-top:10px;display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep);text-align:left">
+<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card)"><div style="flex:1"><div style="font-weight:600">official</div><div style="font-size:12px;color:var(--text2)">Maintained by the Stackly project. Signed manifests, pinned artifacts.</div></div><button disabled style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ ob.tOfficial.bg }};display:flex;justify-content:{{ ob.tOfficial.jc }}"><span style="width:15px;height:15px;border-radius:50%;background:#fff"></span></button></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card)"><div style="flex:1"><div style="font-weight:600">community</div><div style="font-size:12px;color:var(--text2)">Reviewed in public, not by maintainers. Trust each provider explicitly.</div></div><button onClick="{{ ob.tCommunity.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ ob.tCommunity.bg }};display:flex;justify-content:{{ ob.tCommunity.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button></div>
+</div>
+</sc-if>
+<sc-if value="{{ ob.s4 }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:24px;font-weight:700">Command line tool</div>
+<div style="color:var(--text2);font-size:14px">The app and the CLI talk to the same daemon, so changes in one show up in the other.</div>
+<div style="width:100%;margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);display:flex;align-items:center;gap:12px;text-align:left"><div style="flex:1"><div style="font-weight:600">Install stackly in /usr/local/bin</div><div style="font-size:12px;color:var(--text2)">Requires your password once.</div></div><button onClick="{{ ob.tCli.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ ob.tCli.bg }};display:flex;justify-content:{{ ob.tCli.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button></div>
+<pre style="width:100%;box-sizing:border-box;margin:0;padding:12px 14px;border-radius:14px;background:var(--console);box-shadow:0 0 0 .5px var(--sep);text-align:left;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;line-height:1.7;color:var(--text2)">$ stackly instance list
+$ stackly env up ~/Code/erp
+$ stackly doctor</pre>
+</sc-if>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:16px 22px;border-top:.5px solid var(--sep)">
+<div style="display:flex;gap:6px;align-items:center"><sc-for list="{{ ob.dots }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.go }}" style="width:{{ o.w }};height:7px;border:0;padding:0;border-radius:999px;background:{{ o.bg }};cursor:pointer;transition:width .2s"></button></sc-for></div>
+<span style="font-size:12px;color:var(--text2);margin-left:8px">{{ ob.step }}</span>
+<div style="flex:1"></div>
+<sc-if value="{{ ob.hasPrev }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ob.prev }}" style="height:28px;min-width:84px;padding:0 16px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Back</button></sc-if>
+<button onClick="{{ ob.next }}" style="height:28px;min-width:96px;padding:0 16px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">{{ ob.nextLabel }}</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ inShell }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0;top:0;bottom:0;width:236px;background:var(--side);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border-right:.5px solid var(--sep);display:flex;flex-direction:column;padding:18px 10px 10px;z-index:2;box-sizing:border-box">
+<div style="display:flex;gap:8px;padding:2px 6px 20px">
+<button onClick="{{ closeWindow }}" title="Close" style="width:12px;height:12px;border-radius:50%;border:0;padding:0;background:#FF5F57;cursor:pointer"></button><span style="width:12px;height:12px;border-radius:50%;background:#FEBC2E"></span><span style="width:12px;height:12px;border-radius:50%;background:#28C840"></span>
+</div>
+<div style="display:flex;flex-direction:column;gap:1px">
+<button onClick="{{ nav.overview.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.overview.bg }};font-weight:{{ nav.overview.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0A84FF" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1.4"></rect><rect x="9" y="2" width="5" height="5" rx="1.4"></rect><rect x="2" y="9" width="5" height="5" rx="1.4"></rect><rect x="9" y="9" width="5" height="5" rx="1.4"></rect></svg><span style="flex:1">Overview</span></button>
+<button onClick="{{ nav.instances.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.instances.bg }};font-weight:{{ nav.instances.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#28B14C" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2.5" width="12" height="4.5" rx="1.5"></rect><rect x="2" y="9" width="12" height="4.5" rx="1.5"></rect><path d="M4.6 4.75h.01M4.6 11.25h.01" stroke-width="2.2"></path></svg><span style="flex:1">Instances</span><span style="font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums">{{ counts.instBadge }}</span></button>
+<button onClick="{{ nav.environments.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.environments.bg }};font-weight:{{ nav.environments.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#AF52DE" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path><path d="M2 11l6 3 6-3"></path></svg><span style="flex:1">Environments</span><span onClick="{{ toggleEnvOpen }}" title="Show environments" style="width:18px;height:18px;margin-right:-4px;border-radius:5px;display:grid;place-items:center;color:var(--text2);cursor:pointer"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ envChevron }};transition:transform .15s"><path d="m6 3 5 5-5 5"></path></svg></span></button>
+<sc-if value="{{ envOpen }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ envList }}" as="e" hint-placeholder-count="2">
+<button onClick="{{ e.pick }}" style="display:flex;align-items:center;gap:8px;height:28px;padding:0 10px 0 35px;border:0;border-radius:9px;background:{{ e.sbBg }};font-weight:{{ e.sbFw }};cursor:pointer;text-align:left;font-size:12.5px"><span style="width:6px;height:6px;flex:none;border-radius:50%;background:{{ e.dot }}"></span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.id }}</span><span style="font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums">{{ e.readyN }}/{{ e.total }}</span></button>
+</sc-for>
+</sc-if>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--text2);padding:16px 10px 4px">Library</div>
+<div style="display:flex;flex-direction:column;gap:1px">
+<button onClick="{{ nav.catalog.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.catalog.bg }};font-weight:{{ nav.catalog.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF9500" stroke-width="1.5" stroke-linejoin="round"><path d="M2.5 3.5c2-1 4-1 5.5.6 1.5-1.6 3.5-1.6 5.5-.6v9c-2-1-4-1-5.5.6-1.5-1.6-3.5-1.6-5.5-.6Z"></path><path d="M8 4.1v9.4"></path></svg><span style="flex:1">Catalog</span></button>
+<button onClick="{{ nav.runtimes.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.runtimes.bg }};font-weight:{{ nav.runtimes.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#30B0C7" stroke-width="1.5" stroke-linejoin="round"><path d="M8 1.8 13.5 4.8v6.4L8 14.2 2.5 11.2V4.8Z"></path><path d="M2.5 4.8 8 7.8l5.5-3M8 7.8v6.4"></path></svg><span style="flex:1">Runtimes</span></button>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--text2);padding:16px 10px 4px">System</div>
+<div style="display:flex;flex-direction:column;gap:1px">
+<button onClick="{{ nav.operations.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.operations.bg }};font-weight:{{ nav.operations.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#5E5CE6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 6.5A5 5 0 0 0 3.6 5M3 9.5A5 5 0 0 0 12.4 11"></path><path d="M3.4 2.4v2.8h2.8M12.6 13.6v-2.8H9.8"></path></svg><span style="flex:1">Operations</span><sc-if value="{{ hasRunningOps }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center">{{ counts.opsBadge }}</span></sc-if></button>
+<button onClick="{{ nav.diagnostics.go }}" style="display:flex;align-items:center;gap:9px;height:30px;padding:0 10px;border:0;border-radius:9px;background:{{ nav.diagnostics.bg }};font-weight:{{ nav.diagnostics.fw }};cursor:pointer;text-align:left"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF375F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 8.5h3l1.5-4 3 8 1.5-4h4"></path></svg><span style="flex:1">Diagnostics</span><span style="font-size:12px;color:var(--red-t);font-weight:600">{{ counts.issues }}</span></button>
+</div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:8px;padding:8px 6px 2px 10px">
+<span style="width:7px;height:7px;border-radius:50%;background:{{ daemonDot }}"></span>
+<span style="flex:1;font-size:12px;color:var(--text2)">{{ daemonText }}</span>
+<button onClick="{{ openSettings }}" title="Settings (⌘,)" style="width:28px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text2)" style-hover="background:var(--fill)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"></path><circle cx="10.75" cy="4.5" r="1.75"></circle><circle cx="5.25" cy="11.5" r="1.75"></circle></svg></button>
+</div>
+</div>
+<div style="position:absolute;top:0;right:0;bottom:0;left:236px;background:var(--win);display:flex;flex-direction:column">
+<div style="height:56px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 14px">
+<sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goBack }}" title="Back" style="width:34px;height:34px;flex:none;border:0;border-radius:50%;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep);display:grid;place-items:center;cursor:pointer"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"></path></svg></button></sc-if>
+<div style="display:flex;flex-direction:column;min-width:0;margin-right:auto;padding-left:4px"><div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</div><div style="font-size:11px;color:var(--text2);white-space:nowrap">{{ subtitle }}</div></div>
+<sc-if value="{{ is.overview }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)">
+<button onClick="{{ goCreate }}" disabled="{{ offline }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px" style-hover="background:var(--fill)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"></path></svg>New Instance</button>
+</div>
+</sc-if>
+<sc-if value="{{ is.instances }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;height:34px;width:220px;padding:0 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep);color:var(--text2)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><path d="m10.5 10.5 3 3"></path></svg><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search" style="flex:1;min-width:0;border:0;background:transparent;box-shadow:none;color:var(--text)"></div>
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)">
+<button onClick="{{ goCreate }}" disabled="{{ offline }}" title="New Instance" style="width:34px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"></path></svg></button>
+<button onClick="{{ toggleInsp }}" title="Show Inspector" style="width:34px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="11" rx="2.2"></rect><path d="M10 2.5v11"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{ is.instance }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.on }}" style="height:28px;padding:0 11px;border:0;border-radius:999px;background:{{ t.bg }};box-shadow:{{ t.sh }};font-weight:500;cursor:pointer;white-space:nowrap">{{ t.label }}</button></sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)">
+<button onClick="{{ d.onAct }}" disabled="{{ d.actDisabled }}" title="{{ d.actLabel }}" style="width:34px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)">
+<sc-if value="{{ d.isRunning }}" hint-placeholder-val="{{ true }}"><svg width="13" height="13" viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" rx="1.8" fill="currentColor"></rect></svg></sc-if>
+<sc-if value="{{ d.notRunning }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4L13 8Z" fill="currentColor" stroke="currentColor" stroke-linejoin="round"></path></svg></sc-if>
+</button>
+<button onClick="{{ d.restart }}" disabled="{{ d.restartDisabled }}" title="Restart" style="width:34px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.6-3.7"></path><path d="M12 1.6v3h-3"></path></svg></button>
+<button onClick="{{ d.reload }}" disabled="{{ d.reloadDisabled }}" title="{{ d.reloadTitle }}" style="width:34px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9 1.5 3.5 9H8l-1 5.5L12.5 7H8Z"></path></svg></button>
+</div>
+<div style="position:relative">
+<div style="display:flex;align-items:center;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ toggleMore }}" title="More" style="width:30px;height:28px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--fill)"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.3"></circle><circle cx="8" cy="8" r="1.3"></circle><circle cx="12.5" cy="8" r="1.3"></circle></svg></button></div>
+<sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;right:0;top:40px;z-index:10;width:220px;padding:5px;border-radius:12px;background:var(--pop);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 12px 32px rgba(0,0,0,.2),0 0 0 .5px var(--sep);display:flex;flex-direction:column">
+<button onClick="{{ d.copyConn }}" style="height:26px;border:0;border-radius:7px;background:transparent;text-align:left;padding:0 10px;cursor:pointer" style-hover="background:var(--accent);color:#fff">Copy Connection String</button>
+<button onClick="{{ d.duplicate }}" style="height:26px;border:0;border-radius:7px;background:transparent;text-align:left;padding:0 10px;cursor:pointer" style-hover="background:var(--accent);color:#fff">Duplicate…</button>
+<div style="height:.5px;background:var(--sep);margin:4px 8px"></div>
+<button onClick="{{ d.remove }}" style="height:26px;border:0;border-radius:7px;background:transparent;text-align:left;padding:0 10px;cursor:pointer;color:var(--red-t)" style-hover="background:var(--red);color:#fff">Remove Instance…</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ is.catalog }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;height:34px;width:200px;padding:0 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep);color:var(--text2)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><path d="m10.5 10.5 3 3"></path></svg><input value="{{ catQ }}" onChange="{{ onCatQ }}" placeholder="Search providers" style="flex:1;min-width:0;border:0;background:transparent;box-shadow:none;color:var(--text)"></div>
+<div style="display:flex;align-items:center;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ importProvider }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer;white-space:nowrap" style-hover="background:var(--fill)">Import Provider…</button></div>
+</sc-if>
+<sc-if value="{{ is.runtimes }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ registerExternal }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer;white-space:nowrap" style-hover="background:var(--fill)">Register External…</button><button onClick="{{ goCatalog }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer;white-space:nowrap" style-hover="background:var(--fill)">Browse Catalog</button></div>
+</sc-if>
+<sc-if value="{{ is.environments }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ importEnv }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer" style-hover="background:var(--fill)">Import…</button><button onClick="{{ envValidate }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer" style-hover="background:var(--fill)">Validate</button></div>
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ envDown }}" disabled="{{ env.downDisabled }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer" style-hover="background:var(--fill)">Down</button><button onClick="{{ openPlan }}" disabled="{{ env.upDisabled }}" style="height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Up…</button></div>
+</sc-if>
+<sc-if value="{{ is.diagnostics }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:2px;height:34px;padding:0 3px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 1px 4px rgba(0,0,0,.1),0 0 0 .5px var(--sep)"><button onClick="{{ exportBundle }}" style="height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;font-weight:500;cursor:pointer" style-hover="background:var(--fill)">Export Bundle…</button><button onClick="{{ runDoctor }}" disabled="{{ doctorRunning }}" style="height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">{{ doctorLabel }}</button></div>
+</sc-if>
+</div>
+<sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+<div style="margin:0 14px 8px;padding:9px 10px 9px 12px;border-radius:14px;background:color-mix(in srgb,var(--orange) 15%,var(--win));display:flex;align-items:center;gap:10px">
+<svg width="18" height="18" viewBox="0 0 16 16"><path d="M8 1.8 14.8 13.6H1.2Z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.2" stroke-linejoin="round"></path><path d="M8 6v3.6M8 11.7h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<div style="flex:1;min-width:0"><span style="font-weight:600">Can’t connect to stacklyd.</span> <span style="color:var(--text2)">Showing the last known state from 14:02. Actions are disabled until the daemon is reachable.</span></div>
+<button onClick="{{ reconnect }}" style="height:26px;padding:0 12px;border:0;border-radius:999px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);font-weight:500;cursor:pointer">Reconnect</button>
+</div>
+</sc-if>
+<div style="flex:1;min-height:0;display:flex">
+<div style="flex:1;min-width:0;overflow:auto;opacity:{{ staleOpacity }};transition:opacity .2s">
+<sc-if value="{{ is.overview }}" hint-placeholder-val="{{ true }}">
+<div style="padding:6px 22px 28px;display:flex;flex-direction:column;gap:22px">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+<button onClick="{{ nav.instances.go }}" style="text-align:left;border:0;cursor:pointer;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green)"></span>Running</div><div style="font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px">{{ counts.ready }}</div></button>
+<button onClick="{{ nav.instances.go }}" style="text-align:left;border:0;cursor:pointer;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--gray)"></span>Stopped</div><div style="font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px">{{ counts.stopped }}</div></button>
+<button onClick="{{ nav.instances.go }}" style="text-align:left;border:0;cursor:pointer;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--red)"></span>Failed</div><div style="font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;color:var(--red-t)">{{ counts.failed }}</div></button>
+<button onClick="{{ nav.runtimes.go }}" style="text-align:left;border:0;cursor:pointer;padding:14px 16px;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:2px;background:#30B0C7"></span>Runtimes</div><div style="font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px">{{ counts.runtimes }}</div></button>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Needs Attention</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ attention }}" as="a" hint-placeholder-count="4">
+<button onClick="{{ a.go }}" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:0;background:var(--card);text-align:left;cursor:pointer" style-hover="background:color-mix(in srgb,var(--card) 92%,var(--text))">
+<sc-if value="{{ a.err }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--red)"></circle><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ a.warn }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><path d="M8 1.6 15 13.8H1Z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.2" stroke-linejoin="round"></path><path d="M8 6v3.6M8 11.8h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ a.info }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--gray)"></circle><path d="M8 7.2v4M8 4.8h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<div style="flex:1;min-width:0"><div style="font-weight:600">{{ a.title }}</div><div style="color:var(--text2);font-size:12px">{{ a.body }}</div></div>
+<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m6 3 5 5-5 5"></path></svg>
+</button>
+</sc-for>
+</div>
+<div style="font-size:13px;font-weight:700;padding:14px 4px 0">Instances</div>
+<sc-if value="{{ noInstances }}" hint-placeholder-val="{{ false }}">
+<div style="padding:34px 20px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><svg width="40" height="40" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1" stroke-linecap="round"><rect x="2" y="2.5" width="12" height="4.5" rx="1.5"></rect><rect x="2" y="9" width="12" height="4.5" rx="1.5"></rect></svg><div style="font-size:15px;font-weight:600;margin-top:4px">No Instances</div><div style="color:var(--text2);max-width:320px">Install a runtime from the catalog, then create an instance with its own data directory and port.</div><button onClick="{{ goCatalog }}" style="margin-top:8px;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Browse Catalog</button></div>
+</sc-if>
+<sc-if value="{{ hasInstances }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ recent }}" as="v" hint-placeholder-count="6">
+<div onClick="{{ v.open }}" style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card);cursor:default">
+<span style="width:26px;height:26px;flex:none;border-radius:7px;background:{{ v.tile }};color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center">{{ v.mark }}</span>
+<div style="flex:1;min-width:0"><div style="font-weight:500">{{ v.id }}</div><div style="font-size:12px;color:var(--text2)">{{ v.provName }} {{ v.version }} · {{ v.epText }}</div></div>
+<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:{{ v.stFg }};width:84px"><span style="width:7px;height:7px;border-radius:50%;background:{{ v.dot }}"></span>{{ v.stLabel }}</div>
+<button onClick="{{ v.onAct }}" disabled="{{ v.actDisabled }}" style="height:24px;min-width:56px;padding:0 12px;border:0;border-radius:999px;background:{{ v.actBg }};color:{{ v.actFg }};font-weight:500;font-size:12px;cursor:pointer">{{ v.actLabel }}</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Environments</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ envList }}" as="e" hint-placeholder-count="2">
+<button onClick="{{ nav.environments.go }}" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:0;background:var(--card);text-align:left;cursor:pointer">
+<div style="display:flex;align-items:center;gap:8px;width:100%"><span style="flex:1;font-weight:600">{{ e.id }}</span><span style="height:18px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ e.tag.bg }};color:{{ e.tag.fg }}">{{ e.statusText }}</span></div>
+<div style="height:4px;width:100%;border-radius:4px;background:var(--fill)"><div style="height:100%;width:{{ e.w }};border-radius:4px;background:var(--green)"></div></div>
+<div style="font-size:12px;color:var(--text2)">{{ e.readyText }} · {{ e.file }}</div>
+</button>
+</sc-for>
+</div>
+<div style="font-size:13px;font-weight:700;padding:14px 4px 0">Operations</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ runningOps }}" as="o" hint-placeholder-count="1">
+<button onClick="{{ goOps }}" style="display:flex;flex-direction:column;gap:7px;padding:12px 14px;border:0;background:var(--card);text-align:left;cursor:pointer">
+<div style="display:flex;width:100%;gap:8px"><span style="flex:1;font-weight:500">{{ o.title }}</span><span style="color:var(--text2);font-variant-numeric:tabular-nums">{{ o.pctText }}</span></div>
+<div style="height:4px;width:100%;border-radius:4px;background:var(--fill)"><div style="height:100%;width:{{ o.w }};border-radius:4px;background:var(--accent);transition:width .5s"></div></div>
+<div style="font-size:12px;color:var(--text2)">{{ o.stageName }}</div>
+</button>
+</sc-for>
+<sc-if value="{{ noRunningOps }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;background:var(--card);color:var(--text2)">Nothing running.</div></sc-if>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ is.instances }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 24px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ segFilter }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.on }}" style="height:24px;padding:0 14px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<span style="font-size:12px;color:var(--text2)">Double-click a row to open it.</span>
+</div>
+<sc-if value="{{ noInstances }}" hint-placeholder-val="{{ false }}">
+<div style="padding:90px 20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><svg width="48" height="48" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width=".9" stroke-linecap="round"><rect x="2" y="2.5" width="12" height="4.5" rx="1.5"></rect><rect x="2" y="9" width="12" height="4.5" rx="1.5"></rect><path d="M4.6 4.75h.01M4.6 11.25h.01" stroke-width="1.8"></path></svg><div style="font-size:17px;font-weight:600;margin-top:6px">No Instances</div><div style="color:var(--text2);max-width:340px">Each instance gets its own data directory, port and secret. Start by installing a runtime.</div><div style="display:flex;gap:8px;margin-top:10px"><button onClick="{{ goCatalog }}" style="height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Browse Catalog</button><button onClick="{{ goCreate }}" disabled="{{ offline }}" style="height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">New Instance…</button></div></div>
+</sc-if>
+<sc-if value="{{ hasInstances }}" hint-placeholder-val="{{ true }}">
+<div style="border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);overflow:hidden">
+<div style="display:grid;grid-template-columns:minmax(120px,1.5fr) minmax(70px,1fr) 64px minmax(80px,1fr) minmax(90px,1.1fr) 96px 76px;height:28px;align-items:center;padding:0 12px 0 8px;margin:0 4px;border-bottom:.5px solid var(--sep)">
+<sc-for list="{{ cols }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.on }}" style="height:16px;border:0;border-left:{{ c.bl }};background:transparent;text-align:left;padding:0 8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:{{ c.fg }};font-size:12px;font-weight:600"><span>{{ c.label }}</span><span style="font-size:11px">{{ c.arrow }}</span></button></sc-for>
+<span></span>
+</div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="9">
+<div onClick="{{ r.select }}" onDoubleClick="{{ r.open }}" style="display:grid;grid-template-columns:minmax(120px,1.5fr) minmax(70px,1fr) 64px minmax(80px,1fr) minmax(90px,1.1fr) 96px 76px;height:34px;align-items:center;padding:0 12px 0 8px;margin:0 4px;border-radius:8px;background:{{ r.rowBg }};color:{{ r.rowFg }};cursor:default;user-select:none">
+<div style="display:flex;align-items:center;gap:8px;padding:0 8px;min-width:0"><span style="width:20px;height:20px;flex:none;border-radius:5px;background:{{ r.tile }};color:#fff;font-size:9px;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 .5px rgba(255,255,255,.3)">{{ r.mark }}</span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.id }}</span></div>
+<div style="padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.provName }}</div>
+<div style="padding:0 8px;font-variant-numeric:tabular-nums;color:{{ r.rowFg2 }}">{{ r.version }}</div>
+<div style="padding:0 8px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:{{ r.rowFg2 }};white-space:nowrap">{{ r.epText }}</div>
+<div style="padding:0 8px;color:{{ r.rowFg2 }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.envText }}</div>
+<div style="padding:0 8px;display:flex;align-items:center;gap:6px;color:{{ r.stRow }};white-space:nowrap"><span style="width:7px;height:7px;flex:none;border-radius:50%;background:{{ r.dot }};box-shadow:0 0 0 1px rgba(255,255,255,.5)"></span>{{ r.stLabel }}</div>
+<div style="display:flex;justify-content:flex-end"><button onClick="{{ r.onAct }}" disabled="{{ r.actDisabled }}" style="height:22px;min-width:52px;padding:0 10px;border:0;border-radius:999px;background:{{ r.btnBg }};color:{{ r.btnFg }};font-size:12px;font-weight:500;cursor:pointer">{{ r.actLabel }}</button></div>
+</div>
+</sc-for>
+<sc-if value="{{ noFiltered }}" hint-placeholder-val="{{ false }}">
+<div style="padding:50px 20px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><svg width="34" height="34" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.1" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><path d="m10.5 10.5 3 3"></path></svg><div style="font-size:15px;font-weight:600;margin-top:4px">No Results for “{{ filterText }}”</div><div style="color:var(--text2)">Check the spelling or try another status.</div><button onClick="{{ clearFilters }}" style="margin-top:8px;height:26px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Clear Filters</button></div>
+</sc-if>
+<div style="height:6px"></div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ is.instance }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 22px 28px;display:flex;flex-direction:column;gap:18px">
+<sc-if value="{{ tab.summary }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ d.isFailed }}" hint-placeholder-val="{{ false }}">
+<div style="padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--red) 11%,var(--card));box-shadow:0 0 0 .5px color-mix(in srgb,var(--red) 30%,transparent);display:flex;gap:12px">
+<svg width="22" height="22" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--red)"></circle><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+<div style="font-weight:700">{{ d.failTitle }}</div>
+<div style="color:var(--text2)">{{ d.failBody }}</div>
+<div style="padding:8px 10px;border-radius:8px;background:var(--console);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;word-break:break-word">{{ d.failCode }} · {{ d.error }}</div>
+<div style="display:flex;gap:8px;margin-top:2px">
+<sc-if value="{{ d.canFixPort }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fixPort }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Use Port 3308</button></sc-if>
+<button onClick="{{ d.toLogs }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Show Logs</button>
+<button onClick="{{ d.onAct }}" disabled="{{ d.actDisabled }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Retry</button>
+</div>
+</div>
+</div>
+</sc-if>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Endpoints</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.eps }}" as="e" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--card)"><span style="flex:1;text-transform:capitalize">{{ e.name }}</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ e.addr }}</span><button onClick="{{ e.copy }}" title="Copy" style="width:26px;height:24px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text2)" style-hover="background:var(--fill)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8"></rect><path d="M11 5V3.8c0-.7-.6-1.3-1.3-1.3H3.8c-.7 0-1.3.6-1.3 1.3v5.9c0 .7.6 1.3 1.3 1.3H5"></path></svg></button></div></sc-for>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--card)"><span style="flex:1">Readiness</span><span style="color:var(--text2)">{{ d.readiness }}</span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Connection</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<div style="padding:11px 14px;background:var(--card);display:flex;flex-direction:column;gap:8px"><div style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;word-break:break-all">{{ d.conn }}</div><div style="display:flex;gap:6px"><button onClick="{{ toggleReveal }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">{{ revealLabel }} Password</button><button onClick="{{ d.copyConn }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Copy</button></div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--card)"><span style="flex:1">Secret</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:var(--text2)">{{ d.secretRef }}</span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Dependents</div>
+<div style="padding:11px 14px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);color:var(--text2)">{{ d.impact }}</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Details</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.facts }}" as="f" hint-placeholder-count="10"><div style="display:flex;gap:12px;padding:9px 14px;background:var(--card)"><span style="flex:none;width:96px;color:var(--text2)">{{ f.k }}</span><span style="flex:1;min-width:0;text-align:right;word-break:break-all">{{ f.v }}</span></div></sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ tab.config }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ d.drift }}" hint-placeholder-val="{{ false }}">
+<div style="padding:11px 14px;border-radius:14px;background:color-mix(in srgb,var(--orange) 13%,var(--card));display:flex;align-items:center;gap:12px">
+<svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><path d="M8 1.6 15 13.8H1Z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.2" stroke-linejoin="round"></path><path d="M8 6v3.6M8 11.8h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<div style="flex:1"><div style="font-weight:600">postgresql.conf was changed outside Stackly</div><div style="color:var(--text2);font-size:12px">13:41 · shared_buffers is 256MB in the file and 128MB in revision 5. Stackly won’t overwrite it until you choose.</div></div>
+<button onClick="{{ resolveDrift }}" style="height:26px;padding:0 12px;border:0;border-radius:999px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);font-weight:500;cursor:pointer">Keep Revision 5</button>
+</div>
+</sc-if>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ segCfg }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.on }}" style="height:24px;padding:0 14px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<span style="color:var(--text2);font-size:12px">Revision {{ d.rev }}</span>
+<span style="height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ d.cfgTag.bg }};color:{{ d.cfgTag.fg }}">{{ d.cfgImpact }}</span>
+<div style="flex:1"></div>
+<button onClick="{{ discardCfg }}" disabled="{{ d.noDiff }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Revert</button>
+<button onClick="{{ applyCfg }}" disabled="{{ d.applyDisabled }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">{{ d.applyLabel }}</button>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start">
+<div>
+<sc-if value="{{ cfgTyped }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.cfg }}" as="c" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card)">
+<div style="flex:1;min-width:0"><div style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;font-weight:500">{{ c.k }}</div><div style="font-size:11px;color:var(--text2)">{{ c.note }}</div><sc-if value="{{ c.hasErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--red-t);font-weight:500">{{ c.err }}</div></sc-if></div>
+<sc-if value="{{ c.managed }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="var(--text2)" stroke-width="1.5"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"></rect><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path></svg></sc-if>
+<input value="{{ c.v }}" onChange="{{ c.on }}" disabled="{{ c.managed }}" style="width:130px;height:24px;padding:0 8px;border:0;border-radius:7px;background:var(--win);box-shadow:{{ c.ring }};text-align:right;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ cfgAdvanced }}" hint-placeholder-val="{{ false }}">
+<pre style="margin:0;padding:14px 16px;border-radius:14px;background:var(--console);box-shadow:0 0 0 .5px var(--sep);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;line-height:1.6;white-space:pre-wrap">{{ d.raw }}</pre>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Pending Changes</div>
+<div style="padding:8px;border-radius:14px;background:var(--console);box-shadow:0 0 0 .5px var(--sep);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ d.diff }}" as="l" hint-placeholder-count="4"><div style="display:flex;gap:8px;padding:3px 8px;border-radius:6px;background:{{ l.bg }};color:{{ l.fg }}"><span style="width:10px">{{ l.sym }}</span><span>{{ l.t }}</span></div></sc-for>
+<sc-if value="{{ d.noDiff }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 8px;color:var(--text2);font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:13px">No pending changes. Edit a value to see the diff.</div></sc-if>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">History</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.history }}" as="h" hint-placeholder-count="3"><div style="display:flex;gap:10px;padding:9px 14px;background:var(--card)"><span style="font-weight:500;width:84px">{{ h.rev }}</span><span style="flex:1;color:var(--text2)">{{ h.what }}</span><span style="color:var(--text2)">{{ h.when }}</span></div></sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ tab.logs }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ segLog }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.on }}" style="height:24px;padding:0 14px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<div style="display:flex;align-items:center;gap:6px;height:28px;width:220px;padding:0 10px;border-radius:999px;background:var(--fill);color:var(--text2)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"></circle><path d="m10.5 10.5 3 3"></path></svg><input value="{{ logQ }}" onChange="{{ onLogQ }}" placeholder="Filter" style="flex:1;min-width:0;border:0;background:transparent;box-shadow:none;color:var(--text)"></div>
+<div style="flex:1"></div>
+<span style="font-size:12px;color:var(--text2)">Follow</span>
+<button onClick="{{ follow.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ follow.bg }};display:flex;justify-content:{{ follow.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button>
+<button onClick="{{ loadEarlier }}" style="height:26px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Load Earlier</button>
+</div>
+<div style="border-radius:14px;background:var(--console);box-shadow:0 0 0 .5px var(--sep);padding:10px 0;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;line-height:1.7;min-height:440px">
+<sc-for list="{{ d.logs }}" as="l" hint-placeholder-count="14"><div style="display:grid;grid-template-columns:70px 54px minmax(0,1fr);gap:8px;padding:0 14px"><span style="color:var(--text3)">{{ l.ts }}</span><span style="color:{{ l.srcColor }}">{{ l.src }}</span><span style="color:{{ l.color }};white-space:pre-wrap;word-break:break-word">{{ l.text }}</span></div></sc-for>
+<sc-if value="{{ d.noLogs }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;text-align:center;color:var(--text2);font-family:-apple-system,system-ui,sans-serif;font-size:13px">No lines match this filter.</div></sc-if>
+</div>
+<div style="font-size:11px;color:var(--text2)">Cursor {{ d.cursor }} · Retained 14 days or 50 MB · Secrets are redacted before storage</div>
+</sc-if>
+<sc-if value="{{ tab.metrics }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ d.noMetrics }}" hint-placeholder-val="{{ false }}">
+<div style="padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><svg width="44" height="44" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 8.5h3l1.5-4 3 8 1.5-4h4"></path></svg><div style="font-size:17px;font-weight:600;margin-top:6px">No Live Metrics</div><div style="color:var(--text2);max-width:340px">{{ d.id }} isn’t running. Start it to collect CPU, memory and readiness data.</div><button onClick="{{ d.onAct }}" disabled="{{ d.actDisabled }}" style="margin-top:8px;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">{{ d.actLabel }}</button></div>
+</sc-if>
+<sc-if value="{{ d.hasMetrics }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ segScope }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.on }}" style="height:24px;padding:0 14px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<div style="flex:1"></div>
+<span style="display:flex;align-items:center;gap:6px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green)"></span>{{ d.health }}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px">
+<sc-for list="{{ d.stats }}" as="m" hint-placeholder-count="5"><div style="padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);opacity:{{ m.op }}"><div style="font-size:12px;color:var(--text2)">{{ m.k }}</div><div style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;margin:2px 0;white-space:nowrap">{{ m.v }}</div><div style="font-size:11px;color:var(--text2)">{{ m.sub }}</div></div></sc-for>
+</div>
+<div style="padding:14px 16px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:10px"><span style="font-weight:600;color:var(--text)">CPU · last 60 samples</span><span>sampled every 2 s</span></div>
+<div style="height:140px;display:flex;align-items:flex-end;gap:3px;border-bottom:.5px solid var(--sep)"><sc-for list="{{ d.bars }}" as="b" hint-placeholder-count="60"><div style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:3px 3px 0 0;transition:height .5s"></div></sc-for></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Processes</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.pids }}" as="x" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:70px minmax(0,1fr) 80px;gap:10px;padding:8px 14px;background:var(--card);font-variant-numeric:tabular-nums"><span style="color:var(--text2)">{{ x.pid }}</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ x.name }}</span><span style="text-align:right">{{ x.mem }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+</sc-if>
+<sc-if value="{{ tab.backups }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ d.backupUnsupported }}" hint-placeholder-val="{{ false }}">
+<div style="padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><svg width="44" height="44" viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"></circle><path d="M3.4 3.4l9.2 9.2"></path></svg><div style="font-size:17px;font-weight:600;margin-top:6px">Backups Aren’t Supported</div><div style="color:var(--text2);max-width:380px">The {{ d.provName }} provider doesn’t declare a backup capability, so Stackly won’t guess at a file copy. Use the server’s own tools if you need snapshots.</div></div>
+</sc-if>
+<sc-if value="{{ d.backupSupported }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:10px"><span style="flex:1;color:var(--text2)">Backups are checksummed. Restoring into a new instance leaves {{ d.id }} untouched.</span><button onClick="{{ d.createBackup }}" disabled="{{ d.backupDisabled }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Back Up Now</button></div>
+<sc-if value="{{ d.noBackups }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);text-align:center;color:var(--text2)">No backups yet.</div></sc-if>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.backups }}" as="b" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:14px;padding:11px 14px;background:var(--card)">
+<div style="flex:1;min-width:0"><div style="font-weight:600">{{ b.when }} <span style="font-weight:400;color:var(--text2)">· {{ b.id }}</span></div><div style="font-size:12px;color:var(--text2)">{{ b.mode }} · {{ b.size }} · <span style="font-family:ui-monospace,'SF Mono',Menlo,monospace">{{ b.sum }}</span></div></div>
+<span style="height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ b.verTag.bg }};color:{{ b.verTag.fg }}">{{ b.verified }}</span>
+<button onClick="{{ b.restoreNew }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Restore as New…</button>
+<button onClick="{{ b.overwrite }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--red-t);font-weight:500;cursor:pointer">Overwrite…</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</sc-if>
+<sc-if value="{{ tab.activity }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ d.activity }}" as="a" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:70px 120px minmax(0,1fr);gap:10px;padding:10px 14px;background:var(--card)"><span style="color:var(--text2);font-variant-numeric:tabular-nums">{{ a.when }}</span><span style="font-weight:500">{{ a.who }}</span><span>{{ a.what }}</span></div></sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ is.catalog }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 24px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:inline-flex;align-self:flex-start;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ segCat }}" as="f" hint-placeholder-count="6"><button onClick="{{ f.on }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+<sc-for list="{{ catList }}" as="c" hint-placeholder-count="8">
+<button onClick="{{ c.pick }}" style="display:flex;gap:12px;padding:14px;border:0;border-radius:16px;background:var(--card);box-shadow:{{ c.ring }};text-align:left;cursor:pointer;opacity:{{ c.op }}">
+<span style="width:40px;height:40px;flex:none;border-radius:11px;background:{{ c.tile }};color:#fff;font-size:15px;font-weight:700;display:grid;place-items:center">{{ c.mark }}</span>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;flex:1">{{ c.name }}</span><span style="height:18px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ c.tag.bg }};color:{{ c.tag.fg }};white-space:nowrap">{{ c.status }}</span></div><div style="font-size:12px;color:var(--text2)">{{ c.meta }}</div><div style="font-size:12px;color:var(--text2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.desc }}</div></div>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ noCat }}" hint-placeholder-val="{{ false }}"><div style="padding:50px;text-align:center;color:var(--text2)">No providers match “{{ catQ }}”.</div></sc-if>
+</div>
+<div style="position:sticky;top:0;padding:18px;border-radius:18px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:12px;align-items:center"><span style="width:52px;height:52px;flex:none;border-radius:14px;background:{{ pv.tile }};color:#fff;font-size:19px;font-weight:700;display:grid;place-items:center">{{ pv.mark }}</span><div><div style="font-size:17px;font-weight:700">{{ pv.name }}</div><div style="font-size:12px;color:var(--text2)">official/{{ pv.slug }} · {{ pv.cat }}</div></div></div>
+<div style="color:var(--text2)">{{ pv.desc }}</div>
+<sc-if value="{{ pv.planned }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:12px;background:var(--fill);color:var(--text2)">This provider isn’t available yet. It will appear here once packaging and tests pass.</div></sc-if>
+<sc-if value="{{ pv.versions.length }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="display:grid;grid-template-columns:62px repeat(3,minmax(0,1fr)) 84px;gap:6px;font-size:11px;font-weight:600;color:var(--text2);padding:0 4px"><span>Version</span><span>macOS</span><span>Linux</span><span>Windows</span><span></span></div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:12px;overflow:hidden">
+<sc-for list="{{ pv.versions }}" as="v" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:62px repeat(3,minmax(0,1fr)) 84px;gap:6px;align-items:center;padding:8px 10px;background:var(--win)">
+<span style="font-weight:600;font-variant-numeric:tabular-nums">{{ v.v }}</span>
+<span style="justify-self:start;height:18px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;background:{{ v.ta.bg }};color:{{ v.ta.fg }}">{{ v.a }}</span>
+<span style="justify-self:start;height:18px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;background:{{ v.tb.bg }};color:{{ v.tb.fg }}">{{ v.b }}</span>
+<span style="justify-self:start;height:18px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;background:{{ v.tw.bg }};color:{{ v.tw.fg }}">{{ v.w }}</span>
+<div style="display:flex;justify-content:flex-end">
+<sc-if value="{{ v.installed }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:var(--green-t);font-weight:600">Installed</span></sc-if>
+<sc-if value="{{ v.installing }}" hint-placeholder-val="{{ false }}"><div style="width:76px;display:flex;flex-direction:column;gap:3px;align-items:flex-end"><div style="width:100%;height:4px;border-radius:4px;background:var(--fill)"><div style="height:100%;width:{{ v.pct }};border-radius:4px;background:var(--accent);transition:width .5s"></div></div><span style="font-size:10.5px;color:var(--text2)">{{ v.pct }}</span></div></sc-if>
+<sc-if value="{{ v.canInstall }}" hint-placeholder-val="{{ true }}"><button onClick="{{ v.install }}" disabled="{{ v.disabled }}" style="height:22px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer">Get</button></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font-size:12px;font-weight:600;color:var(--text2);padding:0 4px">Capabilities</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:0 4px">
+<sc-for list="{{ pv.caps }}" as="c" hint-placeholder-count="7"><div style="display:flex;align-items:center;gap:6px;font-size:12px">
+<sc-if value="{{ c.ok }}" hint-placeholder-val="{{ true }}"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="var(--green)"></circle><path d="m5 8.2 2 2 4-4.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{{ c.label }}</span></sc-if>
+<sc-if value="{{ c.no }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3" fill="none" stroke="var(--gray)" stroke-width="1.3"></circle><path d="M5.5 8h5" stroke="var(--gray)" stroke-width="1.5" stroke-linecap="round"></path></svg><span style="color:var(--text2)">{{ c.label }} · not supported</span></sc-if>
+</div></sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:12px;overflow:hidden;font-size:12px">
+<div style="display:flex;justify-content:space-between;padding:7px 12px;background:var(--win)"><span style="color:var(--text2)">License</span><span>{{ pv.license }}</span></div>
+<div style="display:flex;justify-content:space-between;padding:7px 12px;background:var(--win)"><span style="color:var(--text2)">Source</span><span>{{ pv.src }}</span></div>
+<div style="display:flex;justify-content:space-between;padding:7px 12px;background:var(--win)"><span style="color:var(--text2)">Download</span><span>{{ pv.disk }}</span></div>
+</div>
+<div style="font-size:12px;color:var(--text2)">{{ pv.winNote }}</div>
+<button onClick="{{ pv.create }}" disabled="{{ pv.noRuntime }}" style="height:30px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">New Instance…</button>
+</sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ is.runtimes }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 22px 28px;display:flex;flex-direction:column;gap:18px">
+<sc-if value="{{ hasInstalling }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Installing</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ installing }}" as="o" hint-placeholder-count="1">
+<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card)">
+<span style="width:28px;height:28px;flex:none;border-radius:8px;background:{{ o.tile }};color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center">{{ o.mark }}</span>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><span style="font-weight:500">{{ o.title }}</span><span style="color:var(--text2);font-variant-numeric:tabular-nums">{{ o.stage }} · {{ o.w }}</span></div><div style="height:5px;border-radius:5px;background:var(--fill)"><div style="height:100%;width:{{ o.w }};border-radius:5px;background:var(--accent);transition:width .5s"></div></div></div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+<div style="border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);overflow:hidden">
+<div style="display:grid;grid-template-columns:minmax(170px,1.3fr) 96px minmax(130px,1fr) minmax(140px,1.2fr) 44px;gap:10px;height:28px;align-items:center;padding:0 16px;border-bottom:.5px solid var(--sep);font-size:12px;font-weight:600;color:var(--text2)"><span>Runtime</span><span>Source</span><span>Digest</span><span>Used By</span><span></span></div>
+<sc-for list="{{ rtList }}" as="r" hint-placeholder-count="9">
+<div style="display:grid;grid-template-columns:minmax(170px,1.3fr) 96px minmax(130px,1fr) minmax(140px,1.2fr) 44px;gap:10px;align-items:center;padding:8px 16px;border-bottom:.5px solid var(--sep)">
+<div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="width:26px;height:26px;flex:none;border-radius:7px;background:{{ r.tile }};color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center">{{ r.mark }}</span><div style="min-width:0"><div style="font-weight:500">{{ r.provName }} {{ r.version }}</div><div style="font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.srcNote }}</div></div></div>
+<span style="justify-self:start;height:18px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ r.srcTag.bg }};color:{{ r.srcTag.fg }}">{{ r.src }}</span>
+<span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--text2)">{{ r.digest }}</span>
+<span style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.refsText }}</span>
+<button onClick="{{ r.remove }}" disabled="{{ r.removeDisabled }}" title="{{ r.removeTitle }}" style="width:30px;height:26px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text2)" style-hover="background:var(--fill)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h11M6.3 4.5V2.8h3.4v1.7M4 4.5l.7 9h6.6l.7-9"></path></svg></button>
+</div>
+</sc-for>
+</div>
+<div style="font-size:12px;color:var(--text2);padding:0 4px">Runtimes in use can’t be removed, even by stopped instances. External runtimes are read-only and never upgraded by Stackly.</div>
+</div>
+</sc-if>
+<sc-if value="{{ is.environments }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 22px 28px">
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:20px;font-weight:700">{{ env.id }}</div><div style="color:var(--text2);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ env.file }}</div></div><span style="height:22px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;background:{{ env.tag.bg }};color:{{ env.tag.fg }}">{{ env.statusText }}</span></div>
+<sc-if value="{{ env.partial }}" hint-placeholder-val="{{ false }}">
+<div style="padding:11px 14px;border-radius:14px;background:color-mix(in srgb,var(--orange) 13%,var(--card));display:flex;flex-direction:column;gap:4px">
+<div style="font-weight:600">{{ env.readyText }}</div>
+<sc-for list="{{ env.notReady }}" as="n" hint-placeholder-count="1"><div style="color:var(--text2)"><button onClick="{{ n.open }}" style="border:0;background:transparent;padding:0;color:var(--accent);cursor:pointer;font-weight:500">{{ n.inst }}</button> ({{ n.key }}) · {{ n.why }}</div></sc-for>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Services</div>
+<div style="border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)">
+<div style="display:grid;grid-template-columns:90px minmax(150px,1.3fr) minmax(110px,1fr) 64px 90px 100px 32px;gap:10px;height:28px;align-items:center;padding:0 14px;border-bottom:.5px solid var(--sep);font-size:12px;font-weight:600;color:var(--text2)"><span>Service</span><span>Selector</span><span>Instance</span><span>Version</span><span>Ownership</span><span>Status</span><span></span></div>
+<sc-for list="{{ env.services }}" as="x" hint-placeholder-count="6">
+<div onDoubleClick="{{ x.open }}" style="display:grid;grid-template-columns:90px minmax(150px,1.3fr) minmax(110px,1fr) 64px 90px 100px 32px;gap:10px;align-items:center;padding:8px 14px;border-bottom:.5px solid var(--sep)">
+<span style="font-weight:600">{{ x.key }}</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--text2)">{{ x.sel }}</span><span>{{ x.inst }}</span><span style="color:var(--text2);font-variant-numeric:tabular-nums">{{ x.version }}</span><span style="color:var(--text2)">{{ x.own }}</span>
+<span style="display:flex;align-items:center;gap:6px;color:{{ x.stFg }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ x.dot }};box-shadow:{{ x.dotRing }}"></span>{{ x.stLabel }}</span>
+<div style="position:relative;justify-self:end">
+<button onClick="{{ x.toggleMenu }}" title="Actions" style="width:28px;height:24px;border:0;border-radius:999px;background:{{ x.menuBg }};display:grid;place-items:center;cursor:pointer;color:var(--text2)" style-hover="background:var(--fill)"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.3"></circle><circle cx="8" cy="8" r="1.3"></circle><circle cx="12.5" cy="8" r="1.3"></circle></svg></button>
+<sc-if value="{{ x.menuOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ x.closeMenu }}" style="position:fixed;inset:0;z-index:14"></div>
+<div style="position:absolute;right:0;top:28px;z-index:15;width:250px;padding:5px;border-radius:12px;background:var(--pop);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 12px 32px rgba(0,0,0,.2),0 0 0 .5px var(--sep);display:flex;flex-direction:column">
+<sc-for list="{{ x.acts }}" as="a" hint-placeholder-count="6">
+<sc-if value="{{ a.sep }}" hint-placeholder-val="{{ false }}"><div style="height:.5px;background:var(--sep);margin:4px 8px"></div></sc-if>
+<sc-if value="{{ a.item }}" hint-placeholder-val="{{ true }}"><button onClick="{{ a.run }}" disabled="{{ a.disabled }}" style="height:26px;border:0;border-radius:7px;background:transparent;text-align:left;padding:0 10px;cursor:pointer;white-space:nowrap" style-hover="background:var(--accent);color:#fff">{{ a.label }}</button></sc-if>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<div style="display:flex;gap:12px;padding:9px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Lock</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ env.lock }}</span></div>
+<div style="display:flex;gap:12px;padding:9px 14px;background:var(--card)"><span style="width:90px;color:var(--text2)">Local override</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ env.override }}</span></div>
+<div style="display:flex;gap:12px;padding:9px 14px;background:var(--card)"><span style="width:90px;flex:none;color:var(--text2)">Lease</span><span>{{ env.lease }}</span></div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ is.operations }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 22px 28px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ opList }}" as="o" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:10px;padding:13px 16px;background:var(--card)">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0"><div style="font-weight:600">{{ o.title }}</div><div style="font-size:12px;color:{{ o.noteFg }}">{{ o.note }}</div></div>
+<span style="color:var(--text2);font-size:12px;font-variant-numeric:tabular-nums">{{ o.started }} · {{ o.id }}</span>
+<span style="height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:{{ o.tag.bg }};color:{{ o.tag.fg }}">{{ o.statusText }}</span>
+<sc-if value="{{ o.running }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.cancel }}" disabled="{{ o.cancelDisabled }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Cancel</button></sc-if>
+<sc-if value="{{ o.canRetry }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.retry }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Retry</button></sc-if>
+</div>
+<sc-if value="{{ o.running }}" hint-placeholder-val="{{ false }}">
+<div style="height:5px;border-radius:5px;background:var(--fill)"><div style="height:100%;width:{{ o.w }};border-radius:5px;background:var(--accent);transition:width .5s"></div></div>
+<div style="display:flex;gap:16px;font-size:12px"><sc-for list="{{ o.stages }}" as="g" hint-placeholder-count="5"><span style="color:{{ g.fg }};display:flex;gap:5px"><span>{{ g.mark }}</span>{{ g.n }}</span></sc-for></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="font-size:12px;color:var(--text2);padding:0 4px">Installs are staged and verified before commit. The commit step can’t be interrupted safely, so Cancel is disabled from 80%.</div>
+</div>
+</sc-if>
+<sc-if value="{{ is.diagnostics }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 22px 28px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;padding:0 4px"><span style="font-size:13px;font-weight:700">Doctor</span><span style="font-size:12px;color:var(--text2)">{{ doctorMeta }}</span></div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ checks }}" as="c" hint-placeholder-count="8">
+<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card);opacity:{{ c.op }};transition:opacity .2s">
+<sc-if value="{{ c.isErr }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--red)"></circle><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ c.isWarn }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><path d="M8 1.6 15 13.8H1Z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.2" stroke-linejoin="round"></path><path d="M8 6v3.6M8 11.8h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ c.isOk }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 16 16" style="flex:none"><circle cx="8" cy="8" r="7" fill="var(--green)"></circle><path d="m5 8.2 2 2 4-4.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+<div style="flex:1;min-width:0"><div style="font-weight:600">{{ c.title }}</div><div style="font-size:12px;color:var(--text2)">{{ c.body }}</div></div>
+<sc-if value="{{ c.hasAction }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.act }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer;white-space:nowrap">{{ c.actLabel }}</button></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">Diagnostic Bundle</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ bundle }}" as="b" hint-placeholder-count="6"><div style="display:flex;justify-content:space-between;gap:10px;padding:9px 14px;background:var(--card)"><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ b.f }}</span><span style="color:var(--text2);font-size:12px">{{ b.n }}</span></div></sc-for>
+</div>
+<div style="font-size:12px;color:var(--text2);padding:0 4px">Secrets and connection strings are redacted. The bundle is saved locally and never uploaded.</div>
+</div>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{ inspOpen }}" hint-placeholder-val="{{ false }}">
+<div style="width:300px;flex:none;margin:0 8px 8px 0;border-radius:18px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 0 0 .5px var(--sep);overflow:auto;opacity:{{ staleOpacity }}">
+<sc-if value="{{ noSel }}" hint-placeholder-val="{{ false }}"><div style="height:100%;display:grid;place-items:center;color:var(--text2)">No Selection</div></sc-if>
+<sc-if value="{{ hasSel }}" hint-placeholder-val="{{ true }}">
+<div style="padding:18px 16px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+<span style="width:52px;height:52px;border-radius:14px;background:{{ d.tile }};color:#fff;font-size:19px;font-weight:700;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.15)">{{ d.mark }}</span>
+<div style="font-size:15px;font-weight:700;margin-top:4px">{{ d.id }}</div>
+<div style="display:flex;align-items:center;gap:6px;color:{{ d.stFg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ d.dot }}"></span>{{ d.stLabel }} · {{ d.readiness }}</div>
+<div style="display:flex;gap:6px;margin-top:6px"><button onClick="{{ d.onAct }}" disabled="{{ d.actDisabled }}" style="height:26px;min-width:64px;padding:0 14px;border:0;border-radius:999px;background:{{ d.actBg }};color:{{ d.actFg }};font-weight:500;cursor:pointer">{{ d.actLabel }}</button><button onClick="{{ d.open }}" style="height:26px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Open</button></div>
+</div>
+<sc-if value="{{ d.isFailed }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--red) 12%,transparent);display:flex;flex-direction:column;gap:6px">
+<div style="font-weight:600;color:var(--red-t)">{{ d.failTitle }}</div>
+<div style="font-size:12px;font-family:ui-monospace,'SF Mono',Menlo,monospace;word-break:break-word">{{ d.error }}</div>
+<sc-if value="{{ d.canFixPort }}" hint-placeholder-val="{{ false }}"><button onClick="{{ fixPort }}" style="align-self:flex-start;height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--card);box-shadow:0 0 0 .5px var(--sep);font-weight:500;cursor:pointer">Use Port 3308</button></sc-if>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:12px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Provider</span><span>{{ d.provName }} {{ d.version }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Endpoint</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ d.epFull }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Environment</span><span>{{ d.envText }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Ownership</span><span>{{ d.ownText }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Data</span><span>{{ d.data }}</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card)"><span style="color:var(--text2)">Uptime</span><span>{{ d.uptime }}</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font-size:12px;font-weight:600;color:var(--text2);padding:0 4px">Connection</div>
+<div style="padding:9px 12px;border-radius:12px;background:var(--card);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;word-break:break-all">{{ d.conn }}</div>
+<div style="display:flex;gap:6px"><button onClick="{{ toggleReveal }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">{{ revealLabel }}</button><button onClick="{{ d.copyConn }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Copy</button></div>
+</div>
+<div style="font-size:12px;color:var(--text2);padding:0 4px">{{ d.impact }}</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ sheetCreate }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.14);display:flex;justify-content:center;align-items:flex-start;padding-top:44px">
+<div style="width:580px;max-height:712px;display:flex;flex-direction:column;border-radius:24px;background:var(--sheet);box-shadow:0 30px 80px rgba(0,0,0,.32),0 0 0 .5px var(--sep);overflow:hidden">
+<div style="padding:20px 22px 6px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;flex:none;border-radius:11px;background:{{ cr.tile }};color:#fff;font-size:15px;font-weight:700;display:grid;place-items:center">{{ cr.mark }}</span><div><div style="font-size:15px;font-weight:700">New Instance</div><div style="font-size:12px;color:var(--text2)">Its own data directory, port and secret. Nothing is shared with other instances.</div></div></div>
+<div style="flex:1;overflow:auto;padding:12px 22px 16px;display:flex;flex-direction:column;gap:16px">
+<div style="display:inline-flex;align-self:flex-start;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ cr.segCat }}" as="f" hint-placeholder-count="6"><button onClick="{{ f.on }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card)"><span style="flex:1">Runtime</span><div style="position:relative"><select value="{{ cr.rt }}" onChange="{{ cr.onRt }}" style="appearance:none;-webkit-appearance:none;height:24px;padding:0 28px 0 10px;border:0;border-radius:7px;background:var(--fill);font-size:13px;cursor:pointer"><sc-for list="{{ cr.runtimes }}" as="r" hint-placeholder-count="9"><option value="{{ r.id }}">{{ r.label }}</option></sc-for></select><span style="position:absolute;right:5px;top:3px;width:18px;height:18px;border-radius:5px;background:var(--accent);color:#fff;display:grid;place-items:center;pointer-events:none;font-size:9px;line-height:1">⌃<br>⌄</span></div></div>
+<div style="display:flex;flex-direction:column;gap:4px;padding:9px 14px;background:var(--card)"><div style="display:flex;align-items:center;gap:12px"><span style="flex:1">Name</span><input value="{{ cr.name }}" onChange="{{ cr.onName }}" style="width:200px;height:24px;padding:0 8px;border:0;border-radius:7px;background:var(--win);box-shadow:{{ cr.nameRing }};text-align:right"></div><sc-if value="{{ cr.hasNameErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:var(--red-t);text-align:right">{{ cr.nameErr }}</div></sc-if></div>
+<div style="display:flex;flex-direction:column;gap:6px;padding:9px 14px;background:var(--card)">
+<div style="display:flex;align-items:center;gap:12px"><span style="flex:1">Port <span style="color:var(--text2)">· {{ cr.epLabel }}</span></span><div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ cr.segMode }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.on }}" style="height:22px;padding:0 12px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div>
+<sc-if value="{{ cr.fixed }}" hint-placeholder-val="{{ true }}"><input value="{{ cr.port }}" onChange="{{ cr.onPort }}" style="width:70px;height:24px;padding:0 8px;border:0;border-radius:7px;background:var(--win);box-shadow:{{ cr.portRing }};text-align:right;font-variant-numeric:tabular-nums"></sc-if>
+<sc-if value="{{ cr.auto }}" hint-placeholder-val="{{ false }}"><span style="width:70px;text-align:right;color:var(--text2);font-variant-numeric:tabular-nums">{{ cr.autoPort }}</span></sc-if>
+</div>
+<sc-if value="{{ cr.hasPortErr }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;font-size:11px;color:var(--red-t)">{{ cr.portErr }} Fixed ports are never changed silently.<button onClick="{{ cr.useSuggest }}" style="border:0;background:transparent;color:var(--accent);font-weight:600;cursor:pointer;padding:0;font-size:11px">Use {{ cr.suggest }}</button></div></sc-if>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card)"><div style="flex:1"><div>Start after creating</div><div style="font-size:11px;color:var(--text2)">Initialise the data directory, start, and wait for readiness.</div></div><button onClick="{{ cr.tStart.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ cr.tStart.bg }};display:flex;justify-content:{{ cr.tStart.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button></div>
+<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card)"><div style="flex:1"><div>Start at login</div><div style="font-size:11px;color:var(--text2)">Separate from the daemon’s own login item.</div></div><button onClick="{{ cr.tAuto.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ cr.tAuto.bg }};display:flex;justify-content:{{ cr.tAuto.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:12px;font-weight:600;color:var(--text2);padding:0 4px">Preflight</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ cr.preflight }}" as="f" hint-placeholder-count="6"><div style="display:flex;gap:8px;min-width:0">
+<sc-if value="{{ f.ok }}" hint-placeholder-val="{{ true }}"><svg width="15" height="15" viewBox="0 0 16 16" style="flex:none;margin-top:1px"><circle cx="8" cy="8" r="7" fill="var(--green)"></circle><path d="m5 8.2 2 2 4-4.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+<sc-if value="{{ f.warn }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 16 16" style="flex:none;margin-top:1px"><path d="M8 1.6 15 13.8H1Z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.2" stroke-linejoin="round"></path><path d="M8 6v3.6M8 11.8h.01" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ f.bad }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 16 16" style="flex:none;margin-top:1px"><circle cx="8" cy="8" r="7" fill="var(--red)"></circle><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path></svg></sc-if>
+<div style="min-width:0"><div style="font-size:12px;font-weight:500">{{ f.label }}</div><div style="font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.sub }}</div></div>
+</div></sc-for>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:var(--fill)"><span style="flex:1;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">$ {{ cr.cli }}</span><button onClick="{{ cr.copyCli }}" style="height:22px;padding:0 10px;border:0;border-radius:999px;background:var(--card);font-size:12px;font-weight:500;cursor:pointer">Copy</button></div>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 22px 18px">
+<button onClick="{{ closeSheet }}" style="height:28px;min-width:84px;padding:0 16px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Cancel</button>
+<button onClick="{{ cr.create }}" disabled="{{ cr.invalid }}" style="height:28px;min-width:84px;padding:0 16px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Create</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ sheetPlan }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.14);display:flex;justify-content:center;align-items:flex-start;padding-top:44px">
+<div style="width:600px;display:flex;flex-direction:column;border-radius:24px;background:var(--sheet);box-shadow:0 30px 80px rgba(0,0,0,.32),0 0 0 .5px var(--sep);overflow:hidden">
+<div style="padding:20px 22px 4px"><div style="font-size:15px;font-weight:700">Plan for {{ env.id }}</div><div style="font-size:12px;color:var(--text2)">Review what Up will do. Nothing runs until you confirm.</div></div>
+<div style="padding:14px 22px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ env.plan }}" as="l" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--card)"><span style="width:64px;flex:none;height:20px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;background:{{ l.bg }};color:{{ l.fg }}">{{ l.verb }}</span><span style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px">{{ l.t }}</span></div></sc-for>
+</div>
+<div style="font-size:12px;color:var(--text2)">Services start in dependency order and wait for readiness. If one fails, the rest stay up and the environment is marked partially ready.</div>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;padding:8px 22px 18px">
+<button onClick="{{ closeSheet }}" style="height:28px;min-width:84px;padding:0 16px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Cancel</button>
+<button onClick="{{ envUp }}" disabled="{{ env.upDisabled }}" style="height:28px;min-width:84px;padding:0 16px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer">Bring Up</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ hasConfirm }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.14);display:grid;place-items:center">
+<div style="width:300px;padding:22px 20px 18px;border-radius:26px;background:var(--pop);backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 30px 80px rgba(0,0,0,.35),0 0 0 .5px var(--sep);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+<div style="width:52px;height:52px;border-radius:13px;background:var(--accent);color:#fff;display:grid;place-items:center;margin-bottom:4px"><svg width="28" height="28" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path><path d="M2 11l6 3 6-3"></path></svg></div>
+<div style="font-weight:700">{{ confirm.title }}</div>
+<div style="font-size:12px;color:var(--text2)">{{ confirm.body }}</div>
+<div style="display:flex;gap:8px;width:100%;margin-top:10px"><button onClick="{{ closeConfirm }}" style="flex:1;height:30px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer">Cancel</button><button onClick="{{ confirm.ok }}" style="flex:1;height:30px;border:0;border-radius:999px;background:{{ confirmBg }};color:#fff;font-weight:600;cursor:pointer">{{ confirm.label }}</button></div>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:40;width:640px;border-radius:24px;overflow:hidden;background:var(--win);box-shadow:0 30px 90px rgba(0,0,0,.35),0 0 0 .5px var(--sep)">
+<div style="position:relative;padding:14px 18px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:.5px solid var(--sep)">
+<div style="position:absolute;left:18px;top:16px;display:flex;gap:8px"><button onClick="{{ closeSettings }}" title="Close" style="width:12px;height:12px;border-radius:50%;border:0;padding:0;background:#FF5F57;cursor:pointer"></button><span style="width:12px;height:12px;border-radius:50%;background:#FEBC2E"></span><span style="width:12px;height:12px;border-radius:50%;background:var(--fill-strong)"></span></div>
+<div style="font-weight:700">{{ setTitle }}</div>
+<div style="display:flex;gap:4px">
+<button onClick="{{ stTabs.general.on }}" style="width:76px;height:52px;border:0;border-radius:10px;background:{{ stTabs.general.bg }};color:{{ stTabs.general.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:11px;font-weight:500"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"></path><circle cx="10.75" cy="4.5" r="1.75"></circle><circle cx="5.25" cy="11.5" r="1.75"></circle></svg>General</button>
+<button onClick="{{ stTabs.instances.on }}" style="width:76px;height:52px;border:0;border-radius:10px;background:{{ stTabs.instances.bg }};color:{{ stTabs.instances.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:11px;font-weight:500"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2.5" width="12" height="4.5" rx="1.5"></rect><rect x="2" y="9" width="12" height="4.5" rx="1.5"></rect></svg>Instances</button>
+<button onClick="{{ stTabs.sources.on }}" style="width:76px;height:52px;border:0;border-radius:10px;background:{{ stTabs.sources.bg }};color:{{ stTabs.sources.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:11px;font-weight:500"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M2.5 3.5c2-1 4-1 5.5.6 1.5-1.6 3.5-1.6 5.5-.6v9c-2-1-4-1-5.5.6-1.5-1.6-3.5-1.6-5.5-.6Z"></path><path d="M8 4.1v9.4"></path></svg>Sources</button>
+<button onClick="{{ stTabs.storage.on }}" style="width:76px;height:52px;border:0;border-radius:10px;background:{{ stTabs.storage.bg }};color:{{ stTabs.storage.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:11px;font-weight:500"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="8" cy="4" rx="5.5" ry="2"></ellipse><path d="M2.5 4v8c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V4M2.5 8c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2"></path></svg>Storage</button>
+<button onClick="{{ stTabs.updates.on }}" style="width:76px;height:52px;border:0;border-radius:10px;background:{{ stTabs.updates.bg }};color:{{ stTabs.updates.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:11px;font-weight:500"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.3"></circle><path d="M8 4.8v6M5.4 8.4 8 11l2.6-2.6"></path></svg>Updates</button>
+</div>
+</div>
+<div style="padding:18px 22px 22px;display:flex;flex-direction:column;gap:16px;min-height:220px">
+<sc-for list="{{ setGroups }}" as="g" hint-placeholder-count="2">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:13px;font-weight:700;padding:0 4px">{{ g.title }}</div>
+<div style="display:flex;flex-direction:column;gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)">
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card)">
+<div style="flex:1;min-width:0"><div>{{ r.label }}</div><div style="font-size:11px;color:var(--text2)">{{ r.sub }}</div></div>
+<sc-if value="{{ r.isT }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.toggle }}" style="width:32px;height:19px;border:0;border-radius:999px;padding:2px;background:{{ r.bg }};display:flex;justify-content:{{ r.jc }};cursor:pointer"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button></sc-if>
+<sc-if value="{{ r.isS }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;padding:2px;border-radius:999px;background:var(--fill)"><sc-for list="{{ r.opts }}" as="f" hint-placeholder-count="2"><button onClick="{{ f.on }}" style="height:22px;padding:0 12px;border:0;border-radius:999px;background:{{ f.bg }};box-shadow:{{ f.sh }};font-size:12px;font-weight:500;cursor:pointer">{{ f.label }}</button></sc-for></div></sc-if>
+<sc-if value="{{ r.isB }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.act }}" disabled="{{ r.disabled }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);font-weight:500;cursor:pointer;white-space:nowrap">{{ r.btn }}</button></sc-if>
+<sc-if value="{{ r.isX }}" hint-placeholder-val="{{ false }}"><span style="color:var(--text2);font-size:12px">{{ r.text }}</span></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeMenu }}" style="position:fixed;inset:0;z-index:55"></div>
+<div style="position:fixed;top:36px;right:96px;z-index:60;width:340px;border-radius:18px;background:var(--pop);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 18px 50px rgba(0,0,0,.25),0 0 0 .5px var(--sep);padding:12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px;padding:2px 4px 4px">
+<div style="width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center"><svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 2 14 5 8 8 2 5Z"></path><path d="M2 8l6 3 6-3"></path><path d="M2 11l6 3 6-3"></path></svg></div>
+<div style="flex:1;min-width:0"><div style="font-weight:600">Stackly</div><div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><span style="width:6px;height:6px;border-radius:50%;background:{{ daemonDot }}"></span>{{ daemonText }}</div></div>
+<div style="font-size:11px;color:var(--text2);text-align:right">{{ counts.ready }} running<br>{{ counts.failed }} failed</div>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--text2);padding:2px 6px 0">Services</div>
+<div style="display:flex;flex-direction:column;gap:1px;border-radius:12px;overflow:hidden;background:var(--sep)">
+<sc-for list="{{ menuList }}" as="m" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--card)">
+<span style="width:22px;height:22px;flex:none;border-radius:6px;background:{{ m.tile }};color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center">{{ m.mark }}</span>
+<div style="flex:1;min-width:0"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.id }}</div><div style="display:flex;align-items:center;gap:5px;font-size:11px;color:{{ m.stFg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ m.dot }}"></span>{{ m.stLabel }} · {{ m.epText }}</div></div>
+<button onClick="{{ m.toggle }}" disabled="{{ m.actDisabled }}" title="{{ m.actLabel }}" style="width:32px;height:19px;flex:none;border:0;border-radius:999px;padding:2px;background:{{ m.bg }};display:flex;justify-content:{{ m.jc }};cursor:pointer;transition:background .15s"><span style="width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)"></span></button>
+</div>
+</sc-for>
+</div>
+<sc-for list="{{ runningOps }}" as="o" hint-placeholder-count="0">
+<div style="padding:8px 10px;border-radius:12px;background:var(--card);display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;justify-content:space-between;font-size:12px"><span style="font-weight:500">{{ o.title }}</span><span style="color:var(--text2);font-variant-numeric:tabular-nums">{{ o.pctText }}</span></div>
+<div style="height:4px;border-radius:4px;background:var(--fill)"><div style="height:100%;width:{{ o.w }};border-radius:4px;background:var(--accent);transition:width .5s"></div></div>
+</div>
+</sc-for>
+<sc-if value="{{ menuStopPreview }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px;border-radius:12px;background:color-mix(in srgb,var(--red) 10%,var(--card));display:flex;flex-direction:column;gap:8px">
+<div style="font-size:12px">Stops {{ counts.ready }} running instances, including ones leased by environments. Data is kept.</div>
+<div style="display:flex;gap:6px;justify-content:flex-end"><button onClick="{{ toggleStopPreview }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--fill);cursor:pointer;font-weight:500">Cancel</button><button onClick="{{ stopAll }}" disabled="{{ offline }}" style="height:24px;padding:0 12px;border:0;border-radius:999px;background:var(--red);color:#fff;cursor:pointer;font-weight:500">Stop All</button></div>
+</div>
+</sc-if>
+<div style="height:.5px;background:var(--sep);margin:0 4px"></div>
+<div style="display:flex;flex-direction:column">
+<button onClick="{{ openFromMenu }}" style="height:28px;border:0;border-radius:8px;background:transparent;text-align:left;padding:0 8px;cursor:pointer;display:flex;justify-content:space-between" style-hover="background:var(--fill)"><span>Open Stackly</span></button>
+<button onClick="{{ toggleStopPreview }}" style="height:28px;border:0;border-radius:8px;background:transparent;text-align:left;padding:0 8px;cursor:pointer" style-hover="background:var(--fill)">Stop All Services…</button>
+<button onClick="{{ openSettings }}" style="height:28px;border:0;border-radius:8px;background:transparent;text-align:left;padding:0 8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" style-hover="background:var(--fill)"><span>Settings…</span><span style="color:var(--text3)">⌘,</span></button>
+<button onClick="{{ closeWindow }}" style="height:28px;border:0;border-radius:8px;background:transparent;text-align:left;padding:0 8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" style-hover="background:var(--fill)"><span>Close Window</span><span style="color:var(--text3)">⌘W</span></button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;max-width:520px;padding:10px 18px;border-radius:999px;background:var(--pop);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);box-shadow:inset 0 0 0 .5px var(--glass-bd),0 10px 30px rgba(0,0,0,.2),0 0 0 .5px var(--sep);font-weight:500;text-align:center">{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;},&quot;glass&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;tinted&quot;,&quot;clear&quot;],&quot;default&quot;:&quot;tinted&quot;,&quot;tsType&quot;:&quot;'tinted'|'clear'&quot;,&quot;section&quot;:&quot;Liquid Glass&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;blue&quot;,&quot;purple&quot;,&quot;pink&quot;,&quot;orange&quot;,&quot;green&quot;,&quot;graphite&quot;],&quot;default&quot;:&quot;blue&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboarding&quot;,&quot;overview&quot;,&quot;instances&quot;,&quot;instance&quot;,&quot;catalog&quot;,&quot;create&quot;,&quot;runtimes&quot;,&quot;environments&quot;,&quot;operations&quot;,&quot;diagnostics&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;overview&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;daemonConnected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;emptyWorkspace&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state={ready:!!window.STK,page:null,theme:null,daemon:true,sel:'pg17-dev',tab:'summary',instances:null,runtimes:null,
+    ops:[{id:'op-0193',title:'Install PostgreSQL 18.1',kind:'install',prov:'pg',version:'18.1',pct:38,status:'running',started:'14:01'},
+      {id:'op-0192',title:'Start valkey-erp',kind:'start',target:'valkey-erp',status:'failed',started:'13:58',note:'Readiness probe failed 4 times. Retry budget exhausted.'},
+      {id:'op-0190',title:'Up · erp-development',kind:'env',status:'partial',started:'09:14',note:'5 of 6 services ready'},
+      {id:'op-0188',title:'Back up pg17-dev',kind:'backup',status:'done',started:'09:30',note:'312 MB · sha256 verified · restore tested'}],
+    filter:'all',q:'',sort:'name',sortDir:1,insp:true,menu:false,stopPreview:false,closed:false,reveal:false,follow:true,logSrc:'all',logQ:'',logTick:0,tick:0,scope:'main',more:false,
+    cfgMode:'typed',edits:{'pg17-dev':{max_connections:'200',work_mem:'16MB'}},applied:{},rev:{},drift:true,
+    catCat:'all',catQ:'',catSel:'ch',
+    create:{rt:'rt-pg-17.6',name:'pg17-feature',mode:'fixed',port:'5435',autostart:false,startNow:true},
+    ob:0,obPerm:false,obCli:true,obCommunity:false,envSel:'erp-development',
+    doctorRunning:false,doctorAt:'14:00:52',legacyFixed:false,confirm:null,toast:null,setTab:'general',
+    backups:{'pg17-dev':[{id:'bk-0412',when:'Today 09:30',mode:'Logical · pg_dump',size:'312 MB',sum:'sha256:7c1e…a90b',verified:'Verified 09:34'},{id:'bk-0398',when:'Mon 18:02',mode:'Logical · pg_dump',size:'298 MB',sum:'sha256:2b44…0f1c',verified:'Not tested'}]},
+    set:{launch:true,autostartDefault:false,community:false,telemetry:false,notify:true,retention:'14',channel:'stable'}};
+
+  componentDidMount(){
+    const boot=()=>{if(window.STK){this.setState(s=>({ready:true,instances:s.instances||window.STK.INIT,runtimes:s.runtimes||window.STK.RT_INIT}));}else this.bt=setTimeout(boot,50);};
+    boot();
+    this.iv=setInterval(()=>this.tickFn(),600);
+  }
+  componentWillUnmount(){clearInterval(this.iv);clearTimeout(this.tt);clearTimeout(this.bt);}
+  tickFn(){
+    if(!this.state.ready)return;
+    const {R,PROV}=window.STK;
+    this.setState(s=>{
+      const n={tick:s.tick+1};
+      if(s.follow&&s.tick%2===0)n.logTick=s.logTick+1;
+      let added=null;
+      if(s.ops.some(o=>o.status==='running')){
+        n.ops=s.ops.map(o=>{if(o.status!=='running')return o;const pct=Math.min(100,o.pct+2);
+          if(pct>=100){if(o.kind==='install')added=o;return {...o,pct,status:'done',note:'Committed · digest verified'};}
+          return {...o,pct};});
+      }
+      if(added&&!s.runtimes.find(r=>r.id===`rt-${added.prov}-${added.version}`)){n.runtimes=[...s.runtimes,R(added.prov,added.version)];setTimeout(()=>this.toast(`${PROV[added.prov].name} ${added.version} installed and verified.`),0);}
+      return n;
+    });
+  }
+  online(){return this.props.daemonConnected===false?false:this.state.daemon;}
+  insts(){return this.props.emptyWorkspace?[]:(this.state.instances||[]);}
+  toast(t){clearTimeout(this.tt);this.setState({toast:t});this.tt=setTimeout(()=>this.setState({toast:null}),2800);}
+  patch(id,x){this.setState(s=>({instances:s.instances.map(i=>i.id===id?{...i,...x}:i)}));}
+  addOp(o){this.setState(s=>({ops:[{id:'op-0'+(194+s.ops.length),started:'14:0'+Math.min(9,2+s.ops.length%7),...o},...s.ops]}));}
+  guard(){if(!this.online()){this.toast('stacklyd is unavailable. Nothing was sent.');return false;}return true;}
+  go(page){this.setState({page,menu:false,more:false,closed:false});}
+  openInst(id){this.setState({page:'instance',sel:id,tab:'summary',reveal:false,menu:false,closed:false});}
+  start(id){
+    if(!this.guard())return;
+    this.patch(id,{status:'starting'});
+    setTimeout(()=>{
+      const s=this.state;
+      if(id==='mysql-legacy'&&!s.legacyFixed){this.patch(id,{status:'failed',error:'Bind failed: 127.0.0.1:3307 is in use by mysqld (PID 812), not owned by Stackly. The fixed port was not changed.',portConflict:true});this.addOp({title:'Start mysql-legacy',kind:'start',target:id,status:'failed',note:'E_PORT_IN_USE · 127.0.0.1:3307'});return;}
+      this.patch(id,{status:'ready',uptime:'0m',error:null,portConflict:false,restarts:id==='valkey-erp'?0:(s.instances.find(i=>i.id===id)||{}).restarts});
+      this.addOp({title:'Start '+id,kind:'start',status:'done',note:'Ready · probe passed in 1.4 s'});
+    },1500);
+  }
+  stop(id,force){
+    if(!this.guard())return;
+    const i=this.state.instances.find(x=>x.id===id);
+    if(!force&&i&&i.env&&!i.shared){
+      this.setState({confirm:{title:`Stop “${id}”?`,body:`It's leased by ${i.env}. Stopping it leaves the environment partially ready. Data is kept.`,label:'Stop',destructive:true,ok:()=>{this.setState({confirm:null});this.stop(id,true);}}});return;
+    }
+    this.patch(id,{status:'stopping'});
+    setTimeout(()=>this.patch(id,{status:'stopped',uptime:'—'}),900);
+  }
+  act(i){if(i.status==='ready')this.stop(i.id);else if(i.status==='stopped'||i.status==='failed')this.start(i.id);}
+  copy(t,msg){try{navigator.clipboard&&navigator.clipboard.writeText(t).catch(()=>{});}catch(e){}this.toast(msg||`Copied ${t}`);}
+  fixPort(){if(!this.guard())return;this.setState(s=>({legacyFixed:true,instances:s.instances.map(i=>i.id==='mysql-legacy'?{...i,eps:[['database',3308]],status:i.status==='failed'?'stopped':i.status,error:null,portConflict:false}:i)}));this.toast('mysql-legacy now uses 127.0.0.1:3308. Config revision updated.');}
+  restartDaemon(){this.setState({daemon:false});setTimeout(()=>{this.setState({daemon:true});this.toast('Daemon restarted. 7 processes re-adopted after identity check.');},3500);}
+  vm(i,online){
+    const {PROV,STC,LABEL,UID,H}=window.STK;
+    const P=PROV[i.prov],st=i.status,busy=st==='starting'||st==='stopping',run=st==='ready';
+    return {...i,uid:UID(i.id),provName:P.name,mark:P.mark,tile:P.tile,dot:STC[st],stLabel:LABEL[st],
+      epText:i.eps.map(e=>':'+e[1]).join('  '),epFull:'127.0.0.1:'+i.eps.map(e=>e[1]).join(', :'),
+      readiness:run?`${P.probe} · ${8+H(i.id)%20} ms`:st==='starting'?'Waiting for probe':st==='failed'?(i.portConflict?'Port in use':'Crash loop · paused'):'—',
+      envText:i.env||'—',ownText:i.env?(i.shared?'Shared · lease':'Dedicated · lease'):'Manual',
+      actLabel:run?'Stop':st==='failed'?'Retry':busy?'…':'Start',isRunning:run||st==='starting',notRunning:!(run||st==='starting'),
+      actBg:run||busy?'var(--fill)':'var(--accent)',actFg:run||busy?'var(--text)':'#fff',actDisabled:busy||!online,
+      stFg:st==='failed'?'var(--red-t)':'var(--text2)',isFailed:st==='failed',
+      onAct:e=>{e&&e.stopPropagation&&e.stopPropagation();this.act(i);},open:()=>this.openInst(i.id)};
+  }
+  detail(v,online){
+    const {PROV,LOGS,H,T,UID,tone}=window.STK;
+    const s=this.state,P=PROV[v.prov],pw=s.reveal?'r7Kq-2mVx-91Lp':'••••••••',port=v.eps[0][1];
+    const applied={...Object.fromEntries(P.cfg.map(c=>[c[0],c[1]])),...(s.applied[v.id]||{})};
+    const edits=s.edits[v.id]||{};
+    const cfg=P.cfg.map(([k,def,imp])=>{const val=edits[k]??applied[k];const num=/^(max_|long_)/.test(k)&&!/ratio/.test(k);const err=val===''?'Required':(num&&!/^\d+$/.test(val))?'Must be a whole number':(k==='max_connections'&&+val>10000)?'Maximum is 10000':'';
+      const dirty=edits[k]!==undefined&&edits[k]!==applied[k];
+      return {k,v:val,managed:false,editable:true,note:(imp==='restart'?'Requires restart':'Applies on reload')+' · default '+def,err,hasErr:!!err,ring:err?'0 0 0 1.5px var(--red)':dirty?'0 0 0 1.5px var(--accent)':'0 0 0 .5px var(--sep)',on:e=>{const x=e.target.value;this.setState(st=>({edits:{...st.edits,[v.id]:{...(st.edits[v.id]||{}),[k]:x}}}));}};});
+    cfg.push({k:v.eps[0][0]==='database'?'port':v.eps[0][0]+'.port',v:String(port),managed:true,editable:false,note:'Managed by Stackly · change in Endpoints',err:'',hasErr:false,ring:'0 0 0 .5px var(--sep)',on:()=>{}});
+    const changed=P.cfg.filter(([k])=>edits[k]!==undefined&&edits[k]!==applied[k]);
+    const diff=[];changed.forEach(([k])=>{diff.push({sym:'−',t:`${k} = ${applied[k]}`,bg:'color-mix(in srgb,var(--red) 11%,transparent)',fg:'var(--red-t)'});diff.push({sym:'+',t:`${k} = ${edits[k]}`,bg:'color-mix(in srgb,var(--green) 13%,transparent)',fg:'var(--green-t)'});});
+    const needRestart=changed.some(c=>c[2]==='restart')||!P.reload;
+    const anyErr=cfg.some(c=>c.err);
+    const rev=s.rev[v.id]||5;
+    const lines=LOGS[v.prov];const n=v.status==='ready'?14+s.logTick:(v.status==='failed'?12:8);
+    let logs=[];for(let k=0;k<n;k++){const [src,text]=lines[k%lines.length];const bad=/Fatal|ERROR|Warning|warn/.test(text);logs.push({ts:T(50400+40+k*3),src,text,color:bad?(/Fatal|ERROR/.test(text)?'var(--red-t)':'var(--orange-t)'):'var(--text)',srcColor:src==='stderr'?'var(--orange-t)':'var(--text3)'});}
+    if(v.status==='stopped')logs.push({ts:T(50400+40+n*3),src:'stackly',text:'supervisor: graceful stop completed (SIGTERM, 0.8 s)',color:'var(--text2)',srcColor:'var(--accent)'});
+    logs=logs.filter(l=>(s.logSrc==='all'||l.src===s.logSrc)&&(!s.logQ||l.text.toLowerCase().includes(s.logQ.toLowerCase()))).slice(-24);
+    const live=v.status==='ready';const seed=H(v.id);
+    const bars=Array.from({length:60},(_,k)=>{const x=(Math.sin((k+s.tick*(live?1:0))*0.42+seed)*0.5+0.5)*(s.scope==='main'?50:75)+((seed>>k%8)&7)*3+6;return {h:live?Math.min(100,x)+'%':'2%',c:k===59&&live?'var(--accent)':'color-mix(in srgb,var(--accent) 45%,transparent)'};});
+    const cpu=live?(parseFloat(bars[59].h)/10).toFixed(1)+'%':'—';
+    const pids=!live?[]:v.prov==='pg'?[['4121','postgres -D …/data','58 MB',0],['4123','checkpointer','12 MB',1],['4124','background writer','8 MB',1],['4125','walwriter','8 MB',1],['4126','autovacuum launcher','6 MB',1]]:[[String(3000+seed%900),P.slug+(v.prov==='ch'?'-server':''),v.prov==='ch'?'612 MB':'42 MB',0]];
+    const bk=s.backups[v.id]||[];
+    const impact=v.env?(v.shared?`Shared by ${v.env} through an instance reference. Other leases are counted before a down.`:`Leased by ${v.env}. Stopping it marks the environment partially ready.`):'Nothing depends on this instance.';
+    return {...v,P,conn:P.conn(port,pw),secretRef:`keychain:${v.env?v.env.split('-')[0]:'stackly'}/${v.id}/admin`,
+      eps:v.eps.map(([name,p])=>({name,addr:'127.0.0.1:'+p,copy:()=>this.copy('127.0.0.1:'+p)})),
+      facts:[{k:'Instance ID',v:'inst_'+UID(v.id)+'Z3M8'},{k:'Runtime',v:v.rt},{k:'Version',v:`${P.name} ${v.version} · arm64`},{k:'Digest',v:((s.runtimes||[]).find(r=>r.id===v.rt)||{}).digest||'—'},{k:'Provider',v:`official/${P.slug} ${P.rev}`},{k:'Data',v:`…/instances/${UID(v.id)}/data`},{k:'Data size',v:v.data},{k:'Uptime',v:v.uptime},{k:'Restarts',v:String(v.restarts)},{k:'Autostart',v:v.env?'With environment':'Off'}],
+      impact,failTitle:v.portConflict?'Couldn’t start: port in use':'Crash loop. Automatic restarts paused.',failBody:v.portConflict?'Stackly never moves a fixed port silently. Pick another port or stop the process holding it.':`Restarted ${v.restarts} times in 6 minutes. The retry budget is used up, so the supervisor is waiting for you.`,failCode:v.portConflict?'E_PORT_IN_USE':'E_READINESS',canFixPort:!!v.portConflict,
+      restartDisabled:v.status!=='ready'||!online,restart:()=>{if(!this.guard())return;this.patch(v.id,{status:'starting'});setTimeout(()=>this.patch(v.id,{status:'ready',uptime:'0m'}),1400);},
+      reloadDisabled:!P.reload||v.status!=='ready'||!online,reloadTitle:P.reload?'Reload configuration':`${P.name} doesn’t support reload`,
+      reload:()=>this.toast(`Reload signal sent to ${v.id}.`),
+      duplicate:()=>this.setState({more:false,sheet:'create',create:{rt:v.rt,name:v.id+'-copy',mode:'auto',port:String(port),autostart:false,startNow:true}}),
+      remove:()=>this.setState({more:false,confirm:{title:`Remove “${v.id}”?`,body:`The instance is unregistered and its process stopped. The data directory (${v.data}) stays on disk.`,label:'Remove',destructive:true,ok:()=>{this.setState(st=>({confirm:null,instances:st.instances.filter(x=>x.id!==v.id),page:'instances'}));this.toast(`${v.id} removed. Data kept.`);}}}),
+      copyConn:()=>{this.setState({more:false});this.copy(P.conn(port,'r7Kq-2mVx-91Lp'),'Connection string copied.');},
+      toLogs:()=>this.setState({tab:'logs',page:'instance'}),
+      drift:v.id==='pg17-dev'&&s.drift,rev,cfg,diff,noDiff:diff.length===0,hasDiff:diff.length>0,
+      cfgImpact:diff.length?(needRestart?'Requires restart':'Applies on reload'):'In sync',cfgTag:tone(diff.length?(needRestart?'orange':'blue'):'green'),
+      applyDisabled:diff.length===0||anyErr||!online,applyLabel:needRestart?'Apply and Restart':'Apply and Reload',
+      raw:P.cfg.map(([k])=>`${k} = ${edits[k]??applied[k]}`).join('\n')+`\n\n# managed by stackly\nlisten_addresses = '127.0.0.1'\n${v.eps[0][0]==='database'?'port':v.eps[0][0]+'.port'} = ${port}\ndata_directory = '…/instances/${UID(v.id)}/data'`,
+      history:[{rev:'Revision '+rev,what:'Current · applied from app',when:'2 days ago'},{rev:'Revision '+(rev-1),what:'Last known good',when:'6 days ago'},{rev:'Revision '+(rev-2),what:'Created from provider defaults',when:'Sep 30'}],
+      logs,noLogs:logs.length===0,hasLogs:logs.length>0,cursor:'c_'+(4812+s.logTick),
+      noMetrics:!live,hasMetrics:live,bars,health:live?`${P.probe} · OK · ${T(50400+131+s.tick%30)}`:`Probe not running · last ${T(50400+11)}`,
+      stats:[{k:'CPU',v:cpu,sub:s.scope==='main'?'Main process':'Process tree',op:1},{k:'Memory',v:live?(pids.length>1?'92 MB':pids[0][2]):'—',sub:'Resident',op:1},{k:'Disk',v:v.data,sub:'Scanned 13:50',op:1},{k:'Disk I/O',v:P.diskio?(live?'0.4 MB/s':'—'):'Not available',sub:P.diskio?'Read + write':`${P.name} doesn’t expose it`,op:P.diskio?1:.5},{k:'Restarts',v:String(v.restarts),sub:'Since created',op:1}],
+      pids:pids.map(p=>({pid:p[0],name:(p[3]?'└ ':'')+p[1],mem:p[2]})),noPids:pids.length===0,
+      backupUnsupported:!P.backup,backupSupported:!!P.backup,backups:bk.map(b=>({...b,verTag:tone(/Verified/.test(b.verified)?'green':'gray'),restoreNew:()=>{this.addOp({title:`Restore ${b.id} as ${v.id}-restore`,kind:'restore',status:'running',pct:0});this.toast(`Restoring into a new instance. ${v.id} is untouched.`);},overwrite:()=>this.setState({confirm:{title:`Overwrite “${v.id}”?`,body:`Replaces the current data with ${b.id}. A safety snapshot is taken first and the instance restarts.`,label:'Overwrite',destructive:true,ok:()=>{this.setState({confirm:null});this.toast('Safety snapshot taken. Restore started.');}}})})),
+      noBackups:bk.length===0,hasBackups:bk.length>0,backupDisabled:!online||v.status!=='ready',createBackup:()=>{this.setState(st=>({backups:{...st.backups,[v.id]:[{id:'bk-0'+(413+bk.length),when:'Today 14:03',mode:'Logical',size:v.data,sum:'sha256:'+H(v.id+bk.length).toString(16).slice(0,4)+'…',verified:'Not tested'},...bk]}}));this.toast('Backup created and checksum recorded.');},
+      activity:[{when:'14:02',who:'App',what:'Viewed connection (secret masked)'},{when:'13:41',who:'External',what:'Config drift detected in effective config'},{when:'09:30',who:'Schedule',what:'Backup created · checksum verified'},{when:'09:14',who:v.env||'CLI',what:v.env?'Lease acquired':'Instance started'},{when:'Sep 30',who:'CLI',what:`Created from ${v.rt}`}]
+    };
+  }
+  renderVals(){
+    const s=this.state,p=this.props;
+    const theme=s.theme??p.theme??'light',glass=p.glass??'tinted',accent=p.accent??'blue';
+    if(!s.ready||!s.instances)return {theme,glass,accent,loading:true};
+    const online=this.online(),dark=theme==='dark';
+    const {tone,STAGES}=window.STK;
+    const insts=this.insts(),vms=insts.map(i=>this.vm(i,online));
+    let page=s.page??p.startPage??'overview';
+    const sheet=s.sheet!==undefined?s.sheet:(page==='create'?'create':null);
+    if(page==='create')page='instances';
+    const settingsOpen=s.settingsOpen!==undefined?s.settingsOpen:page==='settings';
+    if(page==='settings')page='overview';
+    const selVm=vms.find(v=>v.id===s.sel);
+    if(page==='instance'&&!selVm)page='instances';
+    const c=k=>insts.filter(i=>i.status===k).length;
+    const issues=(s.legacyFixed?0:1)+(insts.some(i=>i.id==='valkey-erp'&&i.status==='failed')?1:0)+1+(s.drift?1:0);
+    const runningOps=s.ops.filter(o=>o.status==='running').map(o=>({...o,pctText:o.pct+'%',w:o.pct+'%',stageName:STAGES[Math.min(4,Math.floor(o.pct/20))]}));
+    const counts={ready:c('ready'),stopped:c('stopped'),failed:c('failed'),total:insts.length,runtimes:s.runtimes.length,opsRunning:runningOps.length,issues,opsBadge:runningOps.length?String(runningOps.length):'',instBadge:String(insts.length)};
+    const is={};['onboarding','overview','instances','instance','catalog','runtimes','environments','operations','diagnostics'].forEach(k=>is[k]=page===k);
+    const navKey=page==='instance'?'instances':page;
+    const nav={};['overview','instances','environments','catalog','runtimes','operations','diagnostics'].forEach(k=>nav[k]={go:()=>this.go(k),bg:navKey===k&&k!=='environments'?'var(--sel)':'transparent',fw:navKey===k?600:400});
+    const titles={overview:'Overview',instances:'Instances',instance:s.sel,catalog:'Catalog',runtimes:'Runtimes',environments:'Environments',operations:'Operations',diagnostics:'Diagnostics',onboarding:'Welcome'};
+    const subs={overview:`${counts.ready} running · ${counts.stopped} stopped${counts.failed?` · ${counts.failed} failed`:''}`,instances:`${insts.length} instances`,instance:selVm?`${selVm.provName} ${selVm.version} · ${selVm.stLabel}`:'',catalog:'official · community off',runtimes:`${s.runtimes.length} installed`,environments:`${window.STK.ENVS.length} projects`,operations:runningOps.length?`${runningOps.length} running`:'No running operations',diagnostics:`${issues} issues`};
+    const A=this.rvA(s,p,online,insts,vms,selVm,page);
+    const B=this.rvB(s,p,online,insts,vms,theme);
+    const d=selVm?this.detail(selVm,online):null;
+    const tabs=[['summary','Summary'],['config','Configuration'],['logs','Logs'],['metrics','Metrics'],['backups','Backups'],['activity','Activity']].map(([k,l])=>({label:l,on:()=>this.setState({tab:k}),bg:s.tab===k?'var(--seg-on)':'transparent',sh:s.tab===k?'var(--seg-sh)':'none'}));
+    const tab={};['summary','config','logs','metrics','backups','activity'].forEach(k=>tab[k]=s.tab===k);
+    const attention=[];
+    vms.filter(v=>v.status==='failed').forEach(v=>attention.push({title:`${v.id} failed`,body:v.portConflict?'Port 3307 is held by an external mysqld (PID 812).':`Crash loop after ${v.restarts} restarts. AOF file isn’t readable.`,err:true,warn:false,info:false,go:v.open}));
+    if(!s.legacyFixed&&insts.find(i=>i.id==='mysql-legacy'&&i.status!=='failed'))attention.push({title:'Port conflict on :3307',body:'mysql-legacy can’t start while an external mysqld holds the port.',err:true,warn:false,info:false,go:()=>this.go('diagnostics')});
+    if(s.drift&&insts.length)attention.push({title:'Configuration drift in pg17-dev',body:'postgresql.conf was edited outside Stackly at 13:41.',err:false,warn:true,info:false,go:()=>this.setState({page:'instance',sel:'pg17-dev',tab:'config'})});
+    attention.push({title:'Data volume is 82% full',body:'41 GB free. clickhouse-erp grew 1.1 GB this week.',err:false,warn:false,info:true,go:()=>this.go('diagnostics')});
+    return {loading:false,theme,glass,accent,isDark:dark,
+      menuOpen:s.menu,menuBtnBg:s.menu?'var(--fill-strong)':'transparent',toggleMenu:()=>this.setState({menu:!s.menu,stopPreview:false}),closeMenu:()=>this.setState({menu:false}),
+      menuList:vms.slice(0,8).map(v=>({...v,...window.STK.toggleVm(v.isRunning,v.onAct)})),menuStopPreview:s.stopPreview,toggleStopPreview:()=>this.setState({stopPreview:!s.stopPreview}),
+      stopAll:()=>{if(!this.guard())return;insts.filter(i=>i.status==='ready').forEach(i=>this.stop(i.id,true));this.setState({stopPreview:false});this.toast('Stopping all running services. Data is kept.');},
+      openFromMenu:()=>this.setState({closed:false,menu:false}),openSettings:()=>this.setState({settingsOpen:true,menu:false}),closeSettings:()=>this.setState({settingsOpen:false}),settingsOpen,
+      closeWindow:()=>this.setState({closed:true}),windowClosed:s.closed,windowOpen:!s.closed,
+      daemonDot:online?'var(--green)':'var(--red)',daemonText:online?'stacklyd running':'stacklyd unavailable',offline:!online,staleOpacity:online?1:.6,
+      reconnect:()=>{this.setState({daemon:true});this.toast(this.props.daemonConnected===false?'Still unreachable. Turn on daemonConnected in Tweaks.':'Reconnected. State refreshed.');},
+      is,inShell:page!=='onboarding',nav,title:titles[page],subtitle:subs[page]||'',showBack:page==='instance',goBack:()=>this.go('instances'),
+      goOps:()=>this.go('operations'),goCreate:()=>this.setState({sheet:'create',menu:false}),closeSheet:()=>this.setState({sheet:null}),sheetCreate:sheet==='create',sheetPlan:sheet==='plan',hasSheet:!!sheet,
+      counts,attention,runningOps,noRunningOps:runningOps.length===0,hasRunningOps:runningOps.length>0,vms,noInstances:vms.length===0,hasInstances:vms.length>0,recent:vms.slice(0,6),
+      d:d||{},hasSel:!!d,noSel:!d,tabs,tab,revealLabel:s.reveal?'Hide':'Show',toggleReveal:()=>this.setState({reveal:!s.reveal}),
+      inspOpen:s.insp&&page==='instances'&&vms.length>0,toggleInsp:()=>this.setState({insp:!s.insp}),
+      moreOpen:s.more,toggleMore:()=>this.setState({more:!s.more}),
+      cfgTyped:s.cfgMode==='typed',cfgAdvanced:s.cfgMode==='advanced',segCfg:window.STK.seg([['typed','Form'],['advanced','Effective File']],s.cfgMode,v=>this.setState({cfgMode:v})),
+      applyCfg:()=>{if(!this.guard()||!d)return;const id=d.id;this.setState(st=>({applied:{...st.applied,[id]:{...(st.applied[id]||{}),...(st.edits[id]||{})}},edits:{...st.edits,[id]:{}},rev:{...st.rev,[id]:(st.rev[id]||5)+1}}));this.toast(`Revision ${(s.rev[id]||5)+1} applied to ${id}.`);if(d.cfgImpact==='Requires restart'&&d.status==='ready'){this.patch(id,{status:'starting'});setTimeout(()=>this.patch(id,{status:'ready',uptime:'0m'}),1400);}},
+      discardCfg:()=>d&&this.setState(st=>({edits:{...st.edits,[d.id]:{}}})),resolveDrift:()=>{this.setState({drift:false});this.toast('Drift resolved. Effective config matches revision 5.');},
+      segLog:window.STK.seg([['all','All'],['stdout','stdout'],['stderr','stderr']],s.logSrc,v=>this.setState({logSrc:v})),logQ:s.logQ,onLogQ:e=>this.setState({logQ:e.target.value}),
+      follow:window.STK.toggleVm(s.follow,()=>this.setState({follow:!s.follow})),loadEarlier:()=>this.toast('Loaded 200 earlier lines.'),
+      segScope:window.STK.seg([['main','Main Process'],['tree','Process Tree']],s.scope,v=>this.setState({scope:v})),
+      fixPort:()=>this.fixPort(),
+      hasConfirm:!!s.confirm,confirm:s.confirm||{},confirmBg:s.confirm&&s.confirm.destructive?'var(--red)':'var(--accent)',closeConfirm:()=>this.setState({confirm:null}),hasToast:!!s.toast,toast:s.toast,
+      ...A,...B};
+  }
+  rvA(s,p,online,insts,vms,selVm,page){
+    const {PROV,tone,toggleVm,seg,UID,I,ENVS}=window.STK;
+    const order={failed:0,starting:1,stopping:1,ready:2,stopped:3};
+    const key={name:v=>v.id,provider:v=>v.provName+v.id,version:v=>v.version,port:v=>String(v.eps[0][1]).padStart(5,'0'),env:v=>(v.env||'~')+v.id,state:v=>order[v.status]+v.id};
+    let filtered=vms.filter(v=>(s.filter==='all'||v.status===s.filter||(s.filter==='ready'&&v.status==='starting'))&&(!s.q||(v.id+v.provName+v.epText).toLowerCase().includes(s.q.toLowerCase())));
+    filtered=[...filtered].sort((a,b)=>key[s.sort](a).localeCompare(key[s.sort](b),undefined,{numeric:true})*s.sortDir);
+    const rows=filtered.map((v,i)=>{const on=v.id===s.sel;return {...v,rowBg:on?'var(--accent)':i%2?'var(--stripe)':'transparent',rowFg:on?'#fff':'var(--text)',rowFg2:on?'rgba(255,255,255,.82)':'var(--text2)',stRow:on?'#fff':v.stFg,btnBg:on?'rgba(255,255,255,.24)':v.actBg,btnFg:on?'#fff':v.actFg,select:()=>this.setState({sel:v.id,more:false})};});
+    const cols=[['name','Name'],['provider','Provider'],['version','Version'],['port','Endpoints'],['env','Environment'],['state','Status']].map(([k,l],i)=>({label:l,on:()=>this.setState(st=>({sort:k,sortDir:st.sort===k?-st.sortDir:1})),arrow:s.sort===k?(s.sortDir>0?'⌃':'⌄'):'',fg:s.sort===k?'var(--text)':'var(--text2)',bl:i?'.5px solid var(--sep)':'0'}));
+    const envVm=E=>{const svc=E.services.map(([k,sel,instId,shared])=>{const i=insts.find(x=>x.id===instId);const v=i?this.vm(i,online):null;
+      const run=!!i&&i.status==='ready',mk=E.id+':'+k;
+      const ext=(label,app)=>({label,run:()=>{this.setState({svcMenu:null});this.toast(`Opening ${instId} in ${app}…`);},disabled:!run});
+      let acts=[];
+      if(i){const P=PROV[i.prov],port=i.eps[0][1],url=P.conn(port,'••••');
+        const byProv={pg:[ext('Open in TablePlus','TablePlus'),ext('Open in Postico','Postico'),ext('Open psql in Terminal','Terminal')],
+          my:[ext('Open in TablePlus','TablePlus'),ext('Open in Sequel Ace','Sequel Ace'),ext('Open mysql in Terminal','Terminal')],
+          na:[ext('Open Monitoring in Browser','your browser'),ext('Subscribe in Terminal','Terminal · nats sub ">"')],
+          ch:[ext('Open Play UI in Browser','your browser'),ext('Open in TablePlus','TablePlus'),ext('Open clickhouse-client in Terminal','Terminal')],
+          vk:[ext('Open in TablePlus','TablePlus'),ext('Open in Redis Insight','Redis Insight'),ext('Open valkey-cli in Terminal','Terminal')],
+          tr:[ext('Open Dashboard in Browser','your browser'),{label:'Reveal Routes File in Finder',run:()=>{this.setState({svcMenu:null});this.toast('Revealed dynamic.yml in Finder.');},disabled:false}]};
+        acts=[...byProv[i.prov],{sep:true},{label:'Copy Connection URL',run:()=>{this.setState({svcMenu:null});this.copy(url,'Connection URL copied.');},disabled:false},{sep:true},
+          {label:'Show Instance',run:()=>{this.setState({svcMenu:null});this.openInst(i.id);},disabled:false},{label:'Show Logs',run:()=>{this.setState({svcMenu:null,page:'instance',sel:i.id,tab:'logs'});},disabled:false},
+          {label:run?'Stop':i.status==='failed'?'Retry':'Start',run:()=>{this.setState({svcMenu:null});this.act(i);},disabled:!online||i.status==='starting'||i.status==='stopping'}];
+      }else acts=[{label:'Create with Up…',run:()=>this.setState({svcMenu:null,sheet:'plan'}),disabled:!online}];
+      acts=acts.map(a=>({sep:!!a.sep,item:!a.sep,label:a.label||'',run:a.run||(()=>{}),disabled:!!a.disabled}));
+      return {menuOpen:s.svcMenu===mk,toggleMenu:e=>{e&&e.stopPropagation&&e.stopPropagation();this.setState({svcMenu:s.svcMenu===mk?null:mk});},closeMenu:()=>this.setState({svcMenu:null}),acts,menuBg:s.svcMenu===mk?'var(--fill-h)':'transparent',
+        key:k,sel,inst:instId||'Will be created',version:i?i.version:'—',own:shared?'Shared ref':'Dedicated',stLabel:v?v.stLabel:'Not created',dot:v?v.dot:'transparent',dotRing:v?'none':'inset 0 0 0 1.5px var(--gray)',stFg:v?v.stFg:'var(--text2)',open:v?v.open:()=>{},ready:i&&i.status==='ready',i};});
+      const readyN=svc.filter(x=>x.ready).length,total=svc.length;
+      const statusText=readyN===total?'Ready':readyN===0?'Down':'Partially Ready';
+      return {...E,services:svc,readyN,total,statusText,tag:tone(statusText==='Ready'?'green':statusText==='Down'?'gray':'orange'),readyText:`${readyN} of ${total} ready`,partial:readyN>0&&readyN<total,w:Math.round(readyN/total*100)+'%',
+        notReady:svc.filter(x=>!x.ready&&x.i).map(x=>({key:x.key,inst:x.inst,why:x.i.status==='failed'?'readiness failed (PING timeout)':x.i.status,open:x.open})),
+        plan:svc.map(x=>!x.i?{sym:'+',verb:'Create',t:`${x.key} → billing-cache · Valkey 8.1.3 · 127.0.0.1:6380`,...tone('green')}:x.i.status!=='ready'?{sym:'▸',verb:'Start',t:`${x.key} → ${x.inst} · wait for ${PROV[x.i.prov].probe}`,...tone('blue')}:{sym:'=',verb:'Keep',t:`${x.key} → ${x.inst} · ${x.version}`,...tone('gray')}),
+        lease:E.id==='erp-development'?`Lease held on ${svc.filter(x=>x.i&&x.i.status!=='stopped').length} instances since 09:14. Down stops only instances with no other lease or manual start.`:'pg17-test is shared. Down releases the lease and leaves it running if it was started manually.',
+        upDisabled:!online||readyN===total,downDisabled:!online||readyN===0,
+        pick:()=>this.setState({envSel:E.id,page:'environments',menu:false,more:false}),sbBg:page==='environments'&&s.envSel===E.id?'var(--sel)':'transparent',sbFw:page==='environments'&&s.envSel===E.id?600:400,dot:readyN===total?'var(--green)':readyN===0?'var(--gray)':'var(--orange)',bg:s.envSel===E.id?'var(--accent)':'transparent',fg:s.envSel===E.id?'#fff':'var(--text)',fg2:s.envSel===E.id?'rgba(255,255,255,.82)':'var(--text2)'};};
+    const envList=ENVS.map(envVm);const env=envList.find(e=>e.id===s.envSel)||envList[0];
+    const cr0=s.create,rtSel=s.runtimes.find(r=>r.id===cr0.rt)||s.runtimes[0],CP=PROV[rtSel.prov];
+    const used={};insts.forEach(i=>i.eps.forEach(e=>used[e[1]]=i.id));used[3307]=used[3307]||'mysqld PID 812';
+    const nextFree=b=>{let x=b;while(used[x])x++;return x;};
+    const nameErr=!/^[a-z][a-z0-9-]{2,30}$/.test(cr0.name)?'Use 3–31 lowercase letters, digits or hyphens.':insts.find(i=>i.id===cr0.name)?`“${cr0.name}” already exists.`:'';
+    const pn=+cr0.port;const portErr=cr0.mode==='auto'?'':(!/^\d+$/.test(cr0.port)||pn<1024||pn>65535)?'Enter a port between 1024 and 65535.':used[pn]?`Port ${pn} is used by ${used[pn]}.`:'';
+    const finalPort=cr0.mode==='auto'?nextFree(CP.port):pn;const uid=UID(cr0.name||'x');
+    const setC=x=>this.setState(st=>({create:{...st.create,...x}}));
+    const ok=(bad,warn)=>({ok:!bad&&!warn,bad:!!bad,warn:!bad&&!!warn});
+    const cr={...cr0,uid,fixed:cr0.mode==='fixed',auto:cr0.mode==='auto',autoPort:String(nextFree(CP.port)),epLabel:CP.ep,nameErr,portErr,hasNameErr:!!nameErr,hasPortErr:!!portErr,suggest:String(nextFree(CP.port)),
+      nameRing:nameErr?'0 0 0 1.5px var(--red)':'0 0 0 .5px var(--sep)',portRing:portErr?'0 0 0 1.5px var(--red)':'0 0 0 .5px var(--sep)',
+      tile:CP.tile,mark:CP.mark,provName:CP.name,rtVersion:rtSel.version,rtExternal:rtSel.src==='External',
+      runtimes:s.runtimes.filter(r=>!cr0.cat||cr0.cat==='all'||PROV[r.prov].cat===cr0.cat).map(r=>({id:r.id,label:`${PROV[r.prov].name} ${r.version}${r.src==='External'?' (external)':''}`})),
+      segCat:seg([['all','All'],['Database','Databases'],['Messaging','Messaging'],['Analytics','Analytics'],['Cache','Cache'],['Proxy','Proxy']],cr0.cat||'all',c=>{const r=c==='all'?rtSel:(PROV[rtSel.prov].cat===c?rtSel:s.runtimes.find(x=>PROV[x.prov].cat===c));setC(r?{cat:c,rt:r.id,port:String(nextFree(PROV[r.prov].port))}:{cat:c});}),
+      onRt:e=>{const r=s.runtimes.find(x=>x.id===e.target.value);setC({rt:r.id,port:String(nextFree(PROV[r.prov].port))});},
+      segMode:seg([['fixed','Fixed'],['auto','Automatic']],cr0.mode,m=>setC({mode:m})),
+      onName:e=>setC({name:e.target.value}),onPort:e=>setC({port:e.target.value}),useSuggest:()=>setC({port:String(nextFree(CP.port))}),
+      tStart:toggleVm(cr0.startNow,()=>setC({startNow:!cr0.startNow})),tAuto:toggleVm(cr0.autostart,()=>setC({autostart:!cr0.autostart})),
+      preflight:[{label:`Runtime ${rtSel.id}`,sub:rtSel.src==='External'?'External runtime · not reproducible':`Verified ${rtSel.digest}`,...ok(false,rtSel.src==='External')},{label:'Name available',sub:nameErr||cr0.name,...ok(nameErr)},{label:`Endpoint 127.0.0.1:${finalPort||'—'}`,sub:portErr?'In use':'Free on IPv4 and IPv6 loopback',...ok(portErr)},{label:'Empty data directory',sub:`instances/${uid}/data`,...ok()},{label:'Disk space',sub:`41 GB free · needs ~200 MB`,...ok()},{label:'Secret stored in Keychain',sub:'Generated on create, never logged',...ok()}],
+      cli:`stackly instance create ${cr0.name} --runtime ${rtSel.id} --port ${CP.ep}=${cr0.mode==='auto'?'auto':cr0.port}`,
+      copyCli:()=>this.copy(`stackly instance create ${cr0.name} --runtime ${rtSel.id}`,'Command copied.'),
+      invalid:!!(nameErr||portErr)||!online,
+      create:()=>{if(!this.guard())return;const ni=I(cr0.name,rtSel.prov,rtSel.version,rtSel.id,[[CP.ep,finalPort]],'stopped',null,{data:'0 MB'});this.setState(st=>({instances:[...st.instances,ni],page:'instance',sel:ni.id,tab:'summary',sheet:null}));this.addOp({title:'Create instance '+ni.id,kind:'create',status:'done',note:'Data directory initialised'});if(cr0.startNow)setTimeout(()=>this.start(ni.id),50);}};
+    return {q:s.q,onQ:e=>this.setState({q:e.target.value}),segFilter:seg([['all','All'],['ready','Running'],['stopped','Stopped'],['failed','Failed']],s.filter,v=>this.setState({filter:v})),
+      rows,cols,noFiltered:filtered.length===0&&vms.length>0,hasRows:filtered.length>0,clearFilters:()=>this.setState({q:'',filter:'all'}),filterText:s.q||s.filter,
+      envList,env,cr,envOpen:s.envOpen!==false,envChevron:s.envOpen!==false?'rotate(90deg)':'none',toggleEnvOpen:e=>{e.stopPropagation();this.setState({envOpen:s.envOpen===false});},
+      envValidate:()=>this.toast(`${env.id}: schema stackly/v1alpha1 valid · no cycles · secrets referenced.`),openPlan:()=>this.setState({sheet:'plan'}),
+      envUp:()=>{if(!this.guard())return;this.setState({sheet:null});env.services.forEach(x=>{if(x.i&&x.i.status!=='ready')this.start(x.i.id);});if(env.services.some(x=>!x.i)){const ni=I('billing-cache','vk','8.1.3','rt-vk-8.1.3',[['client',6380]],'stopped','billing-sandbox',{data:'0 MB'});ENVS[1].services[1][2]='billing-cache';this.setState(st=>({instances:[...st.instances,ni]}));setTimeout(()=>this.start('billing-cache'),50);}this.addOp({title:'Up · '+env.id,kind:'env',status:'done',note:'Dependency order respected'});this.toast(`${env.id}: starting services in dependency order.`);},
+      envDown:()=>this.setState({confirm:{title:`Bring down “${env.id}”?`,body:'Releases the lease and stops only instances nothing else needs. Shared and manually started instances keep running. Data is kept.',label:'Bring Down',destructive:false,ok:()=>{this.setState({confirm:null});env.services.forEach(x=>{if(x.i&&x.i.status==='ready'&&x.own==='Dedicated')this.stop(x.i.id,true);});}}}),
+      importEnv:()=>this.toast('Choose a stackly.yaml. You’ll review trust and a plan before anything runs.')};
+  }
+  rvB(s,p,online,insts,vms,theme){
+    const {PROV,tone,toggleVm,seg,vtone,STAGES}=window.STK;
+    const cats=[['all','All'],['Database','Databases'],['Messaging','Messaging'],['Analytics','Analytics'],['Cache','Cache'],['Proxy','Proxy']];
+    const catList=Object.entries(PROV).filter(([k,P])=>(s.catCat==='all'||P.cat===s.catCat)&&(!s.catQ||P.name.toLowerCase().includes(s.catQ.toLowerCase()))).map(([k,P])=>{const n=s.runtimes.filter(r=>r.prov===k).length;const on=s.catSel===k;return {...P,pick:()=>this.setState({catSel:k}),ring:on?'0 0 0 2px var(--accent)':'0 0 0 .5px var(--sep)',op:P.planned?.6:1,status:P.planned?'Planned':n?`${n} installed`:'Available',tag:tone(P.planned?'gray':n?'green':'blue'),meta:P.planned?'Not in this release':`${P.cat} · ${P.license}`};});
+    const spk=s.catSel,PV=PROV[spk];const planned=!!PV.planned;
+    const pv=planned?{...PV,planned:true,versions:[],caps:[]}:{...PV,planned:false,versions:PV.versions.map(([v,a,b,w])=>{const inst=!!s.runtimes.find(r=>r.id===`rt-${spk}-${v}`);const op=s.ops.find(o=>o.status==='running'&&o.kind==='install'&&o.prov===spk&&o.version===v);
+      return {v,a,b,w,ta:vtone(a),tb:vtone(b),tw:vtone(w),installed:inst,installing:!!op&&!inst,pct:op?op.pct+'%':'',canInstall:!inst&&!op,disabled:!online,
+        install:()=>{if(!this.guard())return;this.addOp({title:`Install ${PV.name} ${v}`,kind:'install',prov:spk,version:v,pct:0,status:'running'});this.toast(`Installing ${PV.name} ${v}. Staged, verified, then committed.`);}};}),
+      caps:[['Lifecycle',true],['Readiness probe',true],['Logs',true],['Metrics',true],['Reload without restart',PV.reload],['Backup and restore',PV.backup],['Disk I/O metric',PV.diskio]].map(([l,ok])=>({label:l,ok,no:!ok})),
+      noRuntime:!s.runtimes.find(r=>r.prov===spk)||!online,create:()=>{const r=s.runtimes.filter(r=>r.prov===spk).slice(-1)[0];const used={};insts.forEach(i=>i.eps.forEach(e=>used[e[1]]=1));let x=PV.port;while(used[x])x++;this.setState({sheet:'create',create:{...s.create,rt:r.id,name:PV.slug.slice(0,5)+'-new',port:String(x),mode:'fixed'}});}};
+    const rtList=s.runtimes.map(r=>{const refs=insts.filter(i=>i.rt===r.id);return {...r,mark:PROV[r.prov].mark,tile:PROV[r.prov].tile,provName:PROV[r.prov].name,ext:r.src==='External',srcTag:tone(r.src==='External'?'orange':'gray'),srcNote:r.src==='External'?r.note:'arm64 · verified',
+      refsText:refs.length?refs.map(i=>i.id).join(', '):'Unused',removeDisabled:refs.length>0||!online,removeTitle:refs.length?`Used by ${refs.length} instance(s)`:'Remove runtime',
+      remove:()=>this.setState({confirm:{title:`Remove ${PROV[r.prov].name} ${r.version}?`,body:'Deletes the runtime binaries. No instance uses it. Instance data is never touched.',label:'Remove',destructive:true,ok:()=>{this.setState(st=>({confirm:null,runtimes:st.runtimes.filter(x=>x.id!==r.id)}));this.toast(`${r.id} removed.`);}}})};});
+    const installing=s.ops.filter(o=>o.status==='running'&&o.kind==='install').map(o=>({...o,w:o.pct+'%',stage:STAGES[Math.min(4,Math.floor(o.pct/20))],tile:PROV[o.prov].tile,mark:PROV[o.prov].mark}));
+    const opList=s.ops.map(o=>{const st=Math.min(4,Math.floor((o.pct||0)/20));return {...o,running:o.status==='running',w:(o.pct||0)+'%',
+      stages:STAGES.map((n,k)=>({n,fg:k<st?'var(--text)':k===st?'var(--accent)':'var(--text3)',mark:k<st?'✓':k===st?'●':'○'})),
+      note:o.status==='running'?`${o.pct}% · ${STAGES[st]}${o.pct>=80?' · can’t be cancelled':''}`:o.note,noteFg:o.status==='failed'?'var(--red-t)':'var(--text2)',
+      statusText:{running:'Running',done:'Done',failed:'Failed',partial:'Partial',cancelled:'Cancelled'}[o.status],tag:tone(o.status==='failed'?'red':o.status==='partial'?'orange':o.status==='running'?'blue':'gray'),
+      cancelDisabled:(o.pct||0)>=80,cancel:()=>this.setState(x=>({ops:x.ops.map(y=>y.id===o.id?{...y,status:'cancelled',note:'Cancelled · staging cleaned up'}:y)})),
+      canRetry:o.status==='failed'&&!!o.target,retry:()=>{this.start(o.target);this.setState({page:'instance',sel:o.target,tab:'summary'});}};});
+    const valkeyFailed=insts.some(i=>i.id==='valkey-erp'&&i.status==='failed');
+    const chk=(sev,title,body,actLabel,act)=>({sev,title,body,isErr:sev==='Error',isWarn:sev==='Warning',isOk:sev==='OK',hasAction:!!actLabel,actLabel,act,op:s.doctorRunning?.35:1});
+    const checks=[
+      s.legacyFixed?chk('OK','Endpoints','No conflicts across 13 configured endpoints.'):chk('Error','Port conflict · mysql-legacy','127.0.0.1:3307 is held by mysqld (PID 812), started by Homebrew. Not owned by Stackly.','Use Port 3308',()=>this.fixPort()),
+      valkeyFailed?chk('Error','Data permissions · valkey-erp','appendonlydir is mode 0555. Valkey can’t open its AOF files for writing.','Show Instance',()=>this.openInst('valkey-erp')):chk('OK','Data permissions','All instance directories are writable by your user.'),
+      s.drift?chk('Warning','Configuration drift · pg17-dev','Effective postgresql.conf differs from revision 5.','Review',()=>this.setState({page:'instance',sel:'pg17-dev',tab:'config'})):chk('OK','Configuration revisions','All effective configs match their revision.'),
+      chk('Warning','Disk space','Data volume is 82% full. 41 GB free.'),
+      chk('OK','Background agent','Login item registered and allowed in System Settings.'),
+      chk('OK','Runtimes',`${s.runtimes.length} runtimes. Managed digests verified. 1 external runtime isn’t pinned.`),
+      chk('OK','Registry','SQLite integrity_check passed · schema 7.'),
+      chk('OK','Protocol','App and daemon both speak protocol 1.')];
+    const setS=(k,v)=>this.setState(st=>({set:{...st.set,[k]:v}}));
+    const Tg=(label,sub,k)=>({label,sub,kind:'t',...toggleVm(s.set[k],()=>setS(k,!s.set[k]))});
+    const G={general:[{title:'Appearance',rows:[{label:'Appearance',sub:'Follows the window theme in this prototype.',kind:'s',opts:seg([['light','Light'],['dark','Dark']],theme,v=>this.setState({theme:v}))}]},{title:'Daemon',rows:[Tg('Start stacklyd at login','Runs as a login item in your user session.','launch'),{label:'stacklyd',sub:online?'Connected over Unix socket · protocol 1':'Disconnected · reconnecting',kind:'b',btn:'Restart Daemon',disabled:!online,act:()=>this.restartDaemon()}]}],
+      instances:[{title:'Defaults',rows:[Tg('Autostart new instances','Each instance can override this.','autostartDefault'),Tg('Notifications','Failures and finished operations.','notify')]}],
+      sources:[{title:'Catalog sources',rows:[{label:'official',sub:'catalog.stackly.dev · verified publisher key',kind:'x',text:'Trusted'},Tg('community','Unreviewed providers. Each needs explicit trust.','community')]}],
+      storage:[{title:'Locations',rows:[{label:'Instance data',sub:'Stored by stable ID',kind:'x',text:'~/Library/Application Support/Stackly'},{label:'Download cache',sub:'1.8 GB unused',kind:'b',btn:'Clean Up…',act:()=>this.toast('Removed 3 unused cached artifacts. Runtimes in use were kept.')}]},{title:'Logs',rows:[{label:'Keep logs for',sub:'Per instance, with a 50 MB cap',kind:'s',opts:seg([['7','7 days'],['14','14 days'],['30','30 days']],s.set.retention,v=>setS('retention',v))}]}],
+      updates:[{title:'Updates',rows:[{label:'Channel',sub:'App updates never touch instance data.',kind:'s',opts:seg([['stable','Stable'],['beta','Beta']],s.set.channel,v=>setS('channel',v))}]},{title:'Privacy',rows:[Tg('Share anonymous usage statistics','Off by default. Diagnostic bundles are never uploaded automatically.','telemetry')]}]};
+    Object.values(G).forEach(gs=>gs.forEach(g=>g.rows.forEach(r=>{r.isT=r.kind==='t';r.isS=r.kind==='s';r.isB=r.kind==='b';r.isX=r.kind==='x';})));
+    const stTabs={};['general','instances','sources','storage','updates'].forEach(k=>stTabs[k]={on:()=>this.setState({setTab:k}),bg:s.setTab===k?'var(--sel)':'transparent',fg:s.setTab===k?'var(--accent)':'var(--text2)'});
+    const obLabels=['Welcome','Background Agent','Storage','Catalog Trust','Command Line'];
+    const ob={s0:s.ob===0,s1:s.ob===1,s2:s.ob===2,s3:s.ob===3,s4:s.ob===4,hasPrev:s.ob>0,nextLabel:s.ob===4?'Get Started':s.ob===1&&!s.obPerm?'Not Now':'Continue',
+      next:()=>{if(s.ob===4){this.setState({page:'overview'});this.toast(s.obCli?'Command line tool installed at /usr/local/bin/stackly.':'Setup complete.');}else this.setState({ob:s.ob+1});},prev:()=>this.setState({ob:Math.max(0,s.ob-1)}),
+      permOk:s.obPerm,permNo:!s.obPerm,allow:()=>setTimeout(()=>this.setState({obPerm:true}),700),
+      tCli:toggleVm(s.obCli,()=>this.setState({obCli:!s.obCli})),tOfficial:toggleVm(true,()=>{}),tCommunity:toggleVm(s.obCommunity,()=>this.setState({obCommunity:!s.obCommunity})),
+      dots:obLabels.map((l,k)=>({bg:k===s.ob?'var(--text)':'var(--fill-strong)',w:k===s.ob?'18px':'7px',go:()=>this.setState({ob:k})})),step:`Step ${s.ob+1} of 5 · ${obLabels[s.ob]}`};
+    return {catQ:s.catQ,onCatQ:e=>this.setState({catQ:e.target.value}),segCat:seg(cats,s.catCat,v=>this.setState({catCat:v})),catList,noCat:catList.length===0,pv,
+      importProvider:()=>this.toast('Choose a provider folder. It’s validated locally and needs explicit trust.'),
+      rtList,installing,hasInstalling:installing.length>0,registerExternal:()=>this.toast('Choose an existing binary. Stackly verifies it and marks it external.'),goCatalog:()=>this.go('catalog'),
+      opList,checks,doctorRunning:s.doctorRunning,doctorLabel:s.doctorRunning?'Running…':'Run Doctor',doctorMeta:s.doctorRunning?'Checking permissions, runtimes, endpoints, locks, disk and registry…':`Last run today at ${s.doctorAt} · ${checks.filter(c=>c.sev!=='OK').length} issues`,
+      runDoctor:()=>{this.setState({doctorRunning:true});setTimeout(()=>this.setState({doctorRunning:false,doctorAt:'14:0'+(3+s.tick%6)+':1'+(s.tick%10)}),1600);},
+      bundle:[{f:'doctor.json',n:'8 checks'},{f:'instances.json',n:`${insts.length} entries · secrets redacted`},{f:'logs/valkey-erp.log',n:'Last 2,000 lines'},{f:'logs/stacklyd.log',n:'Last 2,000 lines'},{f:'runtimes.json',n:'Digests only'},{f:'system.json',n:'macOS 27.0 · arm64'}],
+      exportBundle:()=>this.toast('Saved stackly-diagnostics-20261016.zip to Downloads.'),
+      setGroups:G[s.setTab],stTabs,setTitle:{general:'General',instances:'Instances',sources:'Sources',storage:'Storage',updates:'Updates'}[s.setTab],ob};
+  }
+}
+</script>
+</body>
+</html>

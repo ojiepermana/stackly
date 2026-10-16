@@ -18,7 +18,7 @@ Daemon berjalan sebagai helper yang dibundel di dalam `.app` dan didaftarkan lew
 
 Halaman pertama yang menjelaskan status daemon dan izin background, lokasi storage, model isolasi yang jujur, trust catalog, dan pilihan memasang CLI, tanpa akun cloud.
 
-**Done when:** teks onboarding menjelaskan isolasi logis dan tidak menyebut provider disandbox; state izin dari fitur 15 tampil beserta langkah pemulihan; onboarding bisa dilewati dan dibuka lagi tanpa mengubah state daemon.
+**Done when:** teks onboarding menjelaskan isolasi logis dan tidak menyebut provider disandbox; state izin dari fitur 15 tampil beserta langkah pemulihan; onboarding bisa dilewati dan dibuka lagi tanpa mengubah state daemon; tampilan mengikuti lima langkah onboarding di mockup UI (Welcome, Background Agent, Storage, Catalog Trust, Command Line), dengan Not Now saat izin belum diberikan dan Get Started di langkah terakhir.
 
 **Trace:** PAGE-01, AC-061, JOURNEY-01
 
@@ -28,7 +28,7 @@ Halaman pertama yang menjelaskan status daemon dan izin background, lokasi stora
 
 Catalog bawaan (official) yang menampilkan publisher, revision, kategori, OS/arch, versi, trust, status kompatibilitas, dependency, kebutuhan disk, dan capability. Kombinasi yang unsupported terlihat jujur, bukan disembunyikan. Di baseline, catalog ikut terpasang bersama aplikasi dan hanya berubah lewat update aplikasi (fitur 61) atau import lokal (fitur 37); sinkronisasi catalog online ada di Deferred.
 
-**Done when:** provider untuk platform lain berlabel unsupported dengan alasan dan install ditolak oleh daemon, bukan hanya oleh UI; catalog menampilkan waktu pembaruan terakhir dari catalog terpasang dan tidak mengklaim lebih baru dari itu; `stackly provider list` dan `inspect` setara dengan GUI.
+**Done when:** provider untuk platform lain berlabel unsupported dengan alasan dan install ditolak oleh daemon, bukan hanya oleh UI; catalog menampilkan waktu pembaruan terakhir dari catalog terpasang dan tidak mengklaim lebih baru dari itu; `stackly provider list` dan `inspect` setara dengan GUI; layar Catalog mengikuti mockup UI: filter kategori, pencarian, kartu provider dengan status, panel detail dengan matrix versi per OS, capability yang tidak didukung ditulis not supported, lisensi, sumber, ukuran unduhan, dan provider planned tampil redup tanpa tombol install.
 
 **Trace:** REQ-002, REQ-033 (catalog bawaan), PAGE-08, BR-016, BR-025, NFR-014, AC-002, OQ-009, OQ-012
 
@@ -38,7 +38,7 @@ Catalog bawaan (official) yang menampilkan publisher, revision, kategori, OS/arc
 
 Resolusi selector (`@17`, `@stable`) ke exact version dan digest, download ke staging, verifikasi digest dan signature, ekstrak aman, validasi binary dan dependency, lalu commit atomik. Termasuk halaman Runtimes untuk melihat hasilnya.
 
-**Done when:** download yang putus lalu diulang hanya menghasilkan runtime utuh yang terverifikasi; artefak dengan digest yang tidak cocok tidak pernah dijalankan; traversal, symlink escape, dan archive bomb ditolak; artefak x86_64 di ARM64 tanpa dukungan ditolak dengan diagnosis; binary yang ditolak OS saat spawn (signature tidak valid atau quarantine) menghasilkan error terdiagnosis, bukan hang; tanpa internet dan tanpa cache muncul status offline yang benar; versi yang dipasang punya compatibility record sesuai PRD bagian 32.2, dan versi tanpa record tetap `UNVERIFIED`; fuzz target ekstraksi archive berjalan di CI; `stackly runtime install`, `list`, dan `inspect` setara dengan halaman Runtimes.
+**Done when:** download yang putus lalu diulang hanya menghasilkan runtime utuh yang terverifikasi; artefak dengan digest yang tidak cocok tidak pernah dijalankan; traversal, symlink escape, dan archive bomb ditolak; artefak x86_64 di ARM64 tanpa dukungan ditolak dengan diagnosis; binary yang ditolak OS saat spawn (signature tidak valid atau quarantine) menghasilkan error terdiagnosis, bukan hang; tanpa internet dan tanpa cache muncul status offline yang benar; versi yang dipasang punya compatibility record sesuai PRD bagian 32.2, dan versi tanpa record tetap `UNVERIFIED`; fuzz target ekstraksi archive berjalan di CI; `stackly runtime install`, `list`, dan `inspect` setara dengan halaman Runtimes; halaman Runtimes dan progress install bertahap (Download, Verify digest, Extract, Validate binary, Commit) mengikuti mockup UI.
 
 **Trace:** REQ-003, REQ-004, REQ-005, REQ-028, REQ-046 (cache kosong), VAL-003, VAL-010, VAL-011, PAGE-09, BR-025, AC-003, AC-004, AC-005, AC-049, AC-057, AC-059, AC-060, NFR-009, PRD bagian 27 dan 32.2
 
@@ -58,7 +58,7 @@ Manifest dan adapter PostgreSQL resmi: `initdb` dari runtime yang cocok, auth lo
 
 Wizard dan command untuk membuat instance: ID stabil, nama, runtime, endpoint, auth, persistence, storage, dan autostart, dengan preflight dan error per field. Field settings, endpoint, auth, dan storage dirender dari settings schema dan resources manifest provider (kelas field VAL-012), tidak dikodekan khusus untuk PostgreSQL. Inisialisasi hanya terjadi di direktori baru milik operasi itu.
 
-**Done when:** direktori yang sudah berisi data ditolak sebelum `initdb` berjalan; nama mengikuti VAL-001; port fixed yang konflik menghasilkan error, dan auto port dipersistenkan setelah bind berhasil; overlap IPv4/IPv6 dan wildcard terdeteksi; bind default ke loopback; path tidak keluar dari owned root, dan fuzz target validasi path berjalan di CI; fake provider dari fitur 14 mendapat form create tanpa kode SwiftUI khusus provider, field secret tampil sebagai input aman, dan field `immutable-after-init` ditandai; alur bisa diselesaikan dengan keyboard dan VoiceOver tanpa informasi yang hanya tersedia lewat warna atau hover.
+**Done when:** direktori yang sudah berisi data ditolak sebelum `initdb` berjalan; nama mengikuti VAL-001; port fixed yang konflik menghasilkan error, dan auto port dipersistenkan setelah bind berhasil; overlap IPv4/IPv6 dan wildcard terdeteksi; bind default ke loopback; path tidak keluar dari owned root, dan fuzz target validasi path berjalan di CI; fake provider dari fitur 14 mendapat form create tanpa kode SwiftUI khusus provider, field secret tampil sebagai input aman, dan field `immutable-after-init` ditandai; alur bisa diselesaikan dengan keyboard dan VoiceOver tanpa informasi yang hanya tersedia lewat warna atau hover; sheet New Instance mengikuti mockup UI: preflight tampil sebelum Create (runtime terverifikasi, nama tersedia, endpoint bebas di loopback IPv4 dan IPv6, direktori data kosong, ruang disk, secret di Keychain), konflik port fixed menawarkan port bebas tanpa menggantinya otomatis, dan perintah CLI yang setara bisa disalin.
 
 **Trace:** REQ-008, REQ-010, REQ-029 (bagian form), PAGE-04, BR-002, BR-004, BR-005, BR-008, VAL-001, VAL-004 sampai VAL-008, VAL-012, AC-008, AC-027, AC-029 (bagian form UI), AC-055, AC-056, NFR-009, NFR-012
 
@@ -68,7 +68,7 @@ Wizard dan command untuk membuat instance: ID stabil, nama, runtime, endpoint, a
 
 Menjalankan instance, menunggu readiness, dan menampilkan ringkasan instance: ID, versi dan digest, path dan ukuran data, endpoint, connection string yang dimasking, serta tombol copy. Inilah titik akhir JOURNEY-01.
 
-**Done when:** status process dan readiness tampil terpisah; `stackly instance connection --format uri` menyembunyikan password secara default; copy endpoint dan reveal secret butuh aksi eksplisit; dengan jaringan mati, instance dengan runtime yang sudah terpasang tetap bisa start, menampilkan status, dan memberi connection dari GUI dan CLI tanpa menyentuh catalog atau cek trust online; GUI dan CLI menunjukkan hasil yang sama; alur bisa diselesaikan dengan keyboard dan VoiceOver.
+**Done when:** status process dan readiness tampil terpisah; `stackly instance connection --format uri` menyembunyikan password secara default; copy endpoint dan reveal secret butuh aksi eksplisit; dengan jaringan mati, instance dengan runtime yang sudah terpasang tetap bisa start, menampilkan status, dan memberi connection dari GUI dan CLI tanpa menyentuh catalog atau cek trust online; GUI dan CLI menunjukkan hasil yang sama; alur bisa diselesaikan dengan keyboard dan VoiceOver; tab Summary mengikuti mockup UI: endpoint dengan tombol copy, readiness terpisah, connection string dengan Show Password dan Copy, secret reference, dependents, dan detail (ID, runtime, digest, provider revision, path dan ukuran data, uptime, restarts).
 
 **Trace:** REQ-012, REQ-046 (offline), PAGE-05, BR-010, AC-012, AC-027, AC-046, NFR-012, JOURNEY-01
 
@@ -78,7 +78,7 @@ Menjalankan instance, menunggu readiness, dan menampilkan ringkasan instance: ID
 
 Halaman Overview (ringkasan ready, stopped, failed, operasi aktif, peringatan kapasitas) dan Instances (cari, filter, urutkan; nama, provider, exact version, endpoint, lifecycle, readiness, ownership).
 
-**Done when:** keduanya menangani state loading, empty, error, stale, dan partial; error di satu instance tidak membuat seluruh layar kosong; ringkasan tidak dihitung dari PID saja; peringatan kapasitas memakai sumber yang terdefinisi (ruang disk) atau tampil unavailable sampai fitur 28 ada; `stackly instance list` dan `inspect` setara dengan GUI; layar bisa dipakai dengan keyboard dan VoiceOver.
+**Done when:** keduanya menangani state loading, empty, error, stale, dan partial; error di satu instance tidak membuat seluruh layar kosong; ringkasan tidak dihitung dari PID saja; peringatan kapasitas memakai sumber yang terdefinisi (ruang disk) atau tampil unavailable sampai fitur 28 ada; `stackly instance list` dan `inspect` setara dengan GUI; layar bisa dipakai dengan keyboard dan VoiceOver; Overview dan Instances mengikuti mockup UI, termasuk daftar Needs Attention yang menautkan ke layar perbaikan, filter status, tabel yang bisa diurutkan, inspector yang bisa disembunyikan, dan state hasil filter kosong.
 
 **Trace:** PAGE-02, PAGE-03, REQ-028, NFR-002, NFR-012, AC-027
 

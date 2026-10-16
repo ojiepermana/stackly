@@ -10,18 +10,21 @@ Stackly adalah aplikasi open source untuk memasang, membuat instance, menjalanka
 
 **Sumber:** `prd.md` versi 1.0.0 (15 Oktober 2026). ID `REQ`, `BR`, `VAL`, `NFR`, `AC`, `PAGE`, `JOURNEY`, dan `OQ` dari PRD dipertahankan di baris **Trace** tiap fitur supaya traceability tetap utuh; sebagian `RISK` dan `GOAL` juga dicantumkan di fitur yang paling langsung menanganinya.
 
+**Desain UI:** mockup Claude Design di `docs/mockups/Stackly.dc.html` (16 Oktober 2026), bahasa visual native macOS. Di seluruh scope ini disebut **mockup UI**. Aturan fidelity, selisih yang sudah diketahui, dan peta layar ke fitur pemiliknya ada di [ui-macos.md](ui-macos.md).
+
 _Ini rekomendasi supaya build kamu tetap tertib, bukan kewajiban. Lewati apa pun yang tidak cocok: kalau kamu sudah tahu cara membangun sebuah fitur, langsung pakai `/develop` dan lewati `/architect`. Kamu yang menentukan kapan sebuah fitur `done`._
 
 ## Urutan file
 
-Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan, dan nomor fitur berlanjut lintas file.
+Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan, dan nomor fitur berlanjut lintas file. `ui-macos.md` tidak bernomor karena jalur paralel: fiturnya dikerjakan berdampingan dengan Foundation (lihat [Catatan urutan](#catatan-urutan)).
 
 | File | Fase | Fitur | Status |
 | --- | --- | --- | --- |
-| [01-foundation.md](01-foundation.md) | Foundation dan Skeleton | 1 sampai 14 | 14 planned |
+| [01-foundation.md](01-foundation.md) | Foundation dan Skeleton | 1 sampai 11, 14 | 12 planned |
+| [ui-macos.md](ui-macos.md) | UI & desain macOS (jalur paralel SwiftUI) | 12, 13, 67 sampai 69 | 5 planned |
 | [02-instalasi-pertama.md](02-instalasi-pertama.md) | Instalasi pertama (JOURNEY-01, PostgreSQL, plus NATS dasar) | 15 sampai 23 | 9 planned |
 | [03-multi-versi-dan-instance.md](03-multi-versi-dan-instance.md) | Multi versi & instance (JOURNEY-02, JOURNEY-03) | 24 sampai 25 | 2 planned |
-| [04-kerja-harian.md](04-kerja-harian.md) | Kerja harian | 26 sampai 32 | 7 planned |
+| [04-kerja-harian.md](04-kerja-harian.md) | Kerja harian | 26 sampai 32, 70 | 8 planned |
 | [05-saat-instance-gagal.md](05-saat-instance-gagal.md) | Saat instance gagal (JOURNEY-05) | 33 sampai 35 | 3 planned |
 | [06-menambah-provider.md](06-menambah-provider.md) | Menambah provider (JOURNEY-07) | 36 sampai 38 | 3 planned |
 | [07-stack-enam-service.md](07-stack-enam-service.md) | Stack enam service | 39 sampai 43 | 5 planned |
@@ -101,13 +104,18 @@ Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan,
 | 64 | Fault injection, recovery & soak | Siap rilis stabil | planned |
 | 65 | Quality gates & release report | Siap rilis stabil | planned |
 | 66 | Runbook & dokumentasi pengguna | Siap rilis stabil | planned |
+| 67 | Komponen dasar Stackly | Foundation | planned |
+| 68 | Fixture tampilan & cek visual | Foundation | planned |
+| 69 | Menu aplikasi, perintah & shortcut keyboard | Foundation | planned |
+| 70 | Buka instance di aplikasi klien | Kerja harian | planned |
 
 ## Catatan urutan
 
 - **Mulai risiko besar lebih awal.** Fitur 3 (sumber runtime) bisa kamu kerjakan bersamaan dengan fitur 1 dan 2, karena hasilnya menentukan fitur 18.
 - **Helper dan signing dibuktikan di fase 02.** Bundling, signing development, dan registrasi helper dibuktikan di fitur 15; fitur 60 hanya menambah notarization, installer, pipeline rilis, dan third party notices. Minta signing account (OQ-012) ke release owner sejak awal, karena PRD menjadikannya release blocker (RISK-10).
 - **Engine dibuktikan pada provider kedua sejak awal.** NATS dasar lewat manifest saja (fitur 23) dijalankan sebelum fase 04, dan schema Traefik dengan routes berbentuk daftar sudah divalidasi di fitur 9 lalu dipakai sebagai uji form di fitur 29. Ini menjawab RISK-07 sesuai PRD bagian 33.2.
-- **Jalur SwiftUI paralel.** Fitur 12 dan 13 bisa dikerjakan engineer SwiftUI segera setelah kontrak IPC (fitur 6) stabil, memakai contract fixtures. Setelah itu setiap journey membawa layarnya sendiri, jadi GUI dan CLI tetap setara per fase.
+- **Jalur SwiftUI paralel.** Fitur 12, 13, 67, 68, dan 69 di [ui-macos.md](ui-macos.md) bisa dikerjakan engineer SwiftUI segera setelah kontrak IPC (fitur 6) stabil, memakai contract fixtures, dengan urutan 12, 13, lalu 67 sampai 69. Fitur 13 tetap dibutuhkan walking skeleton (fitur 14), dan 67 sampai 69 sebaiknya selesai sebelum layar pertama di fase 02 supaya semua layar dirakit dari komponen, fixture, dan peta perintah yang sama. Setelah itu setiap journey membawa layarnya sendiri sesuai peta layar di file itu, jadi GUI dan CLI tetap setara per fase.
+- **Mockup UI mengikuti scope, bukan sebaliknya.** Mockup mengunci tampilan dan state; kalau perilakunya berbeda dengan scope atau spec, scope dan spec yang menang. Hanya fitur 70 yang lahir dari mockup dan belum ada di PRD.
 - **Jalur kontributor sebelum lima provider.** Fase 06 sengaja datang sebelum fase 07, supaya NATS, Valkey, Traefik, MySQL, dan ClickHouse dibangun lewat SDK dan harness yang sama dengan kontributor (JOURNEY-07, REQ-029, gate G1).
 - **Enam provider sebelum environment.** Environment ERP di fase 08 memakai keenam provider, jadi fase 07 harus selesai lebih dulu.
 - **Checkpoint performa ringan di akhir fase 04.** Ukur NFR-001, NFR-003, dan NFR-006 sekali dengan fixture 100 instance terdaftar dan 10 berjalan, supaya masalah ketahuan sebelum IPC, registry, dan GUI membeku; angka final tetap diukur di fitur 64.
