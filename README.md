@@ -1,5 +1,7 @@
 # Stackly
 
+![Stackly macOS app mockup](docs/mockups/.thumbnail)
+
 Stackly installs, runs, and watches native developer tools (PostgreSQL, MySQL, NATS, ClickHouse, Valkey, Traefik) on one Mac: many versions and many instances, no Docker, no cloud account.
 
 One Rust daemon per user (`stacklyd`) owns the registry and every process. The command line client (`stackly`) and the SwiftUI app only talk to it over a private Unix socket.
