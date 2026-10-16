@@ -1,6 +1,6 @@
 # Stackly
 
-![Stackly macOS app mockup](docs/mockups/.thumbnail)
+![Stackly macOS app mockup](docs/mockups/stackly-overview.png)
 
 Stackly installs, runs, and watches native developer tools (PostgreSQL, MySQL, NATS, ClickHouse, Valkey, Traefik) on one Mac: many versions and many instances, no Docker, no cloud account.
 
