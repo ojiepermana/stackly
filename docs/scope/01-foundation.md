@@ -6,7 +6,7 @@ Fondasi yang dipijak semua journey: stack, tooling, sumber runtime, model domain
 
 ## Foundation
 
-### 1. Stack & arsitektur · needs a decision
+### 1. Stack & arsitektur · in-progress
 
 Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, supaya setiap journey dibangun di atas struktur nyata. PRD sudah mengunci Rust untuk core, daemon, dan CLI, SwiftUI untuk macOS, dan SQLite untuk registry; spec ini mengunci sisanya (toolchain, pembagian crate, encoding IPC) tanpa membuat crate kosong yang belum perlu.
 
@@ -14,7 +14,9 @@ Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, 
 
 **Trace:** REQ-001, REQ-050, NFR-010, OQ-005, PRD bagian 15 dan 16
 
-- [ ] Decide the stack (spec): `/architect stack & arsitektur`
+**Pointer:** spec [0001](../specs/0001-stack-arsitektur/index.md)
+
+- [x] Decide the stack (spec): `/architect stack & arsitektur`
 - [ ] Scaffold from the decision: `/develop stack & arsitektur`
 
 ### 2. Coding standards & tooling
