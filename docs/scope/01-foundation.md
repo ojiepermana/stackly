@@ -27,8 +27,10 @@ Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang forma
 
 **Trace:** REQ-051, OQ-011, PRD bagian 27, 28, 31, 32.1, dan 32.3
 
+**Pointer:** code in `.github/workflows/ci.yml`, `.githooks/pre-commit`, `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `crates/testkit/`
+
 - [x] Capture conventions and tooling choices: `/audit`
-- [ ] Install the tooling: `/develop coding standards & tooling`
+- [x] Install the tooling: `/develop coding standards & tooling`
 
 ### 3. Sumber & packaging runtime · needs a decision
 

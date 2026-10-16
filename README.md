@@ -19,9 +19,17 @@ cargo install --locked typeshare-cli --version 1.13.4
 
 ## Common commands
 
+Turn on the pre commit hook once per clone (rustfmt, clippy, and swift-format on what you change):
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ```bash
 cargo build --workspace             # daemon, CLI, and libraries
 cargo test --workspace              # Rust tests
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo deny check                    # licenses, RustSec advisories, bans, sources
 cargo xtask codegen                 # regenerate Swift types and JSON Schemas from stackly-protocol
 cargo xtask codegen --check         # fail when committed generated files drift
 cargo xtask check-deps              # crate dependency direction and the unsafe policy

@@ -18,7 +18,11 @@ Journey (satu user journey dibangun lengkap, termasuk semua state, error, dan po
 From the repo root. All of these work on the feature 1 scaffold (spec 0001).
 
 ```bash
+git config core.hooksPath .githooks   # once per clone: turns on the pre commit hook
 cargo test -p <crate> [test_name_filter]
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo fmt --all
+cargo deny check            # licenses, RustSec advisories, bans, sources
 cargo xtask codegen          # rerun after any change in stackly-protocol
 cargo xtask codegen --check  # fails when committed generated files drift
 cargo xtask check-deps       # crate dependency direction and unsafe rules
@@ -44,18 +48,18 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-slug/index.md`, with the reaso
 - Every crate inherits the workspace lints with `[lints] workspace = true` and never writes its own `[lints]` table; `cargo xtask check-deps` rejects a crate that does not.
 - Rust API style from the scaffold: `#[must_use]` on constructors and pure getters, a `# Errors` section on every public fallible function, `#[non_exhaustive]` on public error enums and on structs that will grow, and error messages in lowercase with no trailing period. Rust test names are snake_case sentences that state the behavior. Code a later feature replaces is marked `// provisional: F<n>`.
 - Every public item in library crates and Swift packages has a doc comment. Code, comments, doc comments, test names, error messages, and commits are in English; scope, spec, and review docs stay in Indonesian. Commits follow `type(scope): subject`.
-- Tests come after each build (`/test`). Domain gets plain unit tests with no fakes. Core gets unit tests against `stackly-testkit` fakes, not mocked adapters. Adapters, daemon, and supervisor get integration tests in each crate's `tests/` against real systems, each with its own ephemeral test root, ports, and guards that reap child processes; never the real Application Support folder, never global state.
+- Tests come after each build (`/test`). Domain gets plain unit tests with no fakes. Core gets unit tests against `stackly-testkit` fakes, not mocked adapters. Adapters, daemon, and supervisor get integration tests in each crate's `tests/` against real systems, each with its own ephemeral test root, ports, and guards that reap child processes; never the real Application Support folder, never global state. Take the root from `stackly_testkit::TestRoot` and ports from `stackly_testkit::allocate_port`, and use only fixture credentials, never real ones.
 - Keep PRD IDs (`REQ`, `AC`, `NFR`, `OQ`, and the rest) stable in specs and tests. Test status starts at `NOT_RUN`, a fixture pass is not native runtime evidence, and missing hardware, binaries, or signing is recorded as `BLOCKED`.
 - UI meets WCAG AA contrast, has VoiceOver labels, works fully from the keyboard, and follows Dynamic Type.
 
 ## Tooling
 
-Recorded here, installed by `/develop coding standards & tooling` (feature 2).
+Installed by feature 2: `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `.githooks/pre-commit`, and `.github/workflows/ci.yml`. Every CI job runs locally with the commands above.
 
-- Format with rustfmt and swift-format (`.swift-format`). Clippy runs with default lints plus `clippy::unwrap_used`, and warnings fail (`-D warnings`). Library crates turn on `missing_docs`.
+- Format with rustfmt and swift-format (`.swift-format`). Clippy runs with default lints plus `clippy::unwrap_used`, and warnings fail (`-D warnings`). `missing_docs` is on for every crate through `[workspace.lints]`, so bins and each integration test file also start with a `//!` doc. `unwrap()` is allowed only inside `#[test]` functions and `#[cfg(test)]` modules, so integration test helpers use `expect`.
 - swift-format ships with the Xcode 27 toolchain (`xcrun swift-format`), so it needs no separate install. It skips `Generated/`, which typeshare writes with tabs.
 - Pre commit: a plain git hook, no Node or extra tools, running `cargo fmt --check`, clippy on the changed crates, and `swift-format lint`. Tests run in CI.
-- CI on GitHub Actions as spec 0001 describes: Linux for fmt, clippy, tests, `cargo-deny`, and the portability check (clippy and tests there use `--workspace --exclude stackly-platform-macos`); `macos-26` for Rust jobs on darwin; one self hosted macOS 27 Mac for Swift and real runtime jobs. Builds never remap source paths.
+- CI on GitHub Actions as spec 0001 describes: Linux for fmt, clippy, tests, `cargo-deny`, and the portability check (clippy and tests there use `--workspace --exclude stackly-platform-macos`); `macos-26` for Rust jobs on darwin; one self hosted macOS 27 Mac for Swift and real runtime jobs (runner labels `self-hosted, macOS, ARM64, macos-27`; it never runs fork pull requests and holds no signing secrets). Builds never remap source paths.
 - `typeshare-cli` is pinned in xtask. The pin is 1.13.4 (`TYPESHARE_CLI_VERSION` in `xtask/src/codegen.rs`); install it with `cargo install --locked typeshare-cli --version 1.13.4`.
 - Markdown follows `.markdownlint.jsonc`: no line length limit, only `<a>` as inline HTML, compact tables.
 
