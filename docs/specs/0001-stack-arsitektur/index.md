@@ -79,6 +79,7 @@ Aturan ini dijaga oleh `cargo xtask check-deps`, yang membaca `cargo metadata` d
 - `stackly-core` tidak bergantung pada `stackly-protocol` atau `stackly-storage`. Pemetaan dari domain ke DTO terjadi di `stacklyd`.
 - `stackly-cli` tidak pernah bergantung pada `stackly-core` atau `stackly-storage`, karena CLI tidak menjalankan binary provider dan tidak menulis registry.
 - `stackly-testkit` hanya boleh muncul sebagai dependency berjenis dev, dan tidak bergantung pada `stackly-core`.
+- [Spec 0002](../0002-coding-standards-tooling/index.md) menambah crate daun `stackly-evidence` (`crates/evidence`) dengan aturannya sendiri: tanpa crate Stackly lain, hanya dependency dev kecuali di `xtask` dan `stackly-testkit`, dan boleh menjadi dependency dev `stackly-domain` serta `stackly-protocol`.
 - `#![allow(unsafe_code)]` hanya boleh ada di `stackly-platform-macos` (dan `stackly-storage` bila nanti terbukti perlu). `check-deps` memindai source crate lain dan gagal kalau menemukannya.
 - Cek portabilitas (NFR-010, AC-050): di runner Linux, jalankan `cargo check` native dan `cargo check --target aarch64-pc-windows-msvc` untuk `stackly-domain`, `stackly-platform`, `stackly-protocol`, dan `stackly-core`. `check` tidak melakukan link, jadi tidak butuh MSVC. Job Linux lain (clippy, test) memakai `--workspace --exclude stackly-platform-macos`.
 

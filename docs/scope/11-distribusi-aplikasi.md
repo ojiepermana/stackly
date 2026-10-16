@@ -20,7 +20,7 @@ Update GUI, CLI, dan daemon yang memeriksa kompatibilitas protokol dan schema re
 
 **Done when:** setelah update, runtime ID dan data provider tidak berubah; operasi aktif ditangani dengan aman; schema yang tidak kompatibel mencegah rollback buta; cek update hanya mengambil metadata, dan hanya setelah ada persetujuan.
 
-**Trace:** REQ-044, BR-013, AC-044, AC-065, PAGE-14 (update channel), PRD bagian 24.3 dan 25
+**Trace:** REQ-044, BR-013, AC-044, AC-065, RISK-09, PAGE-14 (update channel), PRD bagian 24.3 dan 25
 
 - [ ] Design it (spec): `/architect update aplikasi & kompatibilitas`
 

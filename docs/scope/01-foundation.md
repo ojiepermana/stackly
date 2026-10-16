@@ -27,10 +27,19 @@ Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang forma
 
 **Trace:** REQ-051, OQ-011, PRD bagian 27, 28, 31, 32.1, dan 32.3
 
-**Pointer:** code in `.github/workflows/ci.yml`, `.githooks/pre-commit`, `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `crates/testkit/`
+**Pointer:** spec [0002](../specs/0002-coding-standards-tooling/index.md) · code in `.github/workflows/ci.yml`, `.githooks/pre-commit`, `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `crates/testkit/`
 
 - [x] Capture conventions and tooling choices: `/audit`
 - [x] Install the tooling: `/develop coding standards & tooling`
+- [x] Decide evidence, native tests, and baseline (spec): `/architect coding standards & tooling`
+- [ ] Build the evidence standard: `/develop coding standards & tooling`
+  - [ ] Rust evidence path end to end: `stackly-evidence`, `check-deps` rules, `cargo xtask evidence run`, `linux` and `macos-rust` through the wrapper (REQ-051)
+  - [ ] `cargo xtask evidence check` and `evidence new`, shared examples in `schemas/evidence/`
+  - [ ] Swift path: `StacklyTestSupport` trait, `macos-swift` through the wrapper
+  - [ ] `native.yml`, nightly schedule, fixture credential leak scan
+  - [ ] Baseline recorded on the self hosted CI Mac (needs the runner registered, OQ-011)
+- [ ] Verify it: `/check verify coding standards & tooling`
+- [ ] Test it: `/test coding standards & tooling`
 
 ### 3. Sumber & packaging runtime · needs a decision
 
@@ -68,7 +77,7 @@ Daemon per user dengan protokol berversi di atas encoding dan framing yang dikun
 
 **Done when:** handshake menolak protocol major yang berbeda dan peer dari user lain sebelum ada efek samping; client memverifikasi pemilik endpoint socket sebelum mengirim credential atau mutasi; hanya satu daemon per user yang aktif, daemon kedua berhenti tanpa menyentuh registry, socket, atau proses instance, dan `stackly daemon status` menunjukkan daemon pemiliknya; tidak ada listener TCP admin; batas ukuran pesan dan subscription berlaku; setiap error memakai satu envelope stabil sesuai VAL-020; reconnect memakai snapshot plus cursor; fixture kontrak dipakai bersama oleh Rust dan Swift; fuzz target framing IPC berjalan di CI.
 
-**Trace:** REQ-047, REQ-048, BR-011, VAL-017, VAL-020, NFR-001, NFR-004, NFR-006, NFR-011, AC-047, AC-070, AC-071, AC-079, NFR-009, RISK-03, OQ-005 (generation tooling), PRD bagian 18
+**Trace:** REQ-047, REQ-048, BR-011, VAL-017, VAL-020, NFR-001, NFR-004, NFR-006, NFR-011, AC-047, AC-070, AC-071, AC-079, NFR-009, RISK-03, RISK-09, OQ-005 (generation tooling), PRD bagian 18
 
 - [ ] Design it (spec): `/architect protokol IPC & daemon`
 
