@@ -1,0 +1,10 @@
+# Settings for `typeshare`, run by `cargo xtask codegen`.
+# Swift 6 rejects DTOs that are not Sendable when they cross from the client
+# to the UI on the main actor.
+[swift]
+prefix = ""
+default_decorators = ["Sendable", "Equatable"]
+default_generic_constraints = []
+codablevoid_constraints = []
+
+[swift.type_mappings]

@@ -1,0 +1,9 @@
+/target/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.DS_Store
+
+# SwiftPM build output from `swift test`
+.build/
+.swiftpm/

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProtocolVersion",
+  "description": "Version of the IPC protocol a peer speaks.\n\n`major` changes when the wire breaks, `minor` when it only gains optional\nadditions.",
+  "type": "object",
+  "properties": {
+    "major": {
+      "description": "Bumped for every breaking change to the wire.",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "minor": {
+      "description": "Bumped for every compatible addition.",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "major",
+    "minor"
+  ]
+}

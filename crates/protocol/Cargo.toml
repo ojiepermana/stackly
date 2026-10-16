@@ -1,0 +1,20 @@
+[package]
+name = "stackly-protocol"
+description = "Stackly IPC contract: DTOs shared by the daemon, the CLI, and the generated Swift client."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+schemars.workspace = true
+serde.workspace = true
+typeshare.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[lints]
+workspace = true
