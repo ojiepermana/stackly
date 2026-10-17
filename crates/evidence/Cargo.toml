@@ -1,0 +1,21 @@
+[package]
+name = "stackly-evidence"
+description = "Stackly test evidence records: types, rules, the test guard, and fixture credentials (spec 0002)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+jiff.workspace = true
+schemars = { workspace = true, features = ["jiff02", "uuid1"] }
+serde.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true

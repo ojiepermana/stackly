@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BaselineHost",
+  "description": "The fingerprint of the self hosted CI Mac, committed as\n`evidence/baseline-host.json` by `cargo xtask evidence baseline`.",
+  "type": "object",
+  "properties": {
+    "host": {
+      "description": "The same fields as `context.host`.",
+      "$ref": "#/$defs/Host"
+    },
+    "recordedAt": {
+      "description": "When the baseline was recorded.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "runnerName": {
+      "description": "The GitHub runner name of the Mac.",
+      "type": "string"
+    },
+    "schema": {
+      "description": "Always [`BASELINE_SCHEMA`].",
+      "type": "string"
+    },
+    "storage": {
+      "description": "The volume that holds the temporary directory.",
+      "$ref": "#/$defs/Storage"
+    }
+  },
+  "required": [
+    "schema",
+    "recordedAt",
+    "runnerName",
+    "host",
+    "storage"
+  ],
+  "$defs": {
+    "Host": {
+      "description": "The machine a run or a baseline was recorded on.\n\nHolds no host name and no user name.",
+      "type": "object",
+      "properties": {
+        "arch": {
+          "description": "`std::env::consts::ARCH`, for example `aarch64`.",
+          "type": "string"
+        },
+        "chip": {
+          "description": "`sysctl -n machdep.cpu.brand_string`, null outside macOS.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "efficiencyCores": {
+          "description": "`sysctl -n hw.perflevel1.physicalcpu`, null when the key is missing.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "default": null,
+          "minimum": 0
+        },
+        "hardwareModel": {
+          "description": "`sysctl -n hw.model`, null outside macOS.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "memoryBytes": {
+          "description": "`sysctl -n hw.memsize`, null outside macOS.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "default": null,
+          "minimum": 0
+        },
+        "os": {
+          "description": "`std::env::consts::OS`, for example `macos` or `linux`.",
+          "type": "string"
+        },
+        "osBuild": {
+          "description": "`sw_vers -buildVersion` on macOS, null elsewhere.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "osVersion": {
+          "description": "`sw_vers -productVersion` on macOS, `uname -r` on Linux.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "performanceCores": {
+          "description": "`sysctl -n hw.perflevel0.physicalcpu`, null when the key is missing.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "default": null,
+          "minimum": 0
+        },
+        "virtualized": {
+          "description": "True when `sysctl -n kern.hv_vmm_present` is 1, null outside macOS.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "os",
+        "arch"
+      ]
+    },
+    "Storage": {
+      "description": "The volume that holds test roots and benchmark data.",
+      "type": "object",
+      "properties": {
+        "filesystem": {
+          "description": "`FilesystemType` from `diskutil info -plist`.",
+          "type": "string"
+        },
+        "internal": {
+          "description": "`Internal` from `diskutil info -plist`.",
+          "type": "boolean"
+        },
+        "solidState": {
+          "description": "`SolidState` from `diskutil info -plist`.",
+          "type": "boolean"
+        },
+        "volume": {
+          "description": "`MountPoint` from `diskutil info -plist`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "volume",
+        "filesystem",
+        "internal",
+        "solidState"
+      ]
+    }
+  }
+}

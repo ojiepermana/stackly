@@ -1,0 +1,4 @@
+# Generated JSON Schemas (cargo xtask codegen). Their source of truth, the
+# Rust types in crates/evidence, is already in the graph; the schemas would
+# only add hundreds of generic `type` and `description` nodes.
+schemas/evidence/*.schema.json

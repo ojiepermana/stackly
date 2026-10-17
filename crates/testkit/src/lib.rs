@@ -6,6 +6,9 @@
 //! Integration tests take their own [`TestRoot`] and ports from
 //! [`allocate_port`], so they never touch the real per user folders, never
 //! share state, and can run in parallel.
+//!
+//! Tests that prove a PRD ID write evidence through [`evidence`], the
+//! re-exported `stackly-evidence` crate (spec 0002).
 
 mod port;
 mod test_root;
@@ -15,6 +18,7 @@ use std::path::{Path, PathBuf};
 use stackly_platform::{DirectoryResolver, PlatformError};
 
 pub use port::allocate_port;
+pub use stackly_evidence as evidence;
 pub use test_root::TestRoot;
 
 /// A [`DirectoryResolver`] that points at a test root instead of the real

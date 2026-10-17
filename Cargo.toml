@@ -7,6 +7,7 @@ members = [
     "crates/core",
     "crates/platform-macos",
     "crates/testkit",
+    "crates/evidence",
     "apps/daemon",
     "apps/cli",
     "xtask",
@@ -24,6 +25,7 @@ publish = false
 # Stackly crates
 stackly-core = { path = "crates/core" }
 stackly-domain = { path = "crates/domain" }
+stackly-evidence = { path = "crates/evidence" }
 stackly-platform = { path = "crates/platform" }
 stackly-platform-macos = { path = "crates/platform-macos" }
 stackly-protocol = { path = "crates/protocol" }
@@ -33,6 +35,8 @@ stackly-testkit = { path = "crates/testkit" }
 anyhow = "1.0"
 cargo_metadata = "0.23"
 clap = { version = "4.6", features = ["derive"] }
+ctrlc = { version = "3.5", features = ["termination"] }
+jiff = { version = "0.2", features = ["serde"] }
 schemars = "1.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -42,7 +46,7 @@ toml = "0.9"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }
 typeshare = "1.0"
-uuid = { version = "1.28", features = ["v7"] }
+uuid = { version = "1.28", features = ["v7", "serde"] }
 
 [workspace.lints.rust]
 missing_docs = "warn"

@@ -13,6 +13,10 @@
 #
 # No job remaps source paths: the Swift fixture tests find protocols/fixtures
 # through #filePath.
+#
+# Tests run through `cargo xtask evidence run` (spec 0002): tests that prove a
+# PRD ID write evidence records, and each job uploads target/evidence/ as an
+# artifact, even when the tests fail.
 
 name: CI
 
@@ -54,8 +58,14 @@ jobs:
         run: cargo fmt --all --check
       - name: clippy
         run: cargo clippy --workspace --exclude stackly-platform-macos --all-targets --locked -- -D warnings
-      - name: Tests
-        run: cargo test --workspace --exclude stackly-platform-macos --locked
+      - name: Tests (as fixture evidence)
+        run: cargo xtask evidence run --kind fixture -- cargo test --workspace --exclude stackly-platform-macos --locked --no-fail-fast
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: evidence-linux
+          path: target/evidence/
       - name: Dependency direction and unsafe rules
         run: cargo xtask check-deps
       - name: Portable crates build natively
@@ -114,8 +124,14 @@ jobs:
         run: cargo build --workspace --locked
       - name: clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Tests
-        run: cargo test --workspace --locked
+      - name: Tests (as fixture evidence)
+        run: cargo xtask evidence run --kind fixture -- cargo test --workspace --locked --no-fail-fast
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: evidence-macos-rust
+          path: target/evidence/
 
   macos-swift:
     name: macOS 27 Swift (self hosted)

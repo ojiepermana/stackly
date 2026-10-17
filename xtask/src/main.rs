@@ -3,6 +3,7 @@
 mod build_app;
 mod check_deps;
 mod codegen;
+mod evidence;
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -18,11 +19,13 @@ Tasks:
   check-deps           Check crate dependency direction and the unsafe policy
   build-app            Build the macOS app with xcodebuild (scheme Stackly, Debug)
   build-app --release  Same, with the Release configuration
+  evidence run --kind <fixture|native> [--out <folder>] -- <command>
+                       Run a test command as evidence and write report.json
 ";
 
 fn main() -> ExitCode {
     match run() {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(code) => code,
         Err(err) => {
             eprintln!("error: {err:#}");
             ExitCode::FAILURE
@@ -30,19 +33,23 @@ fn main() -> ExitCode {
     }
 }
 
-fn run() -> Result<()> {
+fn run() -> Result<ExitCode> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
     let root = repo_root();
+    let done = |result: Result<()>| result.map(|()| ExitCode::SUCCESS);
     match args.as_slice() {
-        ["codegen"] => codegen::run(&root, codegen::Mode::Write),
-        ["codegen", "--check"] => codegen::run(&root, codegen::Mode::Check),
-        ["check-deps"] => check_deps::run(&root),
-        ["build-app"] => build_app::run(&root, build_app::Configuration::Debug),
-        ["build-app", "--release"] => build_app::run(&root, build_app::Configuration::Release),
+        ["codegen"] => done(codegen::run(&root, codegen::Mode::Write)),
+        ["codegen", "--check"] => done(codegen::run(&root, codegen::Mode::Check)),
+        ["check-deps"] => done(check_deps::run(&root)),
+        ["build-app"] => done(build_app::run(&root, build_app::Configuration::Debug)),
+        ["build-app", "--release"] => {
+            done(build_app::run(&root, build_app::Configuration::Release))
+        }
+        ["evidence", rest @ ..] => evidence::run(rest),
         ["help" | "--help" | "-h"] => {
             print!("{USAGE}");
-            Ok(())
+            Ok(ExitCode::SUCCESS)
         }
         [] => bail!("no task given\n\n{USAGE}"),
         _ => bail!("unknown task `{}`\n\n{USAGE}", args.join(" ")),

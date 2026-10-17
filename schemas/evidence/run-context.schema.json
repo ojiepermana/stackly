@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RunContext",
+  "description": "What the wrapper knows about a run, computed once at its start.\n\n`cargo xtask evidence run` writes it to `run.json` and copies it into\nevery record of `report.json`; `cargo xtask evidence new` fills it for a\nmanual record. Raw record files written by a test carry none.",
+  "type": "object",
+  "properties": {
+    "baseline": {
+      "description": "How the host compares with `evidence/baseline-host.json`, or null\nwhile that file does not exist.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaselineMatch"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "ci": {
+      "description": "GitHub Actions details, or null outside CI.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Ci"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "command": {
+      "description": "The argv the wrapper ran, or null for a manual record.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "default": null,
+      "items": {
+        "type": "string"
+      }
+    },
+    "host": {
+      "description": "The machine the run happened on.",
+      "$ref": "#/$defs/Host"
+    },
+    "runId": {
+      "description": "The run ID from the wrapper, or null for a manual record.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "default": null
+    },
+    "runKind": {
+      "description": "The kind of the run, or null for a manual record.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Kind"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "sourceCommit": {
+      "description": "The commit that was tested, from `git rev-parse HEAD`. In a pull\nrequest this is the temporary merge commit GitHub builds.",
+      "type": "string"
+    },
+    "sourceDirty": {
+      "description": "True when `git status --porcelain --untracked-files=normal` was not\nempty at the start of the run. A dirty run is never release evidence.",
+      "type": "boolean"
+    },
+    "toolchain": {
+      "description": "Toolchain versions found on the host.",
+      "$ref": "#/$defs/Toolchain"
+    }
+  },
+  "required": [
+    "sourceCommit",
+    "sourceDirty",
+    "host",
+    "toolchain"
+  ],
+  "$defs": {
+    "BaselineMatch": {
+      "description": "How a run's host compares with the recorded baseline host.",
+      "type": "object",
+      "properties": {
+        "matches": {
+          "description": "True when model, chip, memory, core counts, and `virtualized` are all\npresent and equal.",
+          "type": "boolean"
+        },
+        "osBuildMatches": {
+          "description": "True when the macOS build also matches, tracked apart because it\nchanges more often than the hardware.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "matches",
+        "osBuildMatches"
+      ]
+    },
+    "Ci": {
+      "description": "GitHub Actions details of a CI run.",
+      "type": "object",
+      "properties": {
+        "event": {
+          "description": "`GITHUB_EVENT_NAME`, for example `pull_request` or `push`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "headSha": {
+          "description": "`STACKLY_CI_HEAD_SHA`: the pull request head, or the pushed commit.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "job": {
+          "description": "`GITHUB_JOB`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "ref": {
+          "description": "`GITHUB_REF`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "runAttempt": {
+          "description": "`GITHUB_RUN_ATTEMPT`.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "default": null,
+          "minimum": 0
+        },
+        "runUrl": {
+          "description": "The run URL, built from `GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`,\nand `GITHUB_RUN_ID`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "runner": {
+          "description": "`RUNNER_NAME`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "workflow": {
+          "description": "`GITHUB_WORKFLOW`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Host": {
+      "description": "The machine a run or a baseline was recorded on.\n\nHolds no host name and no user name.",
+      "type": "object",
+      "properties": {
+        "arch": {
+          "description": "`std::env::consts::ARCH`, for example `aarch64`.",
+          "type": "string"
+        },
+        "chip": {
+          "description": "`sysctl -n machdep.cpu.brand_string`, null outside macOS.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "efficiencyCores": {
+          "description": "`sysctl -n hw.perflevel1.physicalcpu`, null when the key is missing.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "default": null,
+          "minimum": 0
+        },
+        "hardwareModel": {
+          "description": "`sysctl -n hw.model`, null outside macOS.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "memoryBytes": {
+          "description": "`sysctl -n hw.memsize`, null outside macOS.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "default": null,
+          "minimum": 0
+        },
+        "os": {
+          "description": "`std::env::consts::OS`, for example `macos` or `linux`.",
+          "type": "string"
+        },
+        "osBuild": {
+          "description": "`sw_vers -buildVersion` on macOS, null elsewhere.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "osVersion": {
+          "description": "`sw_vers -productVersion` on macOS, `uname -r` on Linux.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "performanceCores": {
+          "description": "`sysctl -n hw.perflevel0.physicalcpu`, null when the key is missing.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "default": null,
+          "minimum": 0
+        },
+        "virtualized": {
+          "description": "True when `sysctl -n kern.hv_vmm_present` is 1, null outside macOS.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "os",
+        "arch"
+      ]
+    },
+    "Kind": {
+      "description": "Whether a test needs only fakes and fixtures, or a real provider runtime\nor the self hosted macOS 27 Mac.",
+      "oneOf": [
+        {
+          "description": "Fakes, mocks, dummy servers, fake providers, or contract fixtures.",
+          "type": "string",
+          "const": "fixture"
+        },
+        {
+          "description": "A real provider binary, or something only the macOS 27 Mac has.",
+          "type": "string",
+          "const": "native"
+        }
+      ]
+    },
+    "Toolchain": {
+      "description": "Toolchain versions found on the host.",
+      "type": "object",
+      "properties": {
+        "rustc": {
+          "description": "The second token of `rustc --version`, for example `1.99.1`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "swift": {
+          "description": "The version number from `swift --version`, for example `6.4`, or\nnull without Swift.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "xcode": {
+          "description": "The two lines of `xcodebuild -version` joined, for example\n`27.0 (27A266a)`, or null without Xcode.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    }
+  }
+}

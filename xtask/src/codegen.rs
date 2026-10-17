@@ -1,5 +1,6 @@
-//! `cargo xtask codegen [--check]`: Swift contract types and JSON Schemas,
-//! both generated from `stackly-protocol`.
+//! `cargo xtask codegen [--check]`: Swift contract types and JSON Schemas
+//! generated from `stackly-protocol`, plus the evidence JSON Schemas
+//! generated from `stackly-evidence` (spec 0002).
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -13,6 +14,9 @@ const PROTOCOL_SRC: &str = "crates/protocol/src";
 const TYPESHARE_CONFIG: &str = "typeshare.toml";
 const SWIFT_OUTPUT: &str = "clients/swift/Sources/StacklyClient/Generated/StacklyProtocol.swift";
 const SCHEMA_DIR: &str = "protocols/schemas";
+const EVIDENCE_SCHEMA_DIR: &str = "schemas/evidence";
+/// Every folder whose `*.schema.json` files are all generated.
+const SCHEMA_DIRS: [&str; 2] = [SCHEMA_DIR, EVIDENCE_SCHEMA_DIR];
 const SCHEMA_SUFFIX: &str = ".schema.json";
 
 /// Whether to write the generated files or only compare them.
@@ -79,14 +83,20 @@ fn generate_swift(root: &Path) -> Result<Generated> {
 }
 
 fn generate_schemas() -> Result<Vec<Generated>> {
-    stackly_protocol::json_schemas()
+    let protocol = schema_files(SCHEMA_DIR, stackly_protocol::json_schemas())?;
+    let evidence = schema_files(EVIDENCE_SCHEMA_DIR, stackly_evidence::json_schemas())?;
+    Ok(protocol.into_iter().chain(evidence).collect())
+}
+
+fn schema_files(dir: &str, schemas: Vec<(&str, schemars::Schema)>) -> Result<Vec<Generated>> {
+    schemas
         .into_iter()
         .map(|(stem, schema)| {
             let mut contents = serde_json::to_string_pretty(&schema)
                 .with_context(|| format!("cannot serialize the {stem} schema"))?;
             contents.push('\n');
             Ok(Generated {
-                path: Path::new(SCHEMA_DIR).join(format!("{stem}{SCHEMA_SUFFIX}")),
+                path: Path::new(dir).join(format!("{stem}{SCHEMA_SUFFIX}")),
                 contents,
             })
         })
@@ -132,23 +142,27 @@ fn check(root: &Path, generated: &[Generated]) -> Result<()> {
         eprintln!("  out of date: {}", path.display());
     }
     bail!(
-        "generated files drifted from stackly-protocol; run `cargo xtask codegen` and commit the result"
+        "generated files drifted from stackly-protocol or stackly-evidence; run `cargo xtask codegen` and commit the result"
     )
 }
 
-/// Schema files on disk that no contract type generates any more.
+/// Schema files on disk that no type generates any more. Only the top level
+/// of each schema folder is generated; `schemas/evidence/examples/` holds
+/// hand written files and is left alone.
 fn stale_schemas(root: &Path, generated: &[Generated]) -> Result<Vec<PathBuf>> {
-    let dir = root.join(SCHEMA_DIR);
-    if !dir.exists() {
-        return Ok(Vec::new());
-    }
     let mut stale = Vec::new();
-    for entry in fs::read_dir(&dir).with_context(|| format!("cannot read {}", dir.display()))? {
-        let name = entry?.file_name();
-        let Some(name) = name.to_str() else { continue };
-        let path = Path::new(SCHEMA_DIR).join(name);
-        if name.ends_with(SCHEMA_SUFFIX) && !generated.iter().any(|file| file.path == path) {
-            stale.push(path);
+    for schema_dir in SCHEMA_DIRS {
+        let dir = root.join(schema_dir);
+        if !dir.exists() {
+            continue;
+        }
+        for entry in fs::read_dir(&dir).with_context(|| format!("cannot read {}", dir.display()))? {
+            let name = entry?.file_name();
+            let Some(name) = name.to_str() else { continue };
+            let path = Path::new(schema_dir).join(name);
+            if name.ends_with(SCHEMA_SUFFIX) && !generated.iter().any(|file| file.path == path) {
+                stale.push(path);
+            }
         }
     }
     Ok(stale)

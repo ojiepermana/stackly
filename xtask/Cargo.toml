@@ -1,6 +1,6 @@
 [package]
 name = "xtask"
-description = "Stackly repo tasks: codegen, dependency rules, and the app build."
+description = "Stackly repo tasks: codegen, dependency rules, the app build, and test evidence runs."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,10 +11,15 @@ publish.workspace = true
 [dependencies]
 anyhow.workspace = true
 cargo_metadata.workspace = true
+ctrlc.workspace = true
+jiff.workspace = true
+schemars.workspace = true
 serde_json.workspace = true
+stackly-evidence.workspace = true
 stackly-protocol.workspace = true
 tempfile.workspace = true
 toml.workspace = true
+uuid.workspace = true
 
 [lints]
 workspace = true

@@ -27,13 +27,13 @@ Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang forma
 
 **Trace:** REQ-051, OQ-011, PRD bagian 27, 28, 31, 32.1, dan 32.3
 
-**Pointer:** spec [0002](../specs/0002-coding-standards-tooling/index.md) · code in `.github/workflows/ci.yml`, `.githooks/pre-commit`, `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `crates/testkit/`
+**Pointer:** spec [0002](../specs/0002-coding-standards-tooling/index.md) · code in `.github/workflows/ci.yml`, `.githooks/pre-commit`, `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.toml`, `crates/testkit/`, `crates/evidence/`, `xtask/src/evidence/`, `schemas/evidence/`
 
 - [x] Capture conventions and tooling choices: `/audit`
 - [x] Install the tooling: `/develop coding standards & tooling`
 - [x] Decide evidence, native tests, and baseline (spec): `/architect coding standards & tooling`
 - [ ] Build the evidence standard: `/develop coding standards & tooling`
-  - [ ] Rust evidence path end to end: `stackly-evidence`, `check-deps` rules, `cargo xtask evidence run`, `linux` and `macos-rust` through the wrapper (REQ-051)
+  - [x] Rust evidence path end to end: `stackly-evidence`, `check-deps` rules, `cargo xtask evidence run`, `linux` and `macos-rust` through the wrapper (REQ-051)
   - [ ] `cargo xtask evidence check` and `evidence new`, shared examples in `schemas/evidence/`
   - [ ] Swift path: `StacklyTestSupport` trait, `macos-swift` through the wrapper
   - [ ] `native.yml`, nightly schedule, fixture credential leak scan

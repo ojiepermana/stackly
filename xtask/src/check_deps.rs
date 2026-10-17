@@ -1,5 +1,6 @@
 //! `cargo xtask check-deps`: the dependency direction and `unsafe` rules
-//! from spec 0001 ("Aturan arah dependency").
+//! from spec 0001 ("Aturan arah dependency"), plus the `stackly-evidence`
+//! rules from spec 0002.
 //!
 //! Only direct dependencies are checked, each with its kind (normal, dev,
 //! build). Transitive dependencies are left alone: portability is proven by
@@ -18,8 +19,9 @@ const PORTABLE: [&str; 4] = [
     "stackly-protocol",
     "stackly-core",
 ];
-/// Crates that depend on no other Stackly crate.
-const LEAVES: [&str; 2] = ["stackly-domain", "stackly-protocol"];
+/// Crates that depend on no other Stackly crate. Domain and protocol may
+/// still take `stackly-evidence` as a dev dependency.
+const LEAVES: [&str; 3] = ["stackly-domain", "stackly-protocol", EVIDENCE];
 /// Adapters the portable crates never see.
 const ADAPTERS: [&str; 2] = ["stackly-platform-macos", "stackly-storage"];
 /// Crates whose source may opt out of the workspace `unsafe_code` lint.
@@ -28,6 +30,9 @@ const UNSAFE_ALLOWED: [&str; 1] = ["stackly-platform-macos"];
 const MACOS_ADAPTER: &str = "stackly-platform-macos";
 const MACOS_ONLY_TARGET: &str = r#"cfg(target_os = "macos")"#;
 const TESTKIT: &str = "stackly-testkit";
+const EVIDENCE: &str = "stackly-evidence";
+/// The only crates that may take `stackly-evidence` as a normal dependency.
+const EVIDENCE_NORMAL_USERS: [&str; 2] = ["xtask", TESTKIT];
 const UNSAFE_LINT: &str = "unsafe_code";
 
 pub fn run(root: &Path) -> Result<()> {
@@ -60,7 +65,7 @@ pub fn run(root: &Path) -> Result<()> {
         eprintln!("  {violation}");
     }
     bail!(
-        "{} dependency rule violation(s), see spec 0001",
+        "{} dependency rule violation(s), see specs 0001 and 0002",
         violations.len()
     )
 }
@@ -84,8 +89,15 @@ fn check_dependency(package: &str, dependency: &Dependency, violations: &mut Vec
         }
     }
     if LEAVES.contains(&package) {
-        if is_stackly_crate(name) {
-            deny("this crate depends on no other Stackly crate");
+        let dev_evidence = package != EVIDENCE
+            && name == EVIDENCE
+            && dependency.kind == DependencyKind::Development;
+        if is_stackly_crate(name) && !dev_evidence {
+            deny(if package == EVIDENCE {
+                "stackly-evidence depends on no Stackly crate"
+            } else {
+                "this crate depends on no other Stackly crate, except stackly-evidence as a dev dependency"
+            });
         }
         if matches!(name, "tokio" | "libc") {
             deny("tokio and libc are never direct dependencies of this crate");
@@ -102,6 +114,16 @@ fn check_dependency(package: &str, dependency: &Dependency, violations: &mut Vec
     }
     if name == TESTKIT && dependency.kind != DependencyKind::Development {
         deny("stackly-testkit is only ever a dev dependency");
+    }
+    if name == EVIDENCE {
+        let allowed = dependency.kind == DependencyKind::Development
+            || (dependency.kind == DependencyKind::Normal
+                && EVIDENCE_NORMAL_USERS.contains(&package));
+        if !allowed {
+            deny(
+                "stackly-evidence is a dev dependency everywhere except xtask and stackly-testkit",
+            );
+        }
     }
     if name == MACOS_ADAPTER && target.as_deref() != Some(MACOS_ONLY_TARGET) {
         deny("declare it under [target.'cfg(target_os = \"macos\")'.dependencies]");
