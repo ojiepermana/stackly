@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "meson": {
+      "source": "mohitmishra786/low-level-dev-skills",
+      "sourceType": "github",
+      "skillPath": "skills/build-systems/meson/SKILL.md",
+      "computedHash": "81f17012a0d24c37d746be4e3ad8a1afffd77d991d1f2d6d88147acf705856c8"
+    },
     "rust-async-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
@@ -12,6 +18,13 @@
       "sourceType": "github",
       "skillPath": "skills/rust-best-practices/SKILL.md",
       "computedHash": "a3db351ec552ed9d36b59e547d6c1d94077867eb5bcb98b3f802dfebb0a8a248"
+    },
+    "signing-entitlements": {
+      "source": "openai/plugins",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "plugins/build-macos-apps/skills/signing-entitlements/SKILL.md",
+      "computedHash": "d8463c3b3bf767fbe667c2cdc69181832eb86a36b3d685bb14b838ee66e59a32"
     },
     "swift-concurrency": {
       "source": "avdlee/swift-concurrency-agent-skill",
