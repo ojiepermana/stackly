@@ -33,7 +33,7 @@ Kalau isi skill bertentangan dengan spec ini, spec yang menang.
 
 ### Test mana yang menulis record
 
-- Done when fitur 2 menulis "tiap test menghasilkan evidence record". Spec ini membacanya sebagai tiap test yang membuktikan PRD ID, karena PRD bagian 28 mengikat evidence ke AC. `/scope` sebaiknya menyesuaikan kalimat itu (lihat Follow-up).
+- Done when fitur 2 menulis "tiap test yang membuktikan ID PRD menghasilkan evidence record", karena PRD bagian 28 mengikat evidence ke AC.
 - Test yang membuktikan minimal satu PRD ID menulis tepat satu record per fungsi test per run. Satu PRD ID boleh dibuktikan banyak test, dan satu test boleh membuktikan banyak ID.
 - Test unit biasa tanpa PRD ID (seperti test `allocate_port` dan `TestRoot` hari ini) tidak menulis record.
 - Setiap test native wajib menulis record berlabel `native`, karena bukti native adalah yang dicari laporan rilis (fitur 65).
@@ -81,9 +81,9 @@ Kolom Sumber adalah value sourcing: dari mana setiap nilai berasal, supaya build
 Aturan subject:
 
 - `version` harus exact, yaitu cocok dengan `^[0-9]+(\.[0-9]+)+([+-][0-9A-Za-z.]+)?$`. Selector seperti `17`, `@17`, atau `^17` ditolak.
-- `digest` boleh null. `source` bernilai `managed`, `external`, atau `fixture`, dan record `native` tidak pernah memakai `fixture`.
+- `digest` boleh null. Kalau terisi, nilainya SHA-256 berupa 64 karakter hex huruf kecil tanpa awalan, sama dengan `sha256` di inventaris spec 0003. `source` bernilai `managed`, `external`, atau `fixture`, dan record `native` tidak pernah memakai `fixture`.
 - `PASS` native wajib punya minimal satu subject. `FAIL` dan `BLOCKED` native mencantumkannya kalau runtime sudah diketahui.
-- Panggil `subject(...)` segera setelah runtime ditemukan, dengan versi yang dibaca dari binary yang berjalan (output `--version` atau query ke server), tidak pernah dari literal di test.
+- Panggil `subject(...)` segera setelah runtime ditemukan, dengan versi yang dibaca dari binary yang berjalan (output `--version` atau query ke server), tidak pernah dari literal di test. Satu pengecualian tertulis ada di spec 0003: test runtime yang `FAIL` sebelum versinya terbaca memakai versi dari inventaris, supaya record itu tetap terhubung ke digest artefaknya.
 
 ### Identitas test
 
@@ -102,12 +102,12 @@ Wrapper mengubah setiap `file` absolut menjadi path relatif terhadap root worksp
 
 ### Context run
 
-`RunContext` dihitung wrapper sekali di awal run, ditulis ke `run.json`, lalu disalin ke setiap record di `report.json`. Record manual mengisinya lewat `evidence new`. `sourceCommit`, `host.os`, dan `host.arch` wajib ada, dan run langsung gagal kalau salah satunya tidak bisa dibaca. Probe lain dijalankan satu perintah per nilai; kalau gagal, nilainya null dan wrapper mencetak satu baris peringatan.
+`RunContext` dihitung wrapper sekali di awal run, ditulis ke `run.json`, lalu disalin ke setiap record di `report.json`. Record manual mengisinya lewat `evidence new`. `sourceCommit`, `sourceDirty` (boolean), `host.os`, dan `host.arch` wajib ada, dan run langsung gagal kalau salah satunya tidak bisa dibaca. Probe lain dijalankan satu perintah per nilai; kalau gagal, nilainya null dan wrapper mencetak satu baris peringatan.
 
 | Field | Sumber | Catatan |
 | --- | --- | --- |
 | `sourceCommit` | `git rev-parse HEAD` | commit yang benar benar diuji. Di pull request, ini merge commit sementara buatan GitHub |
-| `sourceDirty` | `git status --porcelain` tidak kosong, diambil sekali di awal run | run dirty tidak pernah menjadi bukti rilis |
+| `sourceDirty` | `git -C <root workspace> status --porcelain --untracked-files=normal` tidak kosong, diambil sekali di awal run. Hasilnya sama dengan `git status --porcelain` dengan config default; opsi itu ditulis eksplisit supaya `status.showUntrackedFiles` di config lokal atau global tidak diam diam mematikan hitungan file untracked | file untracked yang tidak di-gitignore ikut dihitung, karena cargo ikut mengompilasi file test, `build.rs`, atau `src/bin` baru yang belum di `git add`. Catatan pribadi di folder repo masuk `.git/info/exclude`. Run dirty tidak pernah menjadi bukti rilis |
 | `runId` | UUID v7 dari wrapper | null untuk manual |
 | `runKind` | `--kind` wrapper | null untuk manual |
 | `command` | argv perintah yang dijalankan wrapper | null untuk manual |
@@ -154,9 +154,13 @@ target/evidence/<runId>/            # STACKLY_EVIDENCE_DIR, tidak masuk git
 └── report.json                     # RunReport, stackly.evidence-report/v1
 evidence/                           # masuk git
 ├── baseline-host.json              # BaselineHost, stackly.evidence-baseline/v1
-└── manual/
-    ├── <yyyy-mm-dd>-<slug>.json    # record manual lengkap, dengan context
-    └── files/<id>/                 # screenshot atau file bukti manual, opsional
+├── manual/
+│   ├── <yyyy-mm-dd>-<slug>.json    # record manual lengkap, dengan context
+│   └── files/<id>/                 # screenshot atau file bukti manual, opsional
+└── runtime/<runId>/                # bukti G0 runtime, ditulis `cargo xtask runtime record` (spec 0003)
+    ├── report.json                 # RunReport yang difilter ke record PASS dan FAIL dari target test native_runtime
+    ├── output.log                  # salinan output.log run itu yang sudah disanitasi (lihat spec 0003)
+    └── artifacts/<id>/spike-result.json
 schemas/evidence/                   # hasil codegen, plus contoh bersama yang ditulis tangan
 ├── record.schema.json
 ├── run-context.schema.json
@@ -166,6 +170,8 @@ schemas/evidence/                   # hasil codegen, plus contoh bersama yang di
 ```
 
 Setiap file ditulis atomik (tulis ke `<nama>.tmp` di folder yang sama, lalu rename), jadi pembaca tidak pernah melihat file setengah jadi. Wrapper mengabaikan file `*.tmp` di `records/`.
+
+`evidence/runtime/` adalah satu satunya evidence otomatis yang masuk git. Isinya bukti G0 untuk spec 0003, bukan bukti rilis, dan hanya `cargo xtask runtime record` yang menulisnya. `cargo xtask evidence check` tidak membaca folder ini; `cargo xtask runtime check` (spec 0003) yang memvalidasinya.
 
 ### Report run `stackly.evidence-report/v1`
 
@@ -187,7 +193,7 @@ Kode masalah (`code`) yang menggagalkan run:
 
 | Kode | Arti |
 | --- | --- |
-| `invalid_record` | record mentah tidak bisa didecode, atau melanggar aturan (pola ID, subject native, `actual` native, `reason` dan `owner` untuk `BLOCKED`). `message` menyebut aturannya |
+| `invalid_record` | record mentah tidak bisa didecode, atau melanggar aturan (pola ID, subject native, format `digest`, `actual` native, `reason` dan `owner` untuk `BLOCKED`). `message` menyebut aturannya |
 | `kind_mismatch` | `kind` record berbeda dengan `kind` run |
 | `duplicate_test` | identitas test yang sama muncul dua kali |
 | `left_not_run` | record masih `NOT_RUN` padahal perintah selesai dengan exit 0 |
@@ -316,7 +322,7 @@ Swift:
 
 | Job | Workflow | Runner | Kind | Langkah evidence | Artifact |
 | --- | --- | --- | --- | --- | --- |
-| `linux` | `ci.yml` | `ubuntu-24.04` | fixture | `cargo xtask evidence run --kind fixture -- cargo test --workspace --exclude stackly-platform-macos --locked --no-fail-fast`, lalu `cargo xtask evidence check` | `evidence-linux` |
+| `linux` | `ci.yml` | `ubuntu-24.04` | fixture | `cargo xtask evidence run --kind fixture -- cargo test --workspace --exclude stackly-platform-macos --locked --no-fail-fast`, lalu `cargo xtask evidence check`, lalu `cargo xtask runtime check` (spec 0003) | `evidence-linux` |
 | `macos-rust` | `ci.yml` | `macos-26` | fixture | `cargo xtask evidence run --kind fixture -- cargo test --workspace --locked --no-fail-fast` | `evidence-macos-rust` |
 | `macos-swift` | `ci.yml` | self hosted `macos-27` | fixture | `cargo xtask evidence run --kind fixture -- swift test --package-path clients/swift --skip 'NativeTests\.'`. Toolchain Rust dipasang sebelum langkah ini | `evidence-macos-swift` |
 | `macos-native` | `native.yml` (baru) | self hosted `macos-27` | native | `cargo xtask evidence run --kind native -- cargo test --workspace --locked --no-fail-fast --tests -- --ignored`, lalu `cargo xtask evidence run --kind native -- swift test --package-path clients/swift --filter 'NativeTests\.'` | `evidence-macos-native` |
@@ -329,8 +335,13 @@ Swift:
 - `native.yml` terpisah supaya pembatalan run PR di `ci.yml` (`cancel-in-progress`) tidak pernah membunuh provider di tengah test. Isinya:
   - trigger `pull_request`, `push` ke `main`, `schedule` dengan cron yang sama, dan `workflow_dispatch`; `permissions: contents: read`
   - `concurrency: { group: native-${{ github.ref }}, cancel-in-progress: false }`
-  - job `macos-native` dengan guard fork yang sama dengan `macos-swift`, label `self-hosted, macOS, ARM64, macos-27`, dan `timeout-minutes: 60`
-  - langkah: checkout (`persist-credentials: false`), cek Xcode yang dipin (sama dengan `macos-swift`), `rustup toolchain install`, membuat `$RUNNER_TEMP/stackly-native`, dua langkah evidence di tabel dengan `TMPDIR` diarahkan ke folder itu (runner mengosongkan `RUNNER_TEMP` di awal dan akhir setiap job, jadi test root yang tertinggal ikut hilang), lalu upload
+  - job `macos-native` dengan kondisi `if:` yang persis sama dengan `macos-swift` (guard fork dan `vars.SELF_HOSTED_MACOS27 == 'true'`, supaya job tidak antre selama runner belum terdaftar), label `self-hosted, macOS, ARM64, macos-27`, dan `timeout-minutes: 90` (delapan spike runtime spec 0003 berjalan berurutan di job ini)
+  - Mac itu wajib punya sesi login GUI yang aktif, karena spike runtime spec 0003 memakai domain launchd `gui/<uid>`. Tanpa sesi itu, test runtime tercatat `BLOCKED`, bukan `FAIL`
+  - langkah, berurutan: checkout (`persist-credentials: false`); cek Xcode yang dipin (sama dengan `macos-swift`); `rustup toolchain install`; membuat `$RUNNER_TEMP/stackly-native`; `cargo xtask runtime spike --cleanup`; khusus trigger `schedule`, `cargo xtask runtime spike --prune-cache`; dua langkah evidence di tabel; `cargo xtask runtime spike --cleanup` lagi; lalu upload. Semua langkah dari pembersihan pertama sampai pembersihan kedua memakai `TMPDIR` yang diarahkan ke `$RUNNER_TEMP/stackly-native` (runner mengosongkan `RUNNER_TEMP` di awal dan akhir setiap job, jadi test root yang tertinggal ikut hilang)
+  - kondisi langkah: pembersihan pertama dan `--prune-cache` memakai kondisi default, jadi kalau salah satunya gagal, job gagal dan kedua langkah evidence dilewati. Langkah evidence Swift memakai `if: ${{ !cancelled() }}`, supaya tetap jalan setelah langkah Rust gagal (satu record `FAIL` sudah membuat exit code bukan 0) atau kena timeout. Pembersihan kedua memakai `if: ${{ always() && steps.toolchain.outcome == 'success' }}` (dengan `id: toolchain` di langkah `rustup toolchain install`), dan upload memakai `if: always()`
+  - langkah evidence Rust memakai `timeout-minutes: 75` dan langkah evidence Swift `timeout-minutes: 10`, supaya langkah Swift, pembersihan kedua, dan upload tetap punya waktu walau spike lambat. Batas 90 menit mencakup kasus biasa. Delapan spike yang masing masing mencapai batas driver 15 menit tidak muat; test sesudahnya tetap `NOT_RUN`, tidak pernah terbaca `PASS`
+  - pembersihan kedua menangkap proses yang lepas saat langkah evidence dibatalkan atau kena timeout (worker LaunchAgent bukan child dari job). `--cleanup` keluar dengan kode 0 walau domain GUI tidak ada, dan tidak pernah menyentuh cache unduhan. Cache spike (`~/Library/Caches/dev.stackly.xtask/runtime/`) menetap karena `HOME` runner tetap, tanpa `actions/cache` dan tanpa override `HOME` atau `XDG`
+  - langkah `--cleanup` dan `--prune-cache` di `native.yml` ditambahkan langkah 13 (milestone 4) spec 0003, bukan di build spec ini. Perintah `--cleanup` sendiri dibangun di milestone 2 spec itu, dan `--prune-cache` di langkah 13. Langkah 4 Rollout spec ini menulis `native.yml` tanpa kedua langkah itu, dengan `TMPDIR` yang diarahkan ke `$RUNNER_TEMP/stackly-native` di kedua langkah evidence; langkah 13 spec 0003 memperluasnya ke langkah pembersihan
 - `macos-native` bukan required status check, supaya Mac yang mati tidak menahan merge. Job yang merah tetap terlihat di PR.
 - Runner self hosted mengerjakan satu job sekali jalan, jadi `macos-swift` dan `macos-native` antre bergantian.
 
@@ -340,8 +351,8 @@ Argumen diparse dengan tangan seperti task `xtask` lain, tanpa clap.
 
 | Perintah | Yang dikerjakan |
 | --- | --- |
-| `cargo xtask evidence run --kind <fixture\|native> [--out <folder>] -- <perintah>` | menolak jalan kalau `STACKLY_EVIDENCE_DIR` sudah terisi (tidak ada run bersarang); membuat folder run (default `<target directory dari cargo metadata>/evidence/<runId>/`); menulis `run.json`; menjalankan perintah dengan kedua variabel environment, sambil menyalin stdout dan stderr ke terminal dan `output.log`; mengumpulkan `records/`; melengkapi `context` dan path file; memvalidasi; memindai fixture credential; menulis `report.json`; di GitHub menulis ringkasan ke `$GITHUB_STEP_SUMMARY` dan satu `::warning::` per `BLOCKED` |
-| `cargo xtask evidence check` | memvalidasi `evidence/manual/*.json` dan `evidence/baseline-host.json`; memindai source Rust dan Swift dengan aturan di bawah |
+| `cargo xtask evidence run --kind <fixture\|native> [--out <folder>] -- <perintah>` | menolak jalan kalau `STACKLY_EVIDENCE_DIR` sudah terisi (tidak ada run bersarang); membuat folder run (default `<target directory dari cargo metadata>/evidence/<runId>/`); menulis `run.json`; menjalankan perintah dengan kedua variabel environment, sambil menyalin stdout dan stderr ke terminal dan `output.log`; mengumpulkan `records/`; melengkapi `context` dan path file; memvalidasi; memindai fixture credential; menulis `report.json` lalu mencetak `evidence report: <path absolut report.json>` sebagai baris terakhir stderr; di GitHub menulis ringkasan ke `$GITHUB_STEP_SUMMARY` dan satu `::warning::` per `BLOCKED` |
+| `cargo xtask evidence check` | memvalidasi `evidence/manual/*.json` dan `evidence/baseline-host.json`; memindai source Rust dan Swift dengan aturan di bawah; tidak membaca `evidence/runtime/`, yang divalidasi `cargo xtask runtime check` (spec 0003) |
 | `cargo xtask evidence new ...` | membuat record manual `NOT_RUN` (lihat Record manual) |
 | `cargo xtask evidence baseline --runner-name <nama>` | menulis `evidence/baseline-host.json` dari Mac tempat perintah dijalankan (lihat Baseline benchmark) |
 | `cargo xtask codegen` | juga menulis empat schema evidence |
@@ -380,7 +391,7 @@ Aturan pindaian `evidence check`:
 ### Invariant
 
 - Hanya wrapper yang mengisi variabel environment evidence.
-- Record final tidak pernah diubah; run atau review baru menulis record baru.
+- Record final tidak pernah diubah; run atau review baru menulis record baru. Menyalin ke `evidence/runtime/` hanya boleh membuang record utuh dan menghitung ulang `summary`; isi record yang disalin tetap sama.
 - Record fixture tidak pernah dihitung sebagai bukti native.
 - Hasil yang tidak teramati tetap `NOT_RUN`, tidak pernah `PASS`.
 - Evidence tidak pernah berisi credential asli, dan run gagal kalau prefix fixture credential muncul di outputnya.
@@ -406,7 +417,7 @@ Aturan pindaian `evidence check`:
 1. Jalur Rust dari ujung ke ujung: crate `stackly-evidence` (tipe, aturan, guard, `FixtureCredential`) dan ekspor ulangnya di testkit, aturan baru di `check-deps`, schema lewat `codegen`, `cargo xtask evidence run` dengan `report.json`, lalu job `linux` dan `macos-rust` lewat wrapper plus upload artifact. Record pertama berasal dari test guard itu sendiri, yang membuktikan REQ-051 (setiap requirement punya test, evidence, dan status).
 2. Aturan dan bukti manual: `cargo xtask evidence check` (pindaian Rust dan Swift, record manual), `cargo xtask evidence new`, dan contoh di `schemas/evidence/examples/`.
 3. Jalur Swift: target `StacklyTestSupport` dengan trait `.evidence`, test-nya membaca contoh bersama dan membuktikan REQ-051, lalu `macos-swift` lewat wrapper.
-4. Native dan kebocoran: `native.yml`, trigger nightly di `ci.yml`, `STACKLY_CI_HEAD_SHA`, dan pindaian prefix credential di wrapper.
+4. Native dan kebocoran: `native.yml`, trigger nightly di `ci.yml`, `STACKLY_CI_HEAD_SHA`, dan pindaian prefix credential di wrapper. Langkah `cargo xtask runtime spike --cleanup` dan `--prune-cache` di `native.yml` ditambahkan milestone 4 spec 0003, bukan di langkah ini.
 5. Baseline: `cargo xtask evidence baseline`, lalu `evidence/baseline-host.json` dicatat di Mac CI. Langkah ini butuh Mac self hosted yang sudah terdaftar.
 
 **Exceptions**:
@@ -420,7 +431,7 @@ Aturan pindaian `evidence check`:
 
 **Positive**:
 
-- Fitur 65 membaca satu format dari tiga tempat (artifact `report.json`, `evidence/manual/`, dan `evidence/baseline-host.json`) dan bisa membedakan fixture dari native tanpa menebak.
+- Fitur 65 membaca satu format dari empat tempat (artifact `report.json`, `evidence/manual/`, `evidence/baseline-host.json`, dan `evidence/runtime/` dari spec 0003, yang hanya berlaku sebagai bukti G0) dan bisa membedakan fixture dari native tanpa menebak.
 - Crash, abort, timeout, atau test yang di cancel tidak pernah terbaca sebagai `PASS`.
 - Test native tidak pernah jalan tanpa sengaja di runner hosted atau di laptop, dan PR yang dibatalkan tidak membunuh provider di tengah test.
 - Bocornya fixture credential ke log atau artifact membuat CI merah.
@@ -438,21 +449,23 @@ Aturan pindaian `evidence check`:
 - `Codable` Swift tulisan tangan menduplikasi tipe Rust, dan keduanya hanya dijaga sama oleh contoh bersama.
 - Trait Swift bergantung pada `TestScoping`, `IssueHandlingTrait`, dan `Test.cancel` (ada di Swift 6.4 dan Xcode 27), jadi `StacklyTestSupport` tidak bisa dibangun dengan Xcode yang lebih lama. Test berparameter hanya punya satu record per fungsi, karena `Test.Case` tidak punya ID publik.
 - Pindaian credential hanya menangkap prefix yang utuh.
+- `sourceDirty` ikut menghitung file untracked yang tidak di-gitignore, jadi catatan pribadi di folder repo membuat run dirty sampai dimasukkan ke `.git/info/exclude`.
 - Baseline belum tercatat sampai Mac CI didaftarkan.
 
 **Neutral**:
 
-- Folder baru `evidence/`, `schemas/evidence/`, dan `crates/evidence/`, target baru `StacklyTestSupport`, dan workflow baru `native.yml`.
+- Folder baru `evidence/`, `schemas/evidence/`, dan `crates/evidence/`, target baru `StacklyTestSupport`, dan workflow baru `native.yml`. Spec 0003 menambah `evidence/runtime/` dengan format report yang sama.
 - Nightly menjalankan semua job di `ci.yml`, bukan hanya native.
 - `cargo-nextest` tetap tidak dipakai. Laporan JUnit-nya bisa menambah data untuk test tanpa PRD ID nanti, tanpa mengubah format record.
 
 ## Follow-up
 
-- [ ] Daftarkan Mac self hosted dengan label `self-hosted, macOS, ARM64, macos-27`, jalankan `cargo xtask evidence baseline --runner-name <nama>` di sana, lalu commit `evidence/baseline-host.json`. Sampai itu terjadi, "mesin benchmark baseline tercatat" di Done when fitur 2 tetap terbuka.
+- [ ] Daftarkan Mac self hosted dengan label `self-hosted, macOS, ARM64, macos-27` dan sesi login GUI yang aktif (dibutuhkan spike runtime spec 0003), set variable repo `SELF_HOSTED_MACOS27` ke `true`, jalankan `cargo xtask evidence baseline --runner-name <nama>` di sana, lalu commit `evidence/baseline-host.json`. Sampai itu terjadi, "mesin benchmark baseline tercatat" di Done when fitur 2 tetap terbuka.
 - [ ] Kalau memori Mac CI bukan 16 GB, catat bedanya bersama OQ-011 saat fitur 64 menetapkan angka NFR.
-- [ ] `/scope`: ubah "tiap test menghasilkan evidence record" di Done when fitur 2 menjadi "tiap test yang membuktikan ID PRD menghasilkan evidence record".
+- [x] `/scope`: ubah "tiap test menghasilkan evidence record" di Done when fitur 2 menjadi "tiap test yang membuktikan ID PRD menghasilkan evidence record".
 - [ ] Fitur 65: tandai `NOT_RUN` untuk AC yang tidak punya record sama sekali; terima bukti rilis hanya dari run push, tag, atau dispatch dan dari commit yang ada di `main` atau tag release candidate; simpan evidence rilis melewati masa kedaluwarsa artifact; dan cek bahwa record manual final tidak diedit, dibandingkan dengan riwayat git.
-- [ ] Test native pertama yang menjalankan provider asli (fitur 3): tambahkan langkah awal di `native.yml` yang menghentikan proses sisa run sebelumnya (misalnya karena timeout) yang command line-nya berada di bawah `$RUNNER_TEMP/stackly-native`.
+- [x] Test native pertama yang menjalankan provider asli (fitur 3): tambahkan langkah awal di `native.yml` yang menghentikan proses sisa run sebelumnya (misalnya karena timeout). Dipegang spec 0003 AC-15 lewat `cargo xtask runtime spike --cleanup`; langkahnya ditambahkan ke `native.yml` di milestone 4 spec itu.
+- [ ] Langkah itu hanya membersihkan proses dan LaunchAgent milik spike runtime. Fitur pertama yang menambah test native yang menjalankan provider di luar spike (misalnya fitur 18 lewat daemon dan supervisor) menambah pembersihan untuk proses sisa yang command line-nya berada di bawah `$RUNNER_TEMP/stackly-native`.
 - [ ] Helper evidence untuk XCTest saat XCUITest pertama datang (fitur 13 atau 68), lewat `/architect` update spec ini.
 - [ ] Fitur 11: sisi Swift dari `FixtureCredential`, dan test redaction yang memakai prefix yang sama.
 - [ ] Fitur 63 dan 64: field tambahan untuk hasil fuzz dan angka benchmark; fitur 64 juga menenangkan Mac (tanpa build lain) sebelum mengukur.

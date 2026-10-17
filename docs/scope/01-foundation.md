@@ -23,7 +23,7 @@ Putuskan stack dan susunan monorepo, lalu scaffold proyek yang bisa dijalankan, 
 
 Catat konvensi dan pilihan tooling dari proyek hasil scaffold, lalu pasang format, lint, typecheck, CI dasar, dan aturan test integrasi yang wajib diikuti semua fitur berikutnya.
 
-**Done when:** root `AGENTS.md` mencerminkan stack nyata dan mewajibkan spec serta test mempertahankan ID AC dari PRD; pipeline PR menjalankan format, lint, build, unit test, validasi schema, audit lisensi dependency, dan security static checks dengan hasil bersih; integration test memakai test root ephemeral (bukan direktori Application Support pengguna), port yang dialokasikan, dan fixture credential, dan cleanup hanya menghapus path milik test run itu; job fixture dan job runtime nyata terpisah; tiap test menghasilkan evidence record sesuai PRD bagian 28 (termasuk versi provider, langkah test, hasil, waktu, dan reviewer bila manual) berlabel fixture atau native, dengan status awal `NOT_RUN`; mesin benchmark baseline tercatat.
+**Done when:** root `AGENTS.md` mencerminkan stack nyata dan mewajibkan spec serta test mempertahankan ID AC dari PRD; pipeline PR menjalankan format, lint, build, unit test, validasi schema, audit lisensi dependency, dan security static checks dengan hasil bersih; integration test memakai test root ephemeral (bukan direktori Application Support pengguna), port yang dialokasikan, dan fixture credential, dan cleanup hanya menghapus path milik test run itu; job fixture dan job runtime nyata terpisah; tiap test yang membuktikan ID PRD menghasilkan evidence record sesuai PRD bagian 28 (termasuk versi provider, langkah test, hasil, waktu, dan reviewer bila manual) berlabel fixture atau native, dengan status awal `NOT_RUN`; mesin benchmark baseline tercatat.
 
 **Trace:** REQ-051, OQ-011, PRD bagian 27, 28, 31, 32.1, dan 32.3
 
@@ -56,7 +56,7 @@ Tentukan dari mana artefak runtime enam provider berasal dan bagaimana mereka di
   - [ ] Inventory, `runtime pin`, `runtime verify`, and `runtime check` in the `linux` job (spec 0003 AC-1 to AC-3)
   - [ ] LaunchAgent spike end to end, proven on NATS, then Traefik, ClickHouse, MySQL 8.4 and 9.7, with evidence in `evidence/runtime/` (spec 0003 AC-1, AC-3 to AC-10, AC-13; needs spec 0002 step 1 built)
   - [ ] `stackly-runtimes` pipeline for PostgreSQL 17 and 18 and Valkey, published with attestation, then their spikes (spec 0003 AC-1, AC-2, AC-5, AC-7, AC-11, AC-12; needs the repo created first)
-  - [ ] Automation: `native.yml` cleanup, cache, and timeout, plus weekly `runtime-watch.yml` (spec 0003 AC-14, AC-15; the CI part needs the self hosted runner registered)
+  - [ ] Automation: `native.yml` cleanup, cache, and timeout, plus weekly `runtime-watch.yml` (spec 0003 AC-14, AC-15; the CI part needs spec 0002 step 4 built, the self hosted runner registered, and `SELF_HOSTED_MACOS27` set to `true`)
 - [ ] Verify it: `/check verify sumber & packaging runtime`
 - [ ] Test it: `/test sumber & packaging runtime`
 
