@@ -7,3 +7,6 @@ xcuserdata/
 # SwiftPM build output from `swift test`
 .build/
 .swiftpm/
+
+# graphify knowledge graph, rebuilt locally in each clone
+/graphify-out/

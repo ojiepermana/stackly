@@ -68,6 +68,7 @@ Installed by feature 2: `rustfmt.toml`, `clippy.toml`, `.swift-format`, `deny.to
 - integration: on
 - branch prefix: feat/
 - commit: per-milestone
+- before every commit: update the knowledge graph in `graphify-out/` so it matches what is being committed. Run `graphify update .`, which re-extracts code with no LLM. When the commit also changes docs, specs, or scope, run `/graphify . --update` instead, because `graphify update` skips non-code files. If `graphify-out/` is missing, build it once with `/graphify .`.
 
 ## Agent skills
 
