@@ -20,7 +20,7 @@ Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan,
 
 | File | Fase | Fitur | Status |
 | --- | --- | --- | --- |
-| [01-foundation.md](01-foundation.md) | Foundation dan Skeleton | 1 sampai 11, 14 | 1 done, 2 in-progress, 9 planned |
+| [01-foundation.md](01-foundation.md) | Foundation dan Skeleton | 1 sampai 11, 14 | 1 done, 3 in-progress, 8 planned |
 | [ui-macos.md](ui-macos.md) | UI & desain macOS (jalur paralel SwiftUI) | 12, 13, 67 sampai 69 | 5 planned |
 | [02-instalasi-pertama.md](02-instalasi-pertama.md) | Instalasi pertama (JOURNEY-01, PostgreSQL, plus NATS dasar) | 15 sampai 23 | 9 planned |
 | [03-multi-versi-dan-instance.md](03-multi-versi-dan-instance.md) | Multi versi & instance (JOURNEY-02, JOURNEY-03) | 24 sampai 25 | 2 planned |
@@ -41,7 +41,7 @@ Bangun dari atas ke bawah. Nomor file adalah urutan development yang disarankan,
 | 1 | Stack & arsitektur | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | in-progress |
 | 3 | Sumber & packaging runtime | Foundation | in-progress |
-| 4 | Domain core & platform abstraction | Foundation | planned |
+| 4 | Domain core & platform abstraction | Foundation | in-progress |
 | 5 | Data model registry | Foundation | planned |
 | 6 | Protokol IPC & daemon | Foundation | planned |
 | 7 | Operation engine | Foundation | planned |
